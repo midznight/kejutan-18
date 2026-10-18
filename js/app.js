@@ -53,7 +53,7 @@
   if (rotateCopy) rotateCopy.textContent = C.copy.rotate;
   const loadingLabel = document.getElementById('loading-state');
   if (loadingLabel) loadingLabel.setAttribute('aria-label', C.copy.loadingLabel);
-  document.title = C.copy.documentTitle;
+  document.title = withName(C.copy.documentTitle);
   document.documentElement.style.setProperty('--purple', C.colors.primary || '#a78bfa');
   document.documentElement.style.setProperty('--blue', C.colors.blue || '#7dd3fc');
   document.documentElement.style.setProperty('--gold', C.colors.gold || '#ffd69b');
@@ -375,7 +375,7 @@
 
     const photos = C.photos.map((photo, i) => `<article class="gallery-card" style="--rot:${(-3 + Math.random() * 7).toFixed(2)}deg;--lift:${(-4 + Math.random() * 8).toFixed(1)}px" data-photo-index="${i}"><span class="polaroid-tape" aria-hidden="true"></span><div class="gallery-photo"><div class="photo-placeholder"><div class="frame-icon">${imageIcon}</div><p>${formatted(c.photoEmpty)}</p><small>${formatted(c.photoEmptyNote)}</small></div><img data-src="${safe(photo.src)}" loading="lazy" decoding="async" alt="${safe(c.photoAlt)} ${i + 1}"></div><div class="gallery-caption"><span class="caption-count">${String(i + 1).padStart(2, '0')}</span><span>${formatted(photo.caption)}</span></div></article>`).join('');
     const s7 = `
-      ${makeTopline(c.galleryEyebrow, 8)}
+      ${makeTopline(c.galleryEyebrow, 9)}
       <p class="kicker">${String(C.photos.length).padStart(2, '0')} ${formatted(c.galleryKicker)}</p>
       <h2 class="section-title">${formatted(c.galleryTitle)}</h2>
       <p class="body-copy">${formatted(c.galleryBody)}</p>
@@ -384,7 +384,7 @@
       <div class="actions">${button(c.galleryButton, 'next')}</div>`;
 
     const s8 = `
-      ${makeTopline(c.preletterEyebrow, 9)}
+      ${makeTopline(c.preletterEyebrow, 10)}
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring"></span><span class="orbit-ring ring-two"></span><div class="orbit-center">${BIG_HEART}</div></div>
         <p class="kicker">${formatted(c.preletterKicker)}</p>
@@ -395,13 +395,13 @@
 
     const paragraphs = C.letter.map((paragraph, i) => `<p class="letter-paragraph" data-letter-paragraph="${i}">${formatted(paragraph)}</p>`).join('');
     const s9 = `
-      ${makeTopline(c.letterEyebrow, 10)}
+      ${makeTopline(c.letterEyebrow, 11)}
       <div class="hero-copy" style="text-align:left"><p class="kicker">${formatted(c.letterKicker)}</p><h2 class="section-title">${formatted(c.letterTitle)}</h2></div>
       <article class="letter-paper" id="letter-paper">${paragraphs}</article>
       <div class="actions" style="justify-content:center">${button(c.letterButton, 'next')}</div>`;
 
     const s10 = `
-      ${makeTopline(c.finaleEyebrow, 11)}
+      ${makeTopline(c.finaleEyebrow, 12)}
       <div class="hero-copy">
         <p class="kicker">${formatted(c.finaleKicker)}</p>
         <h2 class="section-title">${formatted(c.finaleTitle)}</h2>
