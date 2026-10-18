@@ -802,6 +802,7 @@
     }
     if (index === 2) {
       startMusicForHero();
+      animateHeroNumber();
       launchFireworkSequence(8);
     }
     if (index === 3) animateBalloonEntrance();
@@ -1357,12 +1358,76 @@
     canvasRAF = 0;
   }
 
+  let lastFingerStarAt = 0;
+  let orientationPermissionRequested = false;
+  let orientationListenerBound = false;
+
+  function requestDecorOrientationFromGesture() {
+    if (orientationPermissionRequested) return;
+    orientationPermissionRequested = true;
+    const API = window.DeviceOrientationEvent;
+    if (!API || typeof API.requestPermission !== 'function') {
+      if (!orientationListenerBound && API) bindDecorOrientation();
+      return;
+    }
+    // iOS permission prompt can only be called synchronously from a user gesture.
+    API.requestPermission().then((permission) => {
+      if (permission === 'granted') bindDecorOrientation();
+    }).catch(() => { /* pointer parallax remains the fallback */ });
+  }
+
+  function bindDecorOrientation() {
+    if (orientationListenerBound) return;
+    orientationListenerBound = true;
+    window.addEventListener('deviceorientation', (event) => {
+      if (document.hidden || !Number.isFinite(event.gamma) || !Number.isFinite(event.beta)) return;
+      const active = document.getElementById(sceneIds[currentScene]);
+      if (!active) return;
+      active.style.setProperty('--parallax-x', (Math.max(-22, Math.min(22, event.gamma)) * .42).toFixed(1) + 'px');
+      active.style.setProperty('--parallax-y', (Math.max(-24, Math.min(24, event.beta - 25)) * .24).toFixed(1) + 'px');
+    }, { passive: true });
+  }
+
+  function spawnFingerStars(x, y, burst = false) {
+    if (reducedMotion || !canvasActive) return;
+    const count = burst ? 5 : 1;
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = burst ? .45 + Math.random() * 1.4 : .12 + Math.random() * .42;
+      addParticle({
+        type: 'fingerStar',
+        x: x + (burst ? (Math.random() - .5) * 14 : 0),
+        y: y + (burst ? (Math.random() - .5) * 14 : 0),
+        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        radius: burst ? 2.2 + Math.random() * 2 : 1.5 + Math.random() * 1.5,
+        life: burst ? .95 : .62, decay: burst ? .025 : .034,
+        friction: .91, ageMs: 0, color: ['#f3dfb0','#c9a15a','#eaa98b','#f4ecdf'][Math.floor(Math.random() * 4)],
+        rotation: Math.random() * Math.PI, spin: (Math.random() - .5) * .1
+      });
+    }
+  }
+
+  function animateHeroNumber() {
+    const number = document.querySelector('#s2 .big-number');
+    if (!number) return;
+    if (reducedMotion || !window.gsap) { number.textContent = '18'; return; }
+    const counter = { value: 0 };
+    window.gsap.to(counter, {
+      value: 18, duration: 1.55, ease: 'power2.out',
+      onStart: () => { number.textContent = '0'; },
+      onUpdate: () => { number.textContent = String(Math.round(counter.value)); },
+      onComplete: () => { number.textContent = '18'; }
+    });
+  }
+
   function bindCanvasGestures() {
     globalPointerBound = true;
     document.addEventListener('pointerdown', (event) => {
       if (reducedMotion || document.hidden) return;
+      spawnFingerStars(event.clientX, event.clientY, true);
       if (currentScene === 0) {
         attractionPoint = { x: event.clientX, y: event.clientY, until: performance.now() + 1450 };
+        requestDecorOrientationFromGesture();
       }
       const finalSceneIndex = sceneIds.length - 1;
       const overControl = event.target && event.target.closest && event.target.closest('button, input, textarea, a');
@@ -1371,6 +1436,16 @@
       }
     }, { passive: true });
     document.addEventListener('pointermove', (event) => {
+      const now = performance.now();
+      if (now - lastFingerStarAt >= 58) {
+        spawnFingerStars(event.clientX, event.clientY, false);
+        lastFingerStarAt = now;
+      }
+      const active = document.getElementById(sceneIds[currentScene]);
+      if (active) {
+        active.style.setProperty('--parallax-x', (((event.clientX / Math.max(1, window.innerWidth)) - .5) * -12).toFixed(1) + 'px');
+        active.style.setProperty('--parallax-y', (((event.clientY / Math.max(1, window.innerHeight)) - .5) * -9).toFixed(1) + 'px');
+      }
       if (currentScene === 0 && attractionPoint && performance.now() < attractionPoint.until) {
         attractionPoint.x = event.clientX;
         attractionPoint.y = event.clientY;
@@ -1378,7 +1453,7 @@
     }, { passive: true });
   }
 
-  const FIREWORK_PALETTE = ['#bba7db', '#d8c7f0', '#b76f74', '#f2c4aa', '#fff0d9', '#7A89C2', '#9d7ab5'];
+  const FIREWORK_PALETTE = ['#f3dfb0', '#c9a15a', '#8f6b32', '#eaa98b', '#f4ecdf', '#7A89C2', '#8e5fb0'];
   const EMBER_COLOR = '#ff9b58';
   const SPRITE_COLORS = [...FIREWORK_PALETTE, EMBER_COLOR, '#fff9ee', '#ffffff'];
 
@@ -1686,8 +1761,9 @@
     const dt = delta / 16.667;
     lastFrameTime = time;
     averageFrameTime = averageFrameTime * .92 + delta * .08;
-    if (averageFrameTime > 24 && particleBudget > 110) {
-      particleBudget = Math.max(110, Math.floor(particleBudget * .78));
+    if (averageFrameTime > 24) {
+      document.documentElement.classList.add('motion-economy');
+      if (particleBudget > 110) particleBudget = Math.max(110, Math.floor(particleBudget * .78));
       while (particles.length > particleBudget) releaseParticle(particles.length - 1);
     }
     if (canvasElement && (canvasWidth !== window.innerWidth || canvasHeight !== window.innerHeight)) resizeCanvas();
@@ -1706,6 +1782,33 @@
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.previousX = p.x; p.previousY = p.y;
+      if (p.type === 'fingerStar') {
+        p.ageMs = (p.ageMs || 0) + delta;
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        p.vx *= Math.pow(p.friction || .91, dt);
+        p.vy *= Math.pow(p.friction || .91, dt);
+        p.rotation += (p.spin || 0) * dt;
+        p.life -= p.decay * dt;
+        canvasContext.globalAlpha = Math.max(0, p.life) * (.72 + .28 * Math.abs(Math.sin(time / 38 + p.rotation)));
+        canvasContext.fillStyle = p.color;
+        canvasContext.save();
+        canvasContext.translate(p.x, p.y);
+        canvasContext.rotate(p.rotation);
+        canvasContext.beginPath();
+        canvasContext.moveTo(0, -p.radius * 1.7);
+        canvasContext.lineTo(p.radius * .42, -p.radius * .42);
+        canvasContext.lineTo(p.radius * 1.7, 0);
+        canvasContext.lineTo(p.radius * .42, p.radius * .42);
+        canvasContext.lineTo(0, p.radius * 1.7);
+        canvasContext.lineTo(-p.radius * .42, p.radius * .42);
+        canvasContext.lineTo(-p.radius * 1.7, 0);
+        canvasContext.lineTo(-p.radius * .42, -p.radius * .42);
+        canvasContext.closePath();
+        canvasContext.fill();
+        canvasContext.restore();
+        if (p.life <= 0) releaseParticle(i);
+        continue;
+      }
       if (p.type === 'pressure') {
         p.life -= p.decay * dt;
         const progress = Math.max(0, Math.min(1, 1 - p.life));
