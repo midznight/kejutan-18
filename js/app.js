@@ -47,7 +47,7 @@
   let canvasElement = null;
   let canvasWidth = 0;
   let canvasHeight = 0;
-  const sceneIds = ['s0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11'];
+  const sceneIds = ['s0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 'zodiac-slide', 's8', 's9', 's10', 's11'];
   const riddleLevels = Array.isArray(C.riddles) ? C.riddles.slice(0, 3) : [];
 
   if (rotateCopy) rotateCopy.textContent = C.copy.rotate;
@@ -168,6 +168,7 @@
       s2: ['arch','art-arch','art-branch'], s3: ['dusk','art-hills','art-moon'],
       s4: ['candle','art-lamps','art-moth'], s5: ['herbarium','art-branch','art-moth'],
       s6: ['tarot','art-tarot','art-branch'], s7: ['interlude','art-branch','art-star'],
+      'zodiac-slide': ['libra','art-sigil','art-star'],
       s8: ['gallery','art-gallery','art-lamps'], s9: ['envelope','art-envelope','art-moth'],
       s10: ['letter','art-branch','art-envelope'], s11: ['curtain','art-curtain','art-star']
     };
@@ -190,7 +191,7 @@
   }
 
   function installSignatureCompositions() {
-    const map = { s0: 'seal', s1: 'telegram', s2: 'birthday-arch', s3: 'dusk-sky', s4: 'candle-table', s5: 'specimen', s6: 'tarot-deck', s7: 'interlude-editorial', s8: 'gallery-wall', s9: 'sealed-envelope', s10: 'letter-stationery', s11: 'finale-curtain' };
+    const map = { s0: 'seal', s1: 'telegram', s2: 'birthday-arch', s3: 'dusk-sky', s4: 'candle-table', s5: 'specimen', s6: 'tarot-deck', s7: 'interlude-editorial', 'zodiac-slide': 'libra-orbit', s8: 'gallery-wall', s9: 'sealed-envelope', s10: 'letter-stationery', s11: 'finale-curtain' };
     Object.entries(map).forEach(([id, signature]) => {
       const scene = document.getElementById(id);
       const scenery = scene && scene.querySelector('.scene-scenery');
@@ -336,6 +337,42 @@
         <div class="actions">${button(c.interludeButton, 'next')}</div>
       </div>`;
 
+    const zodiac = C.zodiac || {};
+    const zodiacFacts = Array.isArray(zodiac.facts) ? zodiac.facts : [];
+    const zodiacCards = zodiacFacts.map((fact, i) => `
+      <article class="zodiac-fact">
+        <span class="zodiac-fact-number">${String(i + 1).padStart(2, '0')}</span>
+        <span class="zodiac-fact-star" aria-hidden="true">✦</span>
+        <h3>${formatted(fact.title || 'Fakta Libra')}</h3>
+        <p>${formatted(fact.body || '')}</p>
+      </article>`).join('');
+    const sZodiac = `
+      ${makeTopline(zodiac.eyebrow || 'KARTU LANGIT UNTUKMU', 8)}
+      <div class="zodiac-panel">
+        <div class="zodiac-intro">
+          <div class="zodiac-emblem" aria-hidden="true">
+            <svg viewBox="0 0 100 100" role="presentation">
+              <circle cx="50" cy="50" r="43" class="zodiac-emblem-ring"/>
+              <path d="M50 17v17 M29 35h42 M37 35L24 56h26L37 35Zm26 0L50 56h26L63 35ZM25 61q12 10 25 0 M50 61q13 10 25 0 M22 70h56 M30 79h40" class="zodiac-emblem-line"/>
+            </svg>
+          </div>
+          <div class="zodiac-intro-copy">
+            <p class="kicker">${formatted(zodiac.birthday || '18 Oktober')} · ${formatted(zodiac.name || 'Libra')}</p>
+            <h2 class="section-title">${formatted(zodiac.title || 'Sedikit tentang Libra')}</h2>
+            <p class="body-copy">${formatted(zodiac.body || '')}</p>
+          </div>
+        </div>
+        <div class="zodiac-meta" aria-label="Ringkasan zodiak">
+          <span><strong>${formatted(zodiac.symbol || '♎')}</strong> ${formatted(zodiac.name || 'Libra')}</span>
+          <span>${formatted(zodiac.element || 'Unsur udara')}</span>
+          <span>Planet: ${formatted(zodiac.rulingPlanet || 'Venus')}</span>
+        </div>
+        <h3 class="zodiac-facts-title">Lima hal kecil tentang bintangmu</h3>
+        <div class="zodiac-facts-grid">${zodiacCards}</div>
+        <p class="zodiac-note"><span aria-hidden="true">✧</span> ${formatted(zodiac.note || '')}</p>
+      </div>
+      <div class="actions zodiac-actions">${button(zodiac.button || 'Lanjut', 'next')}</div>`;
+
     const photos = C.photos.map((photo, i) => `<article class="gallery-card" style="--rot:${(-3 + Math.random() * 7).toFixed(2)}deg;--lift:${(-4 + Math.random() * 8).toFixed(1)}px" data-photo-index="${i}"><span class="polaroid-tape" aria-hidden="true"></span><div class="gallery-photo"><div class="photo-placeholder"><div class="frame-icon">${imageIcon}</div><p>${formatted(c.photoEmpty)}</p><small>${formatted(c.photoEmptyNote)}</small></div><img data-src="${safe(photo.src)}" loading="lazy" decoding="async" alt="${safe(c.photoAlt)} ${i + 1}"></div><div class="gallery-caption"><span class="caption-count">${String(i + 1).padStart(2, '0')}</span><span>${formatted(photo.caption)}</span></div></article>`).join('');
     const s7 = `
       ${makeTopline(c.galleryEyebrow, 8)}
@@ -369,10 +406,83 @@
         <p class="kicker">${formatted(c.finaleKicker)}</p>
         <h2 class="section-title">${formatted(c.finaleTitle)}</h2>
       </div>
-      <div class="finale-stage" id="finale-stage"><div class="gift-stage" id="gift-stage"><button type="button" class="gift-wrap" id="gift-wrap" aria-label="${safe(c.giftButton)}"><span class="gift-bow"></span><span class="gift-lid"></span><span class="gift-box"></span></button></div><div class="voucher" id="voucher"><div class="voucher-label">${formatted(c.voucherLabel)}</div><h3>${formatted(C.finale.title || c.voucherTitle)}</h3><p>${formatted(C.finale.body || c.voucherBody)}</p><div class="voucher-bottom"><span>${formatted(c.voucherFoot)}</span>${BIG_HEART}</div></div></div>
+      <div class="finale-stage" id="finale-stage">
+        <div class="gift-stage" id="gift-stage">
+          <button type="button" class="gift-wrap" id="gift-wrap" aria-label="${safe(c.giftButton)}" aria-expanded="false"><span class="gift-bow"></span><span class="gift-lid"></span><span class="gift-box"></span></button>
+          <div class="lion-stage" id="lion-stage" hidden>
+            <p class="lion-caption" id="lion-caption" aria-live="polite"></p>
+            <svg class="lion-art lion-roaring" id="lion-roaring" viewBox="0 0 360 310" role="img" aria-label="Singa besar bersurai emas muncul dari kado">
+              <defs>
+                <linearGradient id="lion-mane" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe7aa"/><stop offset=".35" stop-color="#d99642"/><stop offset=".72" stop-color="#8d481f"/><stop offset="1" stop-color="#452326"/></linearGradient>
+                <linearGradient id="lion-face" x1="0" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#ffe4a3"/><stop offset=".58" stop-color="#d9984b"/><stop offset="1" stop-color="#a6602d"/></linearGradient>
+                <radialGradient id="lion-eye"><stop offset="0" stop-color="#fff0a6"/><stop offset=".52" stop-color="#e7a13f"/><stop offset="1" stop-color="#331522"/></radialGradient>
+              </defs>
+              <g id="roar-body">
+                <path d="M82 294Q67 250 92 219Q116 191 148 205L214 205Q253 193 279 228Q297 255 280 294Z" fill="url(#lion-face)" stroke="#67341f" stroke-width="3"/>
+                <path d="M105 245L99 289H144L157 246M212 246L227 289H265L257 245" fill="#bd7939" stroke="#71401f" stroke-width="3"/>
+                <path d="M107 281q16 12 31 0m95 0q15 12 30 0" fill="none" stroke="#f6ce85" stroke-width="3" stroke-linecap="round"/>
+              </g>
+              <g id="roar-mane">
+                <path d="M176 10L198 29L222 20L231 44L258 43L258 67L285 80L274 103L298 121L282 143L295 165L272 181L273 206L247 213L233 238L210 231L190 254L171 237L146 247L136 224L108 227L108 202L82 194L94 172L70 157L87 136L68 116L91 99L84 76L110 68L115 43L141 47L151 24Z" fill="url(#lion-mane)" stroke="#6b381f" stroke-width="4" stroke-linejoin="round"/>
+                <g fill="none" stroke="#f6c16e" stroke-width="5" stroke-linecap="round" opacity=".72">
+                  <path d="M144 35Q123 77 145 102Q117 135 123 173"/>
+                  <path d="M173 24Q151 60 174 90Q151 123 161 154"/>
+                  <path d="M207 41Q226 73 202 103Q227 136 213 173"/>
+                  <path d="M246 72Q224 104 250 129Q229 158 248 188"/>
+                  <path d="M111 101Q134 125 112 153Q130 174 111 193"/>
+                </g>
+              </g>
+              <g id="roar-head">
+                <path d="M121 91Q105 67 126 57Q145 57 151 79L151 93M210 92Q212 66 235 63Q256 75 239 101" fill="#9a5128" stroke="#54251e" stroke-width="5"/>
+                <path d="M129 85Q132 70 144 82L146 100M221 91Q225 75 238 84L233 103" fill="#e8a36b" stroke="#73371f" stroke-width="3"/>
+                <path d="M143 85Q114 109 125 153Q135 197 174 213Q215 202 231 158Q242 117 214 88Q179 67 143 85Z" fill="url(#lion-face)" stroke="#63331f" stroke-width="4"/>
+                <path d="M137 119L161 111L173 124L159 132Z M187 124L201 111L225 119L202 132Z" fill="#3a2020"/>
+                <ellipse cx="158" cy="123" rx="8" ry="10" fill="url(#lion-eye)"/><ellipse cx="204" cy="123" rx="8" ry="10" fill="url(#lion-eye)"/>
+                <ellipse cx="159" cy="125" rx="2.6" ry="7" fill="#1b1117"/><ellipse cx="203" cy="125" rx="2.6" ry="7" fill="#1b1117"/>
+                <path d="M136 111L163 104L174 115M190 115L202 104L227 111" fill="none" stroke="#67351f" stroke-width="7" stroke-linecap="round"/>
+                <path d="M148 150Q163 135 180 150Q197 135 214 150L208 169Q197 186 180 187Q162 185 151 168Z" fill="#4a2021" stroke="#713522" stroke-width="3"/>
+                <path d="M154 151L164 163L174 154L180 164L188 154L198 163L207 151L203 169Q180 187 158 169Z" fill="#e9d6b3"/>
+                <path d="M172 177Q180 183 188 177L186 194Q180 201 174 194Z" fill="#e98d87"/>
+                <path d="M170 148Q180 139 190 148Q180 158 170 148Z" fill="#2b171a"/>
+                <path d="M149 158L113 151M151 166L117 170M211 158L246 151M209 166L243 170" fill="none" stroke="#f5d8a3" stroke-width="1.5" opacity=".85"/>
+                <path d="M135 191Q147 210 166 212L157 230L144 214Z M225 190Q215 211 195 213L204 229L217 212Z" fill="#d18c43" stroke="#67341f" stroke-width="3"/>
+              </g>
+              <g id="roar-paws">
+                <path d="M96 248Q115 235 139 247L153 273Q153 287 141 289H108Q87 285 91 267Z M208 247Q233 235 255 249L264 267Q269 286 247 289H215Q203 285 205 273Z" fill="url(#lion-face)" stroke="#67341f" stroke-width="3"/>
+                <path d="M107 278l12 7m9-7 8 7m82-7 8 7m9-7 8 7" fill="none" stroke="#7f4828" stroke-width="2" stroke-linecap="round"/>
+              </g>
+            </svg>
+            <svg class="lion-art lion-cub" id="lion-cub" viewBox="0 0 360 310" role="img" aria-label="Anak singa mungil bermata besar dan menggemaskan" hidden>
+              <defs>
+                <radialGradient id="cub-fur" cx=".35" cy=".2" r=".9"><stop offset="0" stop-color="#fff0bd"/><stop offset=".6" stop-color="#e5ac5b"/><stop offset="1" stop-color="#b87335"/></radialGradient>
+                <radialGradient id="cub-face" cx=".35" cy=".2" r=".95"><stop offset="0" stop-color="#fff0cb"/><stop offset=".65" stop-color="#f4d5a0"/><stop offset="1" stop-color="#d79b58"/></radialGradient>
+              </defs>
+              <g id="cub-tail"><path d="M255 226Q310 239 299 202Q291 183 274 198" fill="none" stroke="#c17a35" stroke-width="12" stroke-linecap="round"/><circle cx="273" cy="198" r="10" fill="#8b4c29"/></g>
+              <ellipse cx="181" cy="240" rx="92" ry="59" fill="url(#cub-fur)" stroke="#9c5c2d" stroke-width="3"/>
+              <path d="M117 231L105 283Q109 294 131 292L151 256M209 255L232 286Q249 295 258 281L241 233" fill="#d9954e" stroke="#9c5c2d" stroke-width="3" stroke-linecap="round"/>
+              <g id="cub-head">
+                <path d="M113 112Q87 76 119 57Q149 53 158 88L153 118M207 88Q216 54 245 62Q270 81 244 116" fill="url(#cub-fur)" stroke="#9c5c2d" stroke-width="4"/>
+                <path d="M124 91Q133 70 151 96L147 110M223 96Q236 72 251 93L234 113" fill="#f6b2a0" stroke="#b86a49" stroke-width="3"/>
+                <ellipse cx="180" cy="153" rx="78" ry="80" fill="url(#cub-face)" stroke="#9c5c2d" stroke-width="4"/>
+                <ellipse cx="148" cy="148" rx="17" ry="21" fill="#fff8dd"/><ellipse cx="212" cy="148" rx="17" ry="21" fill="#fff8dd"/>
+                <ellipse cx="151" cy="151" rx="10" ry="13" fill="#633b2b"/><ellipse cx="209" cy="151" rx="10" ry="13" fill="#633b2b"/>
+                <ellipse cx="153" cy="153" rx="5" ry="8" fill="#1b1417"/><ellipse cx="207" cy="153" rx="5" ry="8" fill="#1b1417"/>
+                <circle cx="147" cy="143" r="5" fill="#fff"/><circle cx="205" cy="143" r="5" fill="#fff"/>
+                <path d="M119 137Q142 119 160 134M200 134Q220 117 242 137" fill="none" stroke="#9c5c2d" stroke-width="6" stroke-linecap="round"/>
+                <ellipse cx="163" cy="184" rx="26" ry="22" fill="#fff2d6"/><ellipse cx="199" cy="184" rx="26" ry="22" fill="#fff2d6"/>
+                <path d="M170 180Q180 170 190 180Q180 195 170 180Z" fill="#5a2d2e"/>
+                <path d="M180 192Q166 204 154 195M180 192Q194 204 206 195" fill="none" stroke="#71412d" stroke-width="3.5" stroke-linecap="round"/>
+                <ellipse cx="127" cy="181" rx="11" ry="6" fill="#e8a08f" opacity=".48"/><ellipse cx="233" cy="181" rx="11" ry="6" fill="#e8a08f" opacity=".48"/>
+              </g>
+              <path d="M139 219Q180 245 222 219" fill="none" stroke="#fff0c6" stroke-width="4" stroke-linecap="round"/>
+              <g id="cub-paws"><ellipse cx="135" cy="276" rx="25" ry="18" fill="url(#cub-face)" stroke="#9c5c2d" stroke-width="3"/><ellipse cx="226" cy="276" rx="25" ry="18" fill="url(#cub-face)" stroke="#9c5c2d" stroke-width="3"/><path d="M129 273l-4 6m12-6 2 7m82-7-3 7m11-7 2 7" stroke="#9c5c2d" stroke-width="2" stroke-linecap="round"/></g>
+            </svg>
+          </div>
+        </div>
+        <div class="voucher" id="voucher"><div class="voucher-label">${formatted(c.voucherLabel)}</div><h3>${formatted(C.finale.title || c.voucherTitle)}</h3><p>${formatted(C.finale.body || c.voucherBody)}</p><div class="voucher-bottom"><span>${formatted(c.voucherFoot)}</span>${BIG_HEART}</div></div></div>
       <div class="hero-copy"><button type="button" class="primary-btn" id="gift-button">${formatted(c.giftButton)}</button><h2 class="closing-line" id="closing-line">${formatted(C.finale.message || C.finale.closing || c.closing)}</h2><div class="replay-row">${button(c.replay, 'replay', true)}</div></div>`;
 
-    app.innerHTML = [s0,s1,s2,s3,s5,sFlower,s4,s6,s7,s8,s9,s10].map((html, i) => makeScene(sceneIds[i], html, i)).join('');
+    app.innerHTML = [s0,s1,s2,s3,s5,sFlower,s4,s6,sZodiac,s7,s8,s9,s10].map((html, i) => makeScene(sceneIds[i], html, i)).join('');
     installAtelierDecor();
     installSignatureCompositions();
     installEventHandlers();
@@ -885,9 +995,9 @@
     if (index === sceneIds.length - 1) launchFireworkSequence(8);
     if (index === 6) animateReasonCards();
     if (index === 5) animateBouquet();
-    if (index === 10) revealVisibleLetterParagraphs();
+    if (index === 11) revealVisibleLetterParagraphs();
     const audioToggle = document.getElementById('audio-toggle');
-    if (audioToggle) audioToggle.hidden = index < 2 || index === 10;
+    if (audioToggle) audioToggle.hidden = index < 2 || index === 11;
   }
 
   function animateReasonCards() {
@@ -1417,32 +1527,88 @@
     const wrap = document.getElementById('gift-wrap');
     const voucher = document.getElementById('voucher');
     const giftStage = document.getElementById('gift-stage');
-    if (!buttonElement || !wrap || !voucher || !giftStage) return;
+    const lionStage = document.getElementById('lion-stage');
+    const roaringLion = document.getElementById('lion-roaring');
+    const lionCub = document.getElementById('lion-cub');
+    const lionCaption = document.getElementById('lion-caption');
+    if (!buttonElement || !wrap || !voucher || !giftStage || !lionStage || !roaringLion || !lionCub) return;
+
     let opened = false;
+    const revealVoucher = () => {
+      voucher.classList.add('visible');
+      spawnCelebrationBurst(canvasWidth * .5, canvasHeight * .48, 70);
+      spawnConfettiBurst(canvasWidth * .5, canvasHeight * .42, 18);
+      const closing = document.getElementById('closing-line');
+      if (closing && window.gsap && !reducedMotion) {
+        window.gsap.fromTo(closing, { opacity: 0, y: 18, scale: .96 }, {
+          opacity: 1, y: 0, scale: 1, duration: .9, delay: .18, ease: 'power4.out'
+        });
+      }
+    };
+
+    const transformToCub = () => {
+      if (lionCaption) lionCaption.textContent = 'Ternyata cuma si kecil yang ingin merayakan kamu. ♡';
+      if (reducedMotion || !window.gsap) {
+        roaringLion.hidden = true;
+        lionCub.hidden = false;
+        lionCub.classList.add('lion-revealed');
+        window.setTimeout(revealVoucher, reducedMotion ? 250 : 850);
+        return;
+      }
+      const gsap = window.gsap;
+      const timeline = gsap.timeline({ onComplete: () => window.setTimeout(revealVoucher, 450) });
+      timeline.to(roaringLion, { opacity: 0, scale: .68, y: 25, rotation: -3, duration: .48, ease: 'power2.in' });
+      timeline.call(() => { roaringLion.hidden = true; lionCub.hidden = false; });
+      timeline.fromTo(lionCub,
+        { opacity: 0, scale: .48, y: 86, rotation: 5 },
+        { opacity: 1, scale: 1, y: 0, rotation: 0, duration: .95, ease: 'back.out(1.45)' }
+      );
+      timeline.to('#cub-tail', { rotation: 13, transformOrigin: '80% 70%', duration: .22, yoyo: true, repeat: 5, ease: 'sine.inOut' }, '-=.52');
+      timeline.to('#cub-head', { rotation: -2, transformOrigin: '50% 85%', duration: .22, yoyo: true, repeat: 3, ease: 'sine.inOut' }, '-=.95');
+      timeline.to({}, { duration: .28 });
+    };
+
     const openGift = () => {
       if (opened) return;
       opened = true;
+      wrap.disabled = true;
+      wrap.setAttribute('aria-expanded', 'true');
       wrap.classList.add('open');
       giftStage.classList.add('gift-opened');
+      lionStage.hidden = false;
+      lionStage.classList.add('lion-stage-active');
       if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
         try { navigator.vibrate([20, 35, 20]); } catch (_) { /* no-op */ }
       }
-      if (reducedMotion) {
-        giftStage.hidden = true;
-        voucher.classList.add('visible');
-      } else {
-        window.setTimeout(() => {
-          giftStage.hidden = true;
-          voucher.classList.add('visible');
-          spawnCelebrationBurst(canvasWidth * .5, canvasHeight * .48, 95);
-          spawnConfettiBurst(canvasWidth * .5, canvasHeight * .42, 20);
-        }, 560);
-      }
       buttonElement.textContent = C.copy.voucherLabel;
       buttonElement.disabled = true;
-      const closing = document.getElementById('closing-line');
-      if (closing && window.gsap && !reducedMotion) window.gsap.fromTo(closing, { opacity: 0, y: 18, scale: .96 }, { opacity: 1, y: 0, scale: 1, duration: 1, delay: .2, ease: 'power4.out' });
+
+      if (reducedMotion) {
+        roaringLion.hidden = true;
+        lionCub.hidden = false;
+        lionCub.classList.add('lion-revealed');
+        if (lionCaption) lionCaption.textContent = 'Ternyata cuma si kecil yang ingin merayakan kamu. ♡';
+        window.setTimeout(revealVoucher, 250);
+        return;
+      }
+      if (lionCaption) lionCaption.textContent = 'Grrrr… ada penjaga besar di dalam kado!';
+      if (window.gsap) {
+        const gsap = window.gsap;
+        gsap.fromTo(roaringLion, { opacity: 0, y: 125, scale: .57, rotation: -2 }, {
+          opacity: 1, y: 0, scale: 1, rotation: 0, duration: 1.45, ease: 'expo.out',
+          onComplete: () => gsap.fromTo('#roar-head', { y: 8, rotation: -2, transformOrigin: '50% 82%' }, {
+            y: -2, rotation: 1.4, duration: .42, repeat: 3, yoyo: true, ease: 'sine.inOut'
+          })
+        });
+        gsap.fromTo('#roar-mane', { rotation: -2, transformOrigin: '50% 55%' }, {
+          rotation: 1.3, duration: .56, repeat: 3, yoyo: true, ease: 'sine.inOut', delay: .22
+        });
+      } else {
+        roaringLion.classList.add('lion-revealed');
+      }
+      window.setTimeout(transformToCub, 4100);
     };
+
     buttonElement.addEventListener('click', openGift);
     wrap.addEventListener('click', openGift);
   }
@@ -1475,8 +1641,8 @@
     canvasContext = canvasElement.getContext('2d', { alpha: true });
     if (!canvasContext) return;
     resizeCanvas();
-    particleBudget = Math.max(80, Math.min(window.innerWidth <= 600 ? 350 : 520, Number(C.settings.canvasParticleMax) || 400));
-    const starterCount = Math.min(window.innerWidth <= 600 ? 38 : 58, particleBudget);
+    particleBudget = Math.max(80, Math.min(window.innerWidth <= 600 ? 220 : 520, Number(C.settings.canvasParticleMax) || 400));
+    const starterCount = Math.min(window.innerWidth <= 600 ? 26 : 58, particleBudget);
     particles = particles.filter(p => p.type !== 'firefly');
     for (let i = 0; i < starterCount; i++) particles.push(makeFirefly());
     canvasActive = true;
