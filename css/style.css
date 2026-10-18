@@ -1287,3 +1287,24 @@ body {
  .lion-art.lion-revealed { opacity:1!important; transform:none!important; animation:none!important; }
  .scene-zodiac-mark,.ambient { animation:none!important; }
 }
+
+
+/* Final consistency pass: shared controls follow the Libra plum, rose, and gold palette. */
+:root { --blue:#b69acb; --purple-hot:#a989bd; --gold-soft:#f3dfb0; }
+.heart-mark { filter:drop-shadow(0 0 10px rgba(226,189,115,.27)); }
+.orbit-ring { border-color:rgba(226,189,115,.24); }
+.orbit-ring::before,.orbit-ring::after { background:var(--gold); box-shadow:0 0 20px rgba(226,189,115,.45); }
+.balloon-progress span { background:linear-gradient(90deg,#e2bd73,#c4a6dc); }
+#balloon-reveal { color:#fff4dc; text-shadow:0 4px 28px rgba(226,189,115,.27); }
+.audio-toggle { border-color:rgba(226,189,115,.52); background:rgba(28,17,41,.94); }
+.voucher { background:linear-gradient(145deg,#fff8e8,#f0ddb5 58%,#e1cce9); }
+.voucher-label { color:#83532e; }
+.voucher p { color:#514052; }
+.voucher-bottom { border-top-color:rgba(83,55,66,.29); color:#665064; }
+.zodiac-meta span { font-size:11px; border-color:rgba(226,189,115,.29); }
+.zodiac-hero-copy small { font-size:10px; letter-spacing:.1em; }
+@media (max-width:600px) {
+  .zodiac-hero-copy small { font-size:9px; letter-spacing:.075em; }
+  .zodiac-meta { gap:6px; }
+  .zodiac-meta span { font-size:10px; padding:7px 9px; }
+}
