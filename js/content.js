@@ -86,7 +86,7 @@ window.SURPRISE_CONTENT = {
     interludeButton: "Lihat potongan foto",
     galleryEyebrow: "SEPULUH BINGKAI, BANYAK RASA",
     galleryTitle: "Kalau bisa, aku mau simpan semua momen.",
-    galleryBody: "Geser pelan.",
+    galleryBody: "Geser pelan untuk melihat potongan cerita kita. Ketuk foto mana pun untuk membukanya lebih besar.",
     galleryButton: "Masih ada yang mau aku bilang",
     preletterEyebrow: "SEBELUM KEJUTAN TERAKHIR",
     preletterTitle: "Ada yang lebih panjang dari satu ucapan.",
