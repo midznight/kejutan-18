@@ -198,15 +198,15 @@
       <div class="reason-grid">${reasons}</div>
       <div class="actions">${button(c.reasonsButton, 'next')}</div>`;
 
-    const candles = Array.from({ length: Math.max(1, Math.min(18, Number(C.age) || 18)) }, (_, i) => `<span class="candle" style="--delay:${i * 24}ms"><span class="flame"></span></span>`).join('');
+    const candles = ['1', '8'].map((digit, i) => `<span class="candle-number" data-candle-number="${digit}" style="--candle-delay:${i * 90}ms"><svg class="flame-svg" viewBox="0 0 24 34" aria-hidden="true"><path class="flame-path" d="M12 1 C10 7 3 12 4 19 C4 27 8 32 12 32 C18 32 21 26 20 19 C19 12 14 9 12 1Z" fill="url(#flame-fill-${i})"/><defs><linearGradient id="flame-fill-${i}" x1="0" y1="1" x2="1" y2="1"><stop offset="0" stop-color="#ff9b58"/><stop offset=".5" stop-color="#fff3be"/><stop offset="1" stop-color="#ffcf79"/></linearGradient></defs></svg><span class="candle-digit">${digit}</span></span>`).join('');
     const s5 = `
       ${makeTopline(c.cakeEyebrow, 4)}
       <div class="hero-copy">
         <p class="kicker">${formatted(c.cakeKicker)}</p>
         <h2 class="section-title">${formatted(c.cakeTitle)}</h2>
-        <p class="body-copy">${formatted(c.cakeInstruction)}</p>
-        <div class="glass-card cake-wrap"><div class="cake-stage" id="cake-stage"><div class="candle-row">${candles}</div><div class="cake-top"></div><div class="cake-icing"></div><div class="cake-body"></div></div></div>
-        <button id="blow-button" type="button" class="hold-button" aria-describedby="blow-help"><span>${formatted(c.cakeInstruction)}</span></button>
+        <p class="body-copy cake-instruction">${formatted(c.cakeInstruction)}</p>
+        <div class="cake-wrap"><div class="cake-stage" id="cake-stage"><div class="cake-light"></div><div class="candle-row">${candles}</div><div class="cake-top"></div><div class="cake-icing"></div><div class="cake-body"></div><div class="cake-plate"></div></div></div>
+        <button id="blow-button" type="button" class="hold-button" aria-describedby="blow-help"><span>Tahan untuk meniup</span></button>
         <p class="fine-copy" id="blow-help" style="margin-top:12px">${formatted(c.cakeInstruction)}</p>
         <p id="wish-after" class="body-copy" hidden>${formatted(c.cakeAfter)}</p>
         <div class="actions" id="cake-actions" hidden>${button(c.cakeButton, 'next')}</div>
@@ -684,6 +684,7 @@
       startMusicForHero();
       launchFireworkSequence(8);
     }
+    if (index === 3) animateBalloonEntrance();
     if (index === sceneIds.length - 1) launchFireworkSequence(8);
     if (index === 6) animateReasonCards();
     if (index === 5) animateBouquet();
@@ -737,7 +738,7 @@
       const [a,b] = palettes[i % palettes.length];
       const tilt = [-7,-4,4,7,1, -2][i % 6];
       const carrier = i < charCount;
-      return `<button type="button" class="balloon" data-carrier="${carrier ? 'true' : 'false'}" style="--x:${x}%;--y:${y}%;--tilt:${tilt}deg;--balloon-a:${a};--balloon-b:${b};--float:${3.2 + (i%4)*.48}s" aria-label="${safe(withName(C.copy.balloonButtonLabel).replaceAll('{{count}}', i + 1))}"><svg class="balloon-svg" viewBox="0 0 80 118" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="balloon-grad-${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf4" stop-opacity=".88"/><stop offset=".22" stop-color="${a}"/><stop offset=".72" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><linearGradient id="balloon-edge-${i}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#3a2348" stop-opacity=".4"/></linearGradient></defs><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-grad-${i})" stroke="rgba(255,248,240,.76)" stroke-width="1.1"/><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-edge-${i})"/><path d="M24 20 C18 28 18 38 22 45" fill="none" stroke="#fffaf4" stroke-opacity=".85" stroke-width="4" stroke-linecap="round"/><ellipse cx="23" cy="17" rx="3.4" ry="5.5" fill="#fffaf4" fill-opacity=".78" transform="rotate(22 23 17)"/><path class="balloon-rope" d="M40 92 C34 99 47 102 39 110 C35 114 39 116 42 117" fill="none" stroke="#ead9e7" stroke-opacity=".82" stroke-width="1.2" stroke-linecap="round"/></svg><span class="balloon-mark" aria-hidden="true">${carrier ? TINY_HEART : ''}</span></button>`;
+      return `<button type="button" class="balloon" data-carrier="${carrier ? 'true' : 'false'}" style="--x:${x}%;--y:${y}%;--tilt:${tilt}deg;--balloon-a:${a};--balloon-b:${b};--float:${3 + Math.random() * 3}s;--phase:${-Math.random() * 3}s;animation:none" aria-label="${safe(withName(C.copy.balloonButtonLabel).replaceAll('{{count}}', i + 1))}"><svg class="balloon-svg" viewBox="0 0 80 118" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="balloon-grad-${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf4" stop-opacity=".88"/><stop offset=".22" stop-color="${a}"/><stop offset=".72" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><linearGradient id="balloon-edge-${i}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#3a2348" stop-opacity=".4"/></linearGradient></defs><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-grad-${i})" stroke="rgba(255,248,240,.76)" stroke-width="1.1"/><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-edge-${i})"/><path d="M24 20 C18 28 18 38 22 45" fill="none" stroke="#fffaf4" stroke-opacity=".85" stroke-width="4" stroke-linecap="round"/><ellipse cx="23" cy="17" rx="3.4" ry="5.5" fill="#fffaf4" fill-opacity=".78" transform="rotate(22 23 17)"/><path class="balloon-rope" d="M40 92 C34 99 47 102 39 110 C35 114 39 116 42 117" fill="none" stroke="#ead9e7" stroke-opacity=".82" stroke-width="1.2" stroke-linecap="round"/></svg><span class="balloon-mark" aria-hidden="true">${carrier ? TINY_HEART : ''}</span></button>`;
     }).join('');
     const counter = document.getElementById('balloon-counter');
     const total = document.getElementById('balloon-total');
@@ -751,27 +752,55 @@
     total.textContent = String(charCount);
 
     const pop = (item, automatic = false) => {
-      if (!item || item.classList.contains('popped')) return;
+      if (!item || item.classList.contains('popped') || item.classList.contains('balloon-escape')) return;
+      const balloonRect = item.getBoundingClientRect();
+      const centerX = balloonRect.left + balloonRect.width / 2;
+      const centerY = balloonRect.top + balloonRect.height / 2;
+      const isCarrier = item.dataset.carrier === 'true';
+      if (automatic && !isCarrier) {
+        item.disabled = true;
+        item.classList.add('balloon-escape');
+        if (window.gsap && !reducedMotion) {
+          window.gsap.to(item, { y: -arena.clientHeight - 140, x: (Math.random() - .5) * 70, opacity: 0, rotation: (Math.random() - .5) * 35, duration: 1.25 + Math.random() * .45, ease: 'power2.in', onComplete: () => { item.hidden = true; } });
+        } else {
+          item.style.transform = 'translateY(-140vh)';
+          item.hidden = true;
+        }
+        popped++;
+        return;
+      }
       item.classList.add('popped');
       item.disabled = true;
-      const balloonRect = item.getBoundingClientRect();
-      spawnConfettiBurst(balloonRect.left + balloonRect.width / 2, balloonRect.top + balloonRect.height / 2, isSmallScreen() ? 10 : 15);
+      const balloonColor = getComputedStyle(item).getPropertyValue('--balloon-a').trim() || '#bba7db';
+      spawnBalloonBurst(centerX, centerY, balloonColor);
+      spawnConfettiBurst(centerX, centerY, isSmallScreen() ? 8 : 12);
+      spawnBalloonPressure(arena, item, centerX, centerY, balloonColor);
+      playSfx('pop');
       if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
         try { navigator.vibrate(12); } catch (_) { /* no-op */ }
       }
       popped++;
-      const isCarrier = item.dataset.carrier === 'true';
       if (isCarrier && letterCount < charCount) {
-        const mark = item.querySelector('.balloon-mark');
         const character = phrase[letterCount];
         letterCount++;
-        if (mark) mark.textContent = character === ' ' ? '\u00a0' : character;
-        if (mark) mark.classList.add('revealed-character');
+        const mark = item.querySelector('.balloon-mark');
+        if (mark) { mark.textContent = character === ' ' ? '\u00a0' : character; mark.classList.add('revealed-character'); }
         item.setAttribute('aria-label', safe(withName(C.copy.balloonPoppedLabel)));
-        const gotPhrase = phrase.slice(0, letterCount);
-        reveal.textContent = gotPhrase;
+        reveal.textContent = phrase.slice(0, letterCount);
         if (counter) counter.textContent = String(letterCount);
         if (fill) fill.style.transform = `scaleX(${letterCount / charCount})`;
+        if (character !== ' ' && window.gsap && !reducedMotion) {
+          const flight = document.createElement('span');
+          flight.className = 'letter-flight';
+          flight.textContent = character;
+          flight.style.left = centerX + 'px';
+          flight.style.top = centerY + 'px';
+          document.body.appendChild(flight);
+          const target = reveal.getBoundingClientRect();
+          const destinationX = target.left + target.width * ((letterCount - .5) / Math.max(1, charCount));
+          const destinationY = target.top + target.height / 2;
+          window.gsap.to(flight, { x: destinationX - centerX, y: destinationY - centerY, scale: .55, opacity: 0, duration: .58, ease: 'power3.inOut', onComplete: () => flight.remove() });
+        }
       }
       if (automatic && isCarrier) {
         const mark = item.querySelector('.balloon-mark');
@@ -786,18 +815,72 @@
         reveal.textContent = withName(C.copy.balloonsDone);
         reveal.classList.add('revealed');
         actions.hidden = false;
+        playTone(1040, .28, 'sine', .035, 1480);
         launchFireworkSequence(3);
-        if (window.gsap && !reducedMotion) window.gsap.fromTo(actions, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .65, ease: 'back.out(1.7)' });
+        window.setTimeout(() => spawnFireworkRocket(canvasWidth * .5, canvasHeight * .24, 'heart'), 120);
+        if (window.gsap && !reducedMotion) window.gsap.fromTo([reveal, actions], { y: 16, opacity: 0, scale: .97 }, { y: 0, opacity: 1, scale: 1, duration: .65, stagger: .06, ease: 'back.out(1.7)' });
       }
       if (popped >= buttons.length && letterCount >= charCount) actions.hidden = false;
     };
     buttons.forEach((item) => item.addEventListener('click', () => pop(item, false)));
   }
 
+  function animateBalloonEntrance() {
+    const arena = document.getElementById('balloon-arena');
+    if (!arena) return;
+    const buttons = Array.from(arena.querySelectorAll('.balloon:not(.is-floating):not(.popped)'));
+    if (!buttons.length) return;
+    const finish = () => buttons.forEach(item => {
+      item.classList.add('is-floating');
+      item.style.removeProperty('animation');
+    });
+    if (reducedMotion || !window.gsap) { finish(); return; }
+    window.gsap.fromTo(buttons,
+      { y: arena.clientHeight + 130, opacity: 0, scale: .91, rotation: (index, target) => Number.parseFloat(target.style.getPropertyValue('--tilt')) || 0 },
+      { y: 0, opacity: 1, scale: 1, rotation: (index, target) => (Number.parseFloat(target.style.getPropertyValue('--tilt')) || 0) + (Math.random() - .5) * 2,
+        duration: .72, ease: 'back.out(1.22)', stagger: () => .04 + Math.random() * .05,
+        onComplete: () => { finish(); window.gsap.set(buttons, { clearProps: 'transform,opacity' }); } });
+  }
+
+  function spawnBalloonBurst(x, y, color) {
+    if (!canvasActive || reducedMotion) return;
+    const count = 6 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < count; i++) {
+      const angle = Math.PI * 2 * i / count;
+      const speed = 1.4 + Math.random() * 3.2;
+      addParticle({
+        type: 'rubber', x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - .55,
+        life: .9 + Math.random() * .35, decay: .012 + Math.random() * .009, gravity: .085,
+        friction: .964, maxVy: 3.8, angle, spin: (Math.random() - .5) * .3, curve: (Math.random() - .5) * 10,
+        span: 4 + Math.random() * 7, color, ageMs: 0
+      });
+    }
+  }
+
+  function spawnBalloonPressure(arena, poppedItem, x, y, color) {
+    if (canvasActive && !reducedMotion) addParticle({ type: 'pressure', x, y, radius: 8, maxRadius: 92, life: 1, decay: .065, color });
+    if (!window.gsap || reducedMotion) return;
+    const others = Array.from(arena.querySelectorAll('.balloon:not(.popped):not(.balloon-escape)'));
+    others.forEach(item => {
+      const rect = item.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+      const dx = cx - x, dy = cy - y;
+      const distance = Math.hypot(dx, dy);
+      if (distance < 90 && distance > 1) {
+        const force = (90 - distance) / 90 * 28;
+        window.gsap.killTweensOf(item);
+        window.gsap.to(item, {
+          x: dx / distance * force, y: dy / distance * force, duration: .14, ease: 'power2.out',
+          onComplete: () => window.gsap.to(item, { x: 0, y: 0, duration: .6, ease: 'elastic.out(1,.42)', clearProps: 'x,y' })
+        });
+      }
+    });
+  }
+
   function autoPopWave(buttons, popFn) {
-    const remaining = buttons.filter((item) => !item.classList.contains('popped'));
+    const remaining = buttons.filter((item) => !item.classList.contains('popped') && !item.classList.contains('balloon-escape'));
     if (!remaining.length) return;
-    remaining.forEach((item, index) => window.setTimeout(() => popFn(item, true), reducedMotion ? index * 12 : index * 125));
+    remaining.forEach((item, index) => window.setTimeout(() => popFn(item, true), reducedMotion ? index * 12 : index * 75));
   }
 
   function isSmallScreen() { return window.matchMedia('(max-width: 600px)').matches; }
@@ -850,44 +933,88 @@
     let startedAt = 0;
     let holdRAF = 0;
     let blown = false;
+    const scene = document.getElementById('s4');
+    const flames = Array.from(stage.querySelectorAll('.flame-svg'));
     const duration = reducedMotion ? 220 : 1350;
     const release = () => {
       if (holdRAF) cancelAnimationFrame(holdRAF);
       holdRAF = 0;
       startedAt = 0;
-      if (!blown) hold.style.setProperty('--hold-progress', '0');
+      stage.classList.remove('holding');
+      if (!blown) {
+        hold.style.setProperty('--hold-progress', '0');
+        if (scene) scene.classList.remove('candle-dimming');
+        flames.forEach(flame => {
+          flame.style.setProperty('--flame-lean', '0deg');
+          flame.style.setProperty('--flame-x', '1');
+          flame.style.setProperty('--flame-y', '1');
+          flame.style.setProperty('--flame-skew', '0deg');
+          flame.style.filter = '';
+        });
+      }
     };
     const tick = (time) => {
       if (!startedAt || blown) return;
       const progress = Math.min(1, (time - startedAt) / duration);
-      hold.style.setProperty('--hold-progress', `${progress}`);
+      hold.style.setProperty('--hold-progress', String(progress));
+      flames.forEach((flame, index) => {
+        const noise = Math.sin(time * .019 + index * 2.4) * .045 + Math.sin(time * .031 + index) * .025;
+        flame.style.setProperty('--flame-lean', `${(-progress * 34 + noise * 35).toFixed(2)}deg`);
+        flame.style.setProperty('--flame-x', (1 - progress * .6 + noise).toFixed(3));
+        flame.style.setProperty('--flame-y', (1 - progress * .45 + noise * .7).toFixed(3));
+        flame.style.setProperty('--flame-skew', `${(noise * 50).toFixed(2)}deg`);
+        flame.style.filter = `drop-shadow(0 0 ${Math.max(1, 11 * (1-progress))}px rgba(255,172,91,${.8-progress*.5}))`;
+      });
+      if (progress > .06 && scene) scene.classList.add('candle-dimming');
       if (progress >= 1) {
         blown = true;
+        stage.classList.remove('holding');
         stage.classList.add('blown');
         hold.classList.add('complete');
-        hold.setPointerCapture?.(hold._activePointerId);
         hold.querySelector('span').textContent = withName(C.copy.wishComplete);
         if (copy) copy.hidden = true;
         if (after) after.hidden = false;
         if (actions) actions.hidden = false;
+        playSfx('blow');
+        spawnCandleSmoke(stage);
         sprinkleCakeSparks(stage);
         if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
           try { navigator.vibrate(35); } catch (_) { /* no-op */ }
         }
+        window.setTimeout(() => { if (scene) scene.classList.remove('candle-dimming'); }, 320);
         return;
       }
       holdRAF = requestAnimationFrame(tick);
     };
     hold.addEventListener('pointerdown', (event) => {
-      if (blown) return;
+      if (blown || startedAt) return;
       event.preventDefault();
       startedAt = performance.now();
+      stage.classList.add('holding');
+      initAudioEngine();
       hold._activePointerId = event.pointerId;
       hold.setPointerCapture?.(event.pointerId);
       holdRAF = requestAnimationFrame(tick);
     });
     ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => hold.addEventListener(type, release));
     hold.addEventListener('contextmenu', (event) => event.preventDefault());
+  }
+
+  function spawnCandleSmoke(stage) {
+    if (reducedMotion) return;
+    const row = stage.querySelector('.candle-row');
+    if (!row) return;
+    const rect = row.getBoundingClientRect();
+    for (let i = 0; i < 6; i++) {
+      const puff = document.createElement('span');
+      puff.className = 'candle-smoke';
+      puff.style.left = `${rect.left + rect.width * (.42 + i * .035)}px`;
+      puff.style.top = `${rect.top - 5 + Math.random() * 6}px`;
+      puff.style.setProperty('--smoke-drift', `${(Math.random() - .5) * 34}px`);
+      puff.style.setProperty('--smoke-delay', `${i * 85}ms`);
+      document.body.appendChild(puff);
+      window.setTimeout(() => puff.remove(), 2800);
+    }
   }
 
   function sprinkleCakeSparks(stage) {
@@ -1413,6 +1540,37 @@
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.previousX = p.x; p.previousY = p.y;
+      if (p.type === 'pressure') {
+        p.life -= p.decay * dt;
+        const progress = Math.max(0, Math.min(1, 1 - p.life));
+        canvasContext.globalAlpha = Math.max(0, p.life) * .72;
+        canvasContext.strokeStyle = p.color;
+        canvasContext.lineWidth = 1.5 + (1 - progress) * 1.5;
+        canvasContext.beginPath();
+        canvasContext.arc(p.x, p.y, p.radius + (p.maxRadius - p.radius) * progress, 0, Math.PI * 2);
+        canvasContext.stroke();
+        if (p.life <= 0) releaseParticle(i);
+        continue;
+      }
+      if (p.type === 'rubber') {
+        p.ageMs = (p.ageMs || 0) + delta;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vx *= Math.pow(p.friction || .964, dt);
+        p.vy = Math.min(p.maxVy || 3.8, p.vy + (p.gravity || .085) * dt);
+        p.angle += p.spin * dt;
+        p.life -= p.decay * dt;
+        canvasContext.globalAlpha = Math.max(0, p.life);
+        canvasContext.strokeStyle = p.color;
+        canvasContext.lineWidth = 1.7 + p.life;
+        canvasContext.lineCap = 'round';
+        canvasContext.beginPath();
+        canvasContext.moveTo(p.x, p.y);
+        canvasContext.quadraticCurveTo(p.x + Math.cos(p.angle) * p.curve, p.y - p.span, p.x + Math.sin(p.angle) * p.span, p.y + p.span);
+        canvasContext.stroke();
+        if (p.life <= 0 || p.y > canvasHeight + 20) releaseParticle(i);
+        continue;
+      }
       if (p.type === 'flash') {
         p.ageMs = (p.ageMs || 0) + delta;
         p.life -= p.decay * dt;
