@@ -106,7 +106,7 @@ window.SURPRISE_CONTENT = {
   },
 
   // GANTI: jawaban valid ditulis dalam bentuk hash SHA-256 setelah normalisasi.
-  // Untuk mengganti: normalisasi jawaban baru (huruf kecil, tanda baca dibuang, spasi dirapikan),
+  // Untuk mengganti: huruf kecil, aksen dilebur, tanda baca/simbol menjadi spasi, spasi berulang diringkas,
   // lalu hitung SHA-256-nya. Penjelasan singkat tersedia di README.md.
   riddles: [
     {
