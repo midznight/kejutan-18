@@ -627,7 +627,7 @@
         const gotPhrase = phrase.slice(0, letterCount);
         reveal.textContent = gotPhrase;
         if (counter) counter.textContent = String(letterCount);
-        if (fill) fill.style.width = `${(letterCount / charCount) * 100}%`;
+        if (fill) fill.style.transform = `scaleX(${letterCount / charCount})`;
       }
       if (automatic && isCarrier) {
         const mark = item.querySelector('.balloon-mark');
@@ -711,12 +711,12 @@
       if (holdRAF) cancelAnimationFrame(holdRAF);
       holdRAF = 0;
       startedAt = 0;
-      if (!blown) hold.style.setProperty('--hold-progress', '0%');
+      if (!blown) hold.style.setProperty('--hold-progress', '0');
     };
     const tick = (time) => {
       if (!startedAt || blown) return;
       const progress = Math.min(1, (time - startedAt) / duration);
-      hold.style.setProperty('--hold-progress', `${progress * 100}%`);
+      hold.style.setProperty('--hold-progress', `${progress}`);
       if (progress >= 1) {
         blown = true;
         stage.classList.add('blown');
