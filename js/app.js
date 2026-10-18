@@ -906,6 +906,34 @@
     });
   }
 
+  let bouquetPetalTimer = 0;
+  function scheduleBouquetPetalDrop() {
+    if (bouquetPetalTimer) window.clearTimeout(bouquetPetalTimer);
+    const drop = () => {
+      if (currentScene !== 5 || document.hidden || reducedMotion || !canvasActive) {
+        bouquetPetalTimer = 0;
+        return;
+      }
+      const blooms = Array.from(document.querySelectorAll('#bouquet-svg .bouquet-flower'));
+      const bloom = blooms.length ? blooms[Math.floor(Math.random() * blooms.length)] : null;
+      if (bloom) {
+        const rect = bloom.getBoundingClientRect();
+        addParticle({
+          type: 'petal', x: rect.left + rect.width / 2, y: rect.top + rect.height / 2,
+          vx: (Math.random() - .5) * .55, vy: .18 + Math.random() * .3,
+          rotation: Math.random() * Math.PI, spin: (Math.random() - .5) * .035,
+          radius: 3 + Math.random() * 2.5, life: 1, decay: .004 + Math.random() * .002,
+          gravity: .012, friction: .993, maxVy: 1.8, phase: Math.random() * 6.28,
+          phaseSpeed: .08 + Math.random() * .05, sway: Math.random() * 6.28,
+          swayAmplitude: .42, color: ['#d9c6ed','#f3d9ca','#7A89C2','#b79acb'][Math.floor(Math.random()*4)],
+          color2: '#f4e8e0'
+        });
+      }
+      bouquetPetalTimer = window.setTimeout(drop, 1250 + Math.random() * 650);
+    };
+    bouquetPetalTimer = window.setTimeout(drop, 1250 + Math.random() * 650);
+  }
+
   function animateBouquet() {
     const scene = document.getElementById('s5');
     if (!scene) return;
