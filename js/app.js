@@ -61,7 +61,7 @@
   const makeTopline = (label, number) => `<div class="scene-topline"><span class="eyebrow">${formatted(label)}</span><span class="scene-number">${String(number + 1).padStart(2, '0')} / ${String(sceneIds.length).padStart(2, '0')}</span></div>`;
   const makeProgress = (active) => `<div class="progress-dots" aria-hidden="true">${sceneIds.map((_, i) => `<span class="${i === active ? 'active' : ''}"></span>`).join('')}</div>`;
   const button = (label, action, secondary = false, extra = '') => `<button type="button" class="${secondary ? 'secondary-btn' : 'primary-btn'}" data-action="${action}" ${extra}>${formatted(label)}</button>`;
-  const makeScene = (id, content, num) => `<section id="${id}" class="scene${num === 0 ? ' is-active' : ''}" aria-label="${safe(id)}"><div class="scene-inner">${content}${makeProgress(num)}</div></section>`;
+  const makeScene = (id, content, num) => `<section id="${id}" class="scene${num === 0 ? ' is-active' : ''}" aria-label="${safe(id)}"><span class="scene-zodiac-mark" aria-hidden="true">♎</span><div class="scene-inner">${content}${makeProgress(num)}</div></section>`;
 
   function makeBouquetSVG() {
     const plants = [
@@ -231,11 +231,17 @@
 
   function renderApp() {
     const c = C.copy;
+    const zodiac = C.zodiac || {};
     const s0 = `
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring"></span><span class="orbit-ring ring-two"></span><div class="orbit-center">${BIG_HEART}</div></div>
         ${makeTopline(c.startEyebrow, 0)}
         <p class="kicker">${formatted(c.startKicker)}</p>
+        <div class="zodiac-hero-badge" aria-label="${formatted(zodiac.name || 'Libra')} · ${formatted(zodiac.birthday || '18 Oktober')}">
+          <span class="zodiac-hero-sigil" aria-hidden="true">♎</span>
+          <span class="zodiac-hero-copy"><strong>${formatted(zodiac.name || 'Libra')} · ${formatted(zodiac.birthday || '18 Oktober')}</strong><small>THE BALANCE OF BEAUTY & HEART</small></span>
+          <span class="zodiac-hero-spark" aria-hidden="true">✦</span>
+        </div>
         <h1 class="hero-title"><span class="accent">${formatted(c.startTitle)}</span></h1>
         <p class="body-copy">${formatted(c.startBody)}</p>
         <div class="actions">${button(c.startButton, 'start')}</div>
@@ -267,6 +273,7 @@
         <p class="kicker">${formatted(c.heroEyebrow)}</p>
         <h1 class="hero-title"><span class="accent">${formatted(c.heroTitle)}</span></h1>
         <p class="body-copy">${formatted(c.heroAge)}</p>
+        <div class="zodiac-mini-badge"><span aria-hidden="true">♎</span> LIBRA · 18 OKTOBER</div>
         <p class="body-copy">${formatted(c.heroBody)}</p>
         <div class="actions">${button(c.heroButton, 'next')}</div>
       </div>`;
@@ -337,8 +344,7 @@
         <div class="actions">${button(c.interludeButton, 'next')}</div>
       </div>`;
 
-    const zodiac = C.zodiac || {};
-    const zodiacFacts = Array.isArray(zodiac.facts) ? zodiac.facts : [];
+    const zodiacFacts = Array.isArray(zodiac.facts) ? zodiac.facts : []
     const zodiacCards = zodiacFacts.map((fact, i) => `
       <article class="zodiac-fact">
         <span class="zodiac-fact-number">${String(i + 1).padStart(2, '0')}</span>
