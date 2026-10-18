@@ -143,7 +143,7 @@ h1, h2 { text-wrap: balance; }
 .cake-icing { position: absolute; top: 111px; width: min(70%,255px); height: 25px; z-index: 3; border-radius: 0 0 40% 40%; background: #f9ebff; clip-path: polygon(0 0,100% 0,100% 35%,90% 90%,79% 35%,67% 100%,55% 34%,42% 85%,30% 35%,17% 95%,8% 28%,0 85%); }
 .candle-row { position: absolute; top: 38px; z-index: 4; display: flex; align-items: end; justify-content: center; gap: clamp(2px,.7vw,5px); width: 80%; }
 .candle { position: relative; width: 5px; height: 31px; border-radius: 3px 3px 1px 1px; background: repeating-linear-gradient(135deg,#fbf8ff 0 4px,#baa6ff 4px 7px); box-shadow: 0 0 8px rgba(255,255,255,.12); }
-.flame { position: absolute; width: 12px; height: 19px; top: -21px; left: -2px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: radial-gradient(ellipse at 60% 70%,#fff7ba 0 24%,#ffb56f 40%,#ff6a95 72%,transparent 75%); filter: drop-shadow(0 0 8px rgba(255,164,126,.72)); animation: flame-flicker .22s ease-in-out infinite alternate; transform-origin: 70% 80%; }
+.flame { position: absolute; width: 12px; height: 19px; top: -21px; left: -2px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: radial-gradient(ellipse at 60% 70%,#fff7ba 0 24%,#ffb56f 40%,#ff6a95 72%,transparent 75%); animation: flame-flicker .22s ease-in-out infinite alternate; transform-origin: 70% 80%; }
 @keyframes flame-flicker { to { transform: rotate(-38deg) scale(.86,1.1); } }
 .cake-stage.blown .flame { animation: flame-out .5s ease forwards; }
 @keyframes flame-out { 30% { transform: scale(1.5) rotate(-20deg); opacity: .8; } 100% { transform: translateY(-25px) scale(.05); opacity: 0; } }
@@ -450,7 +450,6 @@ h1, h2 { text-wrap: balance; }
   pointer-events: none;
   background: radial-gradient(ellipse,#c4b6c8 0%,rgba(177,160,188,.5) 42%,transparent 78%);
   opacity: 0;
-  filter: blur(.6px);
   animation: smoke-rise 2.55s ease-out var(--smoke-delay,0ms) forwards;
 }
 @keyframes smoke-rise { 0% { opacity: 0; transform: translate(0,0) scale(.45) rotate(0); } 17% { opacity: .6; } 100% { opacity: 0; transform: translate(var(--smoke-drift,0px),-88px) scale(2.5) rotate(52deg); } }
