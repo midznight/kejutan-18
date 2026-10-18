@@ -170,16 +170,16 @@ window.SURPRISE_CONTENT = {
 
   // GANTI: daftar foto dinamis. Tambah/hapus objek untuk mengubah jumlah kartu galeri.
     photos: [
-    { src: "assets/photos/-6078091706051008456_121.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/-6095810533501112793_121.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/-6116211469243323337_121.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/-6131736547657715937_121.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/-6181332351795794919_121.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/-6217530744188376015_121.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/-6221994383440024238_121.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/-6242375489318228547_119.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/IMG-20260521-WA0017.jpg", caption: "Satu momen kita" },
-    { src: "assets/photos/IMG-20260703-WA0032.jpg", caption: "Satu momen kita" },
+    { src: "assets/photos/-6078091706051008456_121.jpg", caption: "Potongan cerita kita" },
+    { src: "assets/photos/-6095810533501112793_121.jpg", caption: "Momen yang ingin kusimpan" },
+    { src: "assets/photos/-6116211469243323337_121.jpg", caption: "Satu hari yang berkesan" },
+    { src: "assets/photos/-6131736547657715937_121.jpg", caption: "Hal kecil, kenangan besar" },
+    { src: "assets/photos/-6181332351795794919_121.jpg", caption: "Cerita yang selalu kuingat" },
+    { src: "assets/photos/-6217530744188376015_121.jpg", caption: "Waktu yang terasa hangat" },
+    { src: "assets/photos/-6221994383440024238_121.jpg", caption: "Sederhana, tapi berarti" },
+    { src: "assets/photos/-6242375489318228547_119.jpg", caption: "Bagian dari perjalanan kita" },
+    { src: "assets/photos/IMG-20260521-WA0017.jpg", caption: "Bingkai kecil, rasa besar" },
+    { src: "assets/photos/IMG-20260703-WA0032.jpg", caption: "Masih ada cerita berikutnya" },
   ],
 
   // GANTI: lagu akan dicek dulu. File yang belum ada tidak akan diputar atau memunculkan error JS.
