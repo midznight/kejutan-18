@@ -1107,3 +1107,31 @@ body {
 /* Keep the last legacy font references inside the same editorial system. */
 .balloon .balloon-mark { font-family: var(--display-font); font-weight: 600; text-shadow: none; }
 .candle-digit { font-family: var(--display-font); font-weight: 600; }
+
+/* Wax-seal relief and telegram rejection movement. */
+#s0 .primary-btn::after {
+  content: "♥";
+  right: 50%;
+  top: 50%;
+  transform: translate(50%,-50%) translateY(-17px);
+  color: #7A89C2;
+  font: 600 18px/1 var(--accent-font);
+  text-shadow: 1px 1px 0 #f3dfb0, 2px 2px 0 rgba(15,7,22,.45);
+  opacity: .92;
+}
+#s0 .primary-btn { padding-top: 21px; }
+#s1 .lock-panel.gate-error { animation: gate-paper-shake .38s ease both; }
+#s1 .lock-symbol.gate-error { animation: gate-lock-shake .38s ease both; }
+@keyframes gate-paper-shake {
+  0%,100% { transform: rotate(-.35deg) translateX(0); }
+  18%,54% { transform: rotate(-.35deg) translateX(-5px); }
+  36%,72% { transform: rotate(-.35deg) translateX(5px); }
+}
+@keyframes gate-lock-shake {
+  0%,100% { transform: rotate(0) translateX(0); }
+  20%,60% { transform: rotate(-7deg) translateX(-2px); }
+  40%,80% { transform: rotate(7deg) translateX(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #s1 .lock-panel.gate-error, #s1 .lock-symbol.gate-error { animation:none!important; }
+}
