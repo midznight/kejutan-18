@@ -1391,3 +1391,14 @@ body {
 @media (prefers-reduced-motion:reduce) {
   .scene-zodiac-mark .libra-sigil-svg { animation:none!important; transform:none!important; }
 }
+
+
+/* Prevent background ornaments and oversized SVGs from widening the mobile page. */
+@media (hover:none) and (pointer:coarse) {
+  html,body { overflow-x:clip!important; }
+  #app { max-width:100vw; overflow-x:clip; }
+  .scene { overflow-x:clip; overflow-y:visible; }
+  #s5 .bouquet-art { width:min(100%,380px); margin:-2px auto 0; }
+  #s5 .bouquet-svg { width:100%; max-width:100%; }
+  #s6 .reason-grid,#s8 .gallery-strip { overscroll-behavior-x:contain; }
+}
