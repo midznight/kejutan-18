@@ -30,7 +30,7 @@
   let canvasElement = null;
   let canvasWidth = 0;
   let canvasHeight = 0;
-  const sceneIds = ['s0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10'];
+  const sceneIds = ['s0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11'];
   const riddleLevels = Array.isArray(C.riddles) ? C.riddles.slice(0, 3) : [];
 
   if (rotateCopy) rotateCopy.textContent = C.copy.rotate;
@@ -41,10 +41,84 @@
   document.documentElement.style.setProperty('--blue', C.colors.blue || '#7dd3fc');
   document.documentElement.style.setProperty('--gold', C.colors.gold || '#ffd69b');
 
-  const makeTopline = (label, number) => `<div class="scene-topline"><span class="eyebrow">${formatted(label)}</span><span class="scene-number">${String(number).padStart(2, '0')} / 11</span></div>`;
+  const makeTopline = (label, number) => `<div class="scene-topline"><span class="eyebrow">${formatted(label)}</span><span class="scene-number">${String(number + 1).padStart(2, '0')} / ${String(sceneIds.length).padStart(2, '0')}</span></div>`;
   const makeProgress = (active) => `<div class="progress-dots" aria-hidden="true">${sceneIds.map((_, i) => `<span class="${i === active ? 'active' : ''}"></span>`).join('')}</div>`;
   const button = (label, action, secondary = false, extra = '') => `<button type="button" class="${secondary ? 'secondary-btn' : 'primary-btn'}" data-action="${action}" ${extra}>${formatted(label)}</button>`;
   const makeScene = (id, content, num) => `<section id="${id}" class="scene${num === 0 ? ' is-active' : ''}" aria-label="${safe(id)}"><div class="scene-inner">${content}${makeProgress(num)}</div></section>`;
+
+  function makeBouquetSVG() {
+    const plants = [
+      { x: 118, y: 110, type: 'lavender', color: '#9c80bb' },
+      { x: 158, y: 145, type: 'wisteria', color: '#c1a2d3' },
+      { x: 190, y: 91, type: 'aster', color: '#e8c4b0' },
+      { x: 222, y: 70, type: 'peony', color: '#b8a3d5' },
+      { x: 263, y: 106, type: 'lavender', color: '#8c70ae' },
+      { x: 300, y: 89, type: 'aster', color: '#f0d8c4' },
+      { x: 337, y: 135, type: 'wisteria', color: '#bda0d3' },
+      { x: 365, y: 117, type: 'baby', color: '#e7daca' },
+    ];
+    const stems = plants.map((plant, i) => {
+      const baseX = 207 + i * 6.5;
+      const tipX = plant.x;
+      const tipY = plant.y + 29;
+      const bend = (tipX - baseX) * .28;
+      const path = `M ${baseX} 426 C ${baseX + bend} 325 ${tipX - bend} 245 ${tipX} ${tipY}`;
+      const leaves = [0,1,2].map(j => {
+        const yy = 335 - j * 45 - (i % 2) * 10;
+        const xx = baseX + (tipX - baseX) * ((426 - yy) / (426 - tipY));
+        const side = (j + i) % 2 ? 1 : -1;
+        return `<path class="bouquet-leaf" d="M ${xx} ${yy} q ${side*21} -20 ${side*35} -5 q -${side*12} 19 -${side*35} 5 Z" fill="${i%2?'#8c9b78':'#a2ab87'}" opacity="0" transform-box="fill-box" transform-origin="center"/>`;
+      }).join('');
+      let bloom = '';
+      if (plant.type === 'lavender') {
+        bloom = Array.from({length:7}, (_,j) => {
+          const yy = tipY + j * 8;
+          const xx = tipX + Math.sin(j*.7+i) * 5;
+          return `<ellipse class="bouquet-flower" cx="${xx}" cy="${yy}" rx="5.2" ry="8.2" transform="rotate(-26 ${xx} ${yy})" fill="${plant.color}" opacity="0"/>`;
+        }).join('');
+      } else if (plant.type === 'wisteria') {
+        bloom = Array.from({length:11}, (_,j) => {
+          const row = Math.floor(j/3);
+          const col = j%3;
+          const xx = tipX + (col-1)*9 + Math.sin(j+i)*2;
+          const yy = tipY + row*11 + (col===1?0:5);
+          return `<circle class="bouquet-flower" cx="${xx}" cy="${yy}" r="${5.2-row*.35}" fill="${j%3===0?'#d6b9e3':plant.color}" opacity="0"/>`;
+        }).join('');
+      } else if (plant.type === 'baby') {
+        bloom = Array.from({length:15}, (_,j) => {
+          const xx = tipX + Math.sin(j*2.4)*18;
+          const yy = tipY + Math.cos(j*1.7)*23;
+          return `<g class="bouquet-flower" opacity="0"><circle cx="${xx}" cy="${yy}" r="4.2" fill="#f5eadb"/><circle cx="${xx}" cy="${yy}" r="1.7" fill="#f0c6ad"/></g>`;
+        }).join('');
+      } else {
+        const count = plant.type === 'peony' ? 12 : 9;
+        const radius = plant.type === 'peony' ? 18 : 14;
+        bloom = Array.from({length:count}, (_,j) => {
+          const angle = Math.PI*2*j/count;
+          const xx = tipX + Math.cos(angle)*radius*.68;
+          const yy = tipY + Math.sin(angle)*radius*.68;
+          return `<ellipse class="bouquet-flower" cx="${xx}" cy="${yy}" rx="${plant.type==='peony'?7:5.5}" ry="${plant.type==='peony'?13:9}" transform="rotate(${j*360/count} ${xx} ${yy})" fill="${j%3===0?'#f4dfcb':plant.color}" opacity="0"/>`;
+        }).join('') + `<circle class="bouquet-flower" cx="${tipX}" cy="${tipY}" r="7" fill="#efc78f" opacity="0"/>`;
+      }
+      return `<g class="bouquet-stem-group"><path class="bouquet-stem" d="${path}" fill="none" stroke="${i%3===0?'#78876d':'#91a080'}" stroke-width="${i%2?2.4:3}" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="520"/>${leaves}${bloom}</g>`;
+    }).join('');
+    const baby'sBreath = Array.from({length:21}, (_,i) => {
+      const x = 120 + (i*37)%220;
+      const y = 175 + (i*23)%135;
+      return `<g class="bouquet-flower" opacity="0"><path d="M 225 426 Q ${x} ${y+20} ${x} ${y}" fill="none" stroke="#9aa586" stroke-width="1.2"/><circle cx="${x}" cy="${y}" r="3.3" fill="#f4e8d7"/><circle cx="${x}" cy="${y}" r="1.2" fill="#f0c6ad"/></g>`;
+    }).join('');
+    return `<svg class="bouquet-svg" id="bouquet-svg" viewBox="0 0 460 520" role="img" aria-label="${safe(C.copy.flowerAria || 'Buket bunga untuk '+C.name)}" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="kraft-paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d5b18a"/><stop offset=".55" stop-color="#b98f6d"/><stop offset="1" stop-color="#9c755f"/></linearGradient><linearGradient id="kraft-fold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ead2af"/><stop offset="1" stop-color="#c39a76"/></linearGradient></defs>
+      <ellipse cx="228" cy="471" rx="116" ry="16" fill="#0f0a1d" opacity=".18"/>
+      <g class="bouquet-blooms">${stems}${baby'sBreath}</g>
+      <path d="M142 330 Q221 370 318 326 L278 472 Q227 494 176 471 Z" fill="url(#kraft-paper)" stroke="#9c755f" stroke-width="1.4"/>
+      <path d="M142 330 Q225 385 318 326 L304 368 Q230 405 157 365 Z" fill="url(#kraft-fold)"/>
+      <path d="M153 365 Q228 406 306 365" fill="none" stroke="#ead2af" stroke-width="2" opacity=".7"/>
+      <path d="M194 395 C168 377 153 400 177 418 C194 429 213 411 225 402 C237 411 256 429 274 418 C299 399 281 377 256 395 C243 403 237 406 225 402 C213 406 207 403 194 395Z" fill="#7A89C2" stroke="#d7d8ee" stroke-width="1.5"/>
+      <path d="M225 401 Q218 421 199 443 Q224 440 229 414 Q247 437 252 438 Q240 414 225 401Z" fill="#7A89C2" stroke="#d7d8ee" stroke-width="1.4"/>
+      <path d="M150 344 Q230 386 310 340" fill="none" stroke="#f1d9ba" stroke-width="2.3" opacity=".75"/>
+    </svg>`;
+  }
 
   function renderApp() {
     const c = C.copy;
@@ -109,7 +183,7 @@
 
     const candles = Array.from({ length: Math.max(1, Math.min(18, Number(C.age) || 18)) }, (_, i) => `<span class="candle" style="--delay:${i * 24}ms"><span class="flame"></span></span>`).join('');
     const s5 = `
-      ${makeTopline(c.cakeEyebrow, 5)}
+      ${makeTopline(c.cakeEyebrow, 4)}
       <div class="hero-copy">
         <p class="kicker">${formatted(c.cakeKicker)}</p>
         <h2 class="section-title">${formatted(c.cakeTitle)}</h2>
@@ -121,8 +195,18 @@
         <div class="actions" id="cake-actions" hidden>${button(c.cakeButton, 'next')}</div>
       </div>`;
 
+    const sFlower = `
+      ${makeTopline(c.flowerEyebrow || c.flowerKicker, 5)}
+      <div class="hero-copy bouquet-copy">
+        <p class="kicker">${formatted(c.flowerKicker)}</p>
+        <h2 class="section-title">${formatted(c.flowerTitle)}</h2>
+        <div class="bouquet-art" id="bouquet-art">${makeBouquetSVG()}</div>
+        <p class="body-copy bouquet-body">${formatted(c.flowerBody)}</p>
+        <div class="actions">${button(c.flowerButton, 'next')}</div>
+      </div>`;
+
     const s6 = `
-      ${makeTopline(c.interludeEyebrow, 6)}
+      ${makeTopline(c.interludeEyebrow, 7)}
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring"></span><span class="orbit-ring ring-two"></span><div class="orbit-center">${BIG_HEART}</div></div>
         <p class="kicker">${formatted(c.interludeKicker)}</p>
@@ -134,7 +218,7 @@
 
     const photos = C.photos.map((photo, i) => `<article class="gallery-card" style="--rot:${i % 2 ? '1.5deg' : '-1.5deg'};--lift:${i % 3 ? '3px' : '-3px'}" data-photo-index="${i}"><div class="gallery-photo"><div class="photo-placeholder"><div class="frame-icon">${imageIcon}</div><p>${formatted(c.photoEmpty)}</p><small>${formatted(c.photoEmptyNote)}</small></div><img data-src="${safe(photo.src)}" loading="lazy" decoding="async" alt="${safe(c.photoAlt)} ${i + 1}"></div><div class="gallery-caption"><span class="caption-count">${String(i + 1).padStart(2, '0')}</span><span>${formatted(photo.caption)}</span></div></article>`).join('');
     const s7 = `
-      ${makeTopline(c.galleryEyebrow, 7)}
+      ${makeTopline(c.galleryEyebrow, 8)}
       <p class="kicker">${String(C.photos.length).padStart(2, '0')} ${formatted(c.galleryKicker)}</p>
       <h2 class="section-title">${formatted(c.galleryTitle)}</h2>
       <p class="body-copy">${formatted(c.galleryBody)}</p>
@@ -143,7 +227,7 @@
       <div class="actions">${button(c.galleryButton, 'next')}</div>`;
 
     const s8 = `
-      ${makeTopline(c.preletterEyebrow, 8)}
+      ${makeTopline(c.preletterEyebrow, 9)}
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring"></span><span class="orbit-ring ring-two"></span><div class="orbit-center">${BIG_HEART}</div></div>
         <p class="kicker">${formatted(c.preletterKicker)}</p>
@@ -154,13 +238,13 @@
 
     const paragraphs = C.letter.map((paragraph, i) => `<p class="letter-paragraph" data-letter-paragraph="${i}">${formatted(paragraph)}</p>`).join('');
     const s9 = `
-      ${makeTopline(c.letterEyebrow, 9)}
+      ${makeTopline(c.letterEyebrow, 10)}
       <div class="hero-copy" style="text-align:left"><p class="kicker">${formatted(c.letterKicker)}</p><h2 class="section-title">${formatted(c.letterTitle)}</h2></div>
       <article class="letter-paper" id="letter-paper">${paragraphs}</article>
       <div class="actions" style="justify-content:center">${button(c.letterButton, 'next')}</div>`;
 
     const s10 = `
-      ${makeTopline(c.finaleEyebrow, 10)}
+      ${makeTopline(c.finaleEyebrow, 11)}
       <div class="hero-copy">
         <p class="kicker">${formatted(c.finaleKicker)}</p>
         <h2 class="section-title">${formatted(c.finaleTitle)}</h2>
@@ -169,7 +253,7 @@
       <div class="finale-stage" id="finale-stage"><div class="gift-stage" id="gift-stage"><button type="button" class="gift-wrap" id="gift-wrap" aria-label="${safe(c.giftButton)}"><span class="gift-bow"></span><span class="gift-lid"></span><span class="gift-box"></span></button></div><div class="voucher" id="voucher"><div class="voucher-label">${formatted(c.voucherLabel)}</div><h3>${formatted(C.finale.title || c.voucherTitle)}</h3><p>${formatted(C.finale.body || c.voucherBody)}</p><div class="voucher-bottom"><span>${formatted(c.voucherFoot)}</span>${BIG_HEART}</div></div></div>
       <div class="hero-copy"><button type="button" class="primary-btn" id="gift-button">${formatted(c.giftButton)}</button><h2 class="closing-line" id="closing-line">${formatted(C.finale.message || C.finale.closing || c.closing)}</h2><div class="replay-row">${button(c.replay, 'replay', true)}</div></div>`;
 
-    app.innerHTML = [s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10].map((html, i) => makeScene(sceneIds[i], html, i)).join('');
+    app.innerHTML = [s0,s1,s2,s3,s5,sFlower,s4,s6,s7,s8,s9,s10].map((html, i) => makeScene(sceneIds[i], html, i)).join('');
     installEventHandlers();
     observePhotos();
     setupLetterReveal();
@@ -385,7 +469,7 @@
   }
 
   function setScene(index) {
-    index = Math.max(0, Math.min(10, index));
+    index = Math.max(0, Math.min(sceneIds.length - 1, index));
     if (index === 1 && !unlocked) { /* riddle is the expected first gate */ }
     const previous = document.getElementById(sceneIds[currentScene]);
     const next = document.getElementById(sceneIds[index]);
@@ -403,16 +487,17 @@
       if (inner) window.gsap.fromTo(inner, { y: 24, rotateX: 1.4, opacity: 0.2, transformPerspective: 900 }, { y: 0, rotateX: 0, opacity: 1, duration: .9, ease: 'power4.out', clearProps: 'transform,opacity' });
     }
     if (index === 2) startMusicForHero();
-    if (index === 4) animateReasonCards();
-    if (index === 9) revealVisibleLetterParagraphs();
+    if (index === 6) animateReasonCards();
+    if (index === 5) animateBouquet();
+    if (index === 10) revealVisibleLetterParagraphs();
     const audioToggle = document.getElementById('audio-toggle');
     if (audioToggle) audioToggle.hidden = index < 2;
   }
 
   function animateReasonCards() {
-    const active = document.querySelector('#s4 .reason-card');
+    const active = document.querySelector('.scene.is-active .reason-card');
     if (!active || reducedMotion || !window.gsap) return;
-    const cards = Array.from(document.querySelectorAll('#s4 .reason-card'));
+    const cards = Array.from(document.querySelectorAll('.scene.is-active .reason-card'));
     window.gsap.fromTo(cards, { opacity: .2, y: 26, rotateX: -8, scale: .97 }, { opacity: 1, y: 0, rotateX: 0, scale: 1, duration: .7, stagger: .075, ease: 'power4.out', clearProps: 'transform,opacity' });
   }
 
@@ -531,6 +616,28 @@
       parent.appendChild(bit);
       window.setTimeout(() => bit.remove(), 950);
     }
+  }
+
+  function animateBouquet() {
+    const scene = document.getElementById('s5');
+    if (!scene) return;
+    const svg = scene.querySelector('#bouquet-svg');
+    if (!svg) return;
+    const stems = Array.from(svg.querySelectorAll('.bouquet-stem'));
+    const leaves = Array.from(svg.querySelectorAll('.bouquet-leaf'));
+    const flowers = Array.from(svg.querySelectorAll('.bouquet-flower'));
+    if (reducedMotion || !window.gsap) {
+      stems.forEach(el => { el.style.strokeDashoffset = '0'; });
+      leaves.forEach(el => { el.style.opacity = '1'; });
+      flowers.forEach(el => { el.style.opacity = '1'; el.style.transform = 'scale(1)'; });
+      return;
+    }
+    window.gsap.killTweensOf([stems, leaves, flowers]);
+    const timeline = window.gsap.timeline();
+    timeline.to(stems, { strokeDashoffset: 0, duration: .95, stagger: .075, ease: 'power2.out' });
+    timeline.to(leaves, { opacity: 1, scale: 1, duration: .32, stagger: .045, ease: 'back.out(1.7)' }, '-=.48');
+    timeline.to(flowers, { opacity: 1, scale: 1, rotate: (i) => (i % 2 ? 8 : -8), duration: .48, stagger: .027, ease: 'back.out(1.7)', transformOrigin: 'center center' }, '-=.28');
+    timeline.call(() => releasePetals(34, canvasWidth * .5, canvasHeight * .18), null, '+=.12');
   }
 
   function setupCakeHold() {
