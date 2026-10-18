@@ -1509,3 +1509,13 @@ body {
 @media (prefers-reduced-motion:reduce) {
   .photo-lightbox,.photo-lightbox-panel,.photo-lightbox-image { transition:none!important; transform:none!important; }
 }
+
+
+/* Keep the underlying story still while the immersive viewer is open. */
+body.photo-lightbox-open {
+  overflow:hidden!important;
+  overscroll-behavior:none;
+}
+.photo-lightbox {
+  overscroll-behavior:contain;
+}
