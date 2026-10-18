@@ -7,7 +7,7 @@
   --muted: #d9cbd9;
   --purple: #bba7db;
   --purple-hot: #9476bf;
-  --blue: #7A89C2;
+  --blue: #b69acb;
   --gold: #f0bd9e;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -37,7 +37,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .countdown-overlay { position: fixed; z-index: 120; inset: 0; display: grid; place-items: center; overflow: hidden; isolation: isolate; background: rgba(33,21,46,.995); color: #fff0df; padding: 24px; }
 .countdown-overlay #atmosphere-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 .countdown-caption { z-index: 3; position: absolute; top: 21%; left: 12%; right: 12%; margin: 0; text-align: center; font: 600 clamp(16px,4vw,21px)/1.35 'Caveat', cursive; color: #f0c6b2; }
-.countdown-number { z-index: 3; position: absolute; left: 0; right: 0; top: 50%; margin: 0; text-align: center; transform: translateY(-50%); transform-origin: center; font: 800 clamp(150px,48vw,300px)/.8 'Fraunces', Georgia, serif; letter-spacing: -.08em; color: #f5eadb; text-shadow: 7px 8px 0 rgba(122,137,194,.42), 0 18px 38px rgba(14,8,28,.28); will-change: transform, opacity; }
+.countdown-number { z-index: 3; position: absolute; left: 0; right: 0; top: 50%; margin: 0; text-align: center; transform: translateY(-50%); transform-origin: center; font: 800 clamp(150px,48vw,300px)/.8 'Fraunces', Georgia, serif; letter-spacing: -.08em; color: #f5eadb; text-shadow: 7px 8px 0 rgba(226,189,115,.42), 0 18px 38px rgba(14,8,28,.28); will-change: transform, opacity; }
 .countdown-flash { position: absolute; z-index: 10; inset: 0; pointer-events: none; background: #fff8f0; animation: birthday-flash .19s ease-out both; }
 @keyframes birthday-flash { 0% { opacity: 0; } 30% { opacity: .94; } 100% { opacity: 0; } }
 
@@ -58,7 +58,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 h1, h2, h3, p { margin-top: 0; }
 h1, h2 { text-wrap: balance; }
 .hero-title { font-family: 'Fraunces', Georgia, serif; font-weight: 800; margin: 15px 0 19px; font-size: clamp(39px, 11vw, 78px); line-height: .97; letter-spacing: -.065em; font-weight: 830; white-space: pre-line; }
-.hero-title .accent { display: inline-block; color: transparent; background: linear-gradient(115deg,#fff 5%,#aeb9e6 48%,#7A89C2 95%); background-clip: text; -webkit-background-clip: text; }
+.hero-title .accent { display: inline-block; color: transparent; background: linear-gradient(115deg,#fff 5%,#aeb9e6 48%,#b69acb 95%); background-clip: text; -webkit-background-clip: text; }
 .section-title { font-family: 'Fraunces', Georgia, serif; font-weight: 700; max-width: 650px; margin: 13px 0 14px; font-size: clamp(29px, 7.6vw, 54px); letter-spacing: -.055em; line-height: 1.03; font-weight: 800; white-space: pre-line; }
 .body-copy { max-width: 560px; color: var(--muted); font-size: clamp(14px, 3.7vw, 17px); line-height: 1.7; }
 .fine-copy { color: rgba(218, 208, 239, .62); font-size: 12px; line-height: 1.65; }
@@ -262,7 +262,7 @@ h1, h2 { text-wrap: balance; }
 .photo-placeholder .frame-icon { border-color: #c7b6ac; background: #ebdfd1; box-shadow: 5px 5px 0 #d9c6b7; }
 .photo-placeholder small { color: #897582; }
 .gallery-caption { min-height: 67px; padding: 13px 7px 10px; color: #47334d; font-size: 22px; line-height: 1.13; }
-.gallery-caption .caption-count { color: #7A89C2; font: 700 10px/1.6 'Outfit', sans-serif; }
+.gallery-caption .caption-count { color: #b69acb; font: 700 10px/1.6 'Outfit', sans-serif; }
 .gallery-foot { color: #d9c5dc; }
 
 /* Distinct scene wipes, built from transform and opacity only. */
@@ -516,7 +516,7 @@ h1, h2 { text-wrap: balance; }
   --foil-mid: #c9a15a;
   --foil-dark: #8f6b32;
   --peach: #eaa98b;
-  --blue: #7A89C2;
+  --blue: #b69acb;
   --purple: #8e5fb0;
   --purple-hot: #4a2260;
   --gold: #c9a15a;
@@ -1119,7 +1119,7 @@ body {
   right: 50%;
   top: 50%;
   transform: translate(50%,-50%) translateY(-17px);
-  color: #7A89C2;
+  color: #b69acb;
   font: 600 18px/1 var(--accent-font);
   text-shadow: 1px 1px 0 #f3dfb0, 2px 2px 0 rgba(15,7,22,.45);
   opacity: .92;
@@ -1308,3 +1308,16 @@ body {
   .zodiac-meta { gap:6px; }
   .zodiac-meta span { font-size:10px; padding:7px 9px; }
 }
+
+
+/* Visual QA follow-up: keep the Libra emblem vector-based and the cover CTA seal-shaped. */
+.scene-zodiac-mark { display:block; width:1em; height:1em; }
+.scene-zodiac-mark .libra-sigil-svg { display:block; width:100%; height:100%; }
+.zodiac-hero-sigil { display:grid; place-items:center; width:34px; height:34px; flex:0 0 34px; }
+.zodiac-hero-sigil .libra-sigil-svg { display:block; width:100%; height:100%; }
+.zodiac-mini-badge .libra-mini-sigil { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; flex:0 0 22px; }
+.zodiac-mini-badge .libra-sigil-svg { display:block; width:100%; height:100%; }
+.zodiac-meta-symbol { display:inline-flex; align-items:center; width:18px; height:18px; vertical-align:middle; }
+.zodiac-meta-symbol .libra-sigil-svg { display:block; width:100%; height:100%; }
+#s0 .primary-btn { border-radius:50%!important; }
+#s0 .primary-btn::before { border-radius:50%!important; }
