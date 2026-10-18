@@ -689,7 +689,7 @@
     if (index === 5) animateBouquet();
     if (index === 10) revealVisibleLetterParagraphs();
     const audioToggle = document.getElementById('audio-toggle');
-    if (audioToggle) audioToggle.hidden = index < 2;
+    if (audioToggle) audioToggle.hidden = index < 2 || index === 10;
   }
 
   function animateReasonCards() {
@@ -1167,6 +1167,7 @@
       if (opened) return;
       opened = true;
       wrap.classList.add('open');
+      giftStage.classList.add('gift-opened');
       if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
         try { navigator.vibrate([20, 35, 20]); } catch (_) { /* no-op */ }
       }
@@ -1178,6 +1179,7 @@
           giftStage.hidden = true;
           voucher.classList.add('visible');
           spawnCelebrationBurst(canvasWidth * .5, canvasHeight * .48, 95);
+          spawnConfettiBurst(canvasWidth * .5, canvasHeight * .42, 20);
         }, 560);
       }
       buttonElement.textContent = C.copy.voucherLabel;
