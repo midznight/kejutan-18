@@ -146,6 +146,28 @@ window.SURPRISE_CONTENT = {
     "Selamat ulang tahun, {{name}}. Semoga kamu selalu punya ruang untuk bahagia, tempat untuk pulang saat capek, dan orang-orang yang mendukungmu dengan tulus. Hari ini, aku ikut merayakan kamu—bukan cuma karena kamu bertambah umur, tapi juga karena kamu adalah kamu.\n\nDari aku, Hamid. {{heart}}",
   ],
 
+  // Zodiak ulang tahun — astrologi populer untuk hiburan, bukan penilaian ilmiah kepribadian.
+  zodiac: {
+    name: "Libra",
+    birthday: "18 Oktober",
+    dateRange: "23 September – 22 Oktober",
+    symbol: "♎",
+    element: "Unsur udara",
+    rulingPlanet: "Venus",
+    eyebrow: "KARTU LANGIT UNTUKMU",
+    title: "Sedikit tentang Libra",
+    body: "Tanggal 18 Oktober berada dalam rentang Libra di astrologi Barat. Simbol timbangan mengingatkan kita pada keseimbangan, keindahan, dan cara melihat lebih dari satu sisi.",
+    note: "Fun fact ini berasal dari astrologi populer—anggap sebagai hiburan, bukan rumus pasti tentang siapa dirimu.",
+    button: "Lanjut ke potongan cerita kita",
+    facts: [
+      { title: "Pencinta keseimbangan", body: "Libra sering diasosiasikan dengan harmoni, keadilan, dan keinginan mencari jalan tengah." },
+      { title: "Selera estetik", body: "Dalam astrologi populer, Libra dikaitkan dengan seni, desain, dan detail yang terasa indah." },
+      { title: "Melihat dua sisi", body: "Simbol timbangan mewakili kebiasaan mempertimbangkan sudut pandang berbeda sebelum memilih." },
+      { title: "Diplomatis", body: "Libra kerap digambarkan suka menjaga percakapan tetap hangat dan berusaha adil kepada orang lain." },
+      { title: "Dinaungi Venus", body: "Venus adalah planet penguasa Libra dalam astrologi Barat, dan sering dikaitkan dengan cinta serta estetika." }
+    ]
+  },
+
   // GANTI: daftar foto dinamis. Tambah/hapus objek untuk mengubah jumlah kartu galeri.
     photos: [
     { src: "assets/photos/-6078091706051008456_121.jpg", caption: "Satu momen kita" },
