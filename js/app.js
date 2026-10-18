@@ -206,8 +206,7 @@
         <h2 class="section-title">${formatted(c.cakeTitle)}</h2>
         <p class="body-copy cake-instruction">${formatted(c.cakeInstruction)}</p>
         <div class="cake-wrap"><div class="cake-stage" id="cake-stage"><div class="cake-light"></div><div class="candle-row">${candles}</div><div class="cake-top"></div><div class="cake-icing"></div><div class="cake-body"></div><div class="cake-plate"></div></div></div>
-        <button id="blow-button" type="button" class="hold-button" aria-describedby="blow-help"><span>Tahan untuk meniup</span></button>
-        <p class="fine-copy" id="blow-help" style="margin-top:12px">${formatted(c.cakeInstruction)}</p>
+        <button id="blow-button" type="button" class="hold-button"><span>Tahan untuk meniup</span></button>
         <p id="wish-after" class="body-copy" hidden>${formatted(c.cakeAfter)}</p>
         <div class="actions" id="cake-actions" hidden>${button(c.cakeButton, 'next')}</div>
       </div>`;
