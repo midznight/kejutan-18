@@ -1126,7 +1126,7 @@
         flame.style.setProperty('--flame-x', (1 - progress * .6 + noise).toFixed(3));
         flame.style.setProperty('--flame-y', (1 - progress * .45 + noise * .7).toFixed(3));
         flame.style.setProperty('--flame-skew', `${(noise * 50).toFixed(2)}deg`);
-        flame.style.filter = `drop-shadow(0 0 ${Math.max(1, 11 * (1-progress))}px rgba(255,172,91,${.8-progress*.5}))`;
+        flame.style.removeProperty('filter');
       });
       if (progress > .06 && scene) scene.classList.add('candle-dimming');
       if (progress >= 1) {
