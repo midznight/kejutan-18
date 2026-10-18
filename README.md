@@ -38,12 +38,19 @@ Upload file lagu ke `assets/audio/monokrom-tulus.mp3`. File tidak disertakan kar
 
 Buka folder ini di editor lalu jalankan server statis sederhana, misalnya VS Code Live Server. Alternatif dengan Python di komputer: `python -m http.server 8000`, lalu buka `http://localhost:8000`. Fitur WebCrypto untuk hash memerlukan secure context; `localhost` memenuhi syarat itu di browser modern.
 
-## Deploy Cloudflare Pages
+## Deployment yang sudah aktif
 
-1. Repo **private** bernama `kejutan-18` berada di GitHub.
-2. Proyek Cloudflare Pages `kejutan-18` terhubung ke repo ini pada branch `main`.
-3. Pengaturan: Framework preset **None**, build command kosong, output directory `/`.
-4. Setiap commit ke `main` akan memicu deploy ulang otomatis setelah integrasi GitHub aktif.
+- Repo GitHub private: https://github.com/midznight/kejutan-18
+- Situs: https://kejutan-18.pages.dev/
+- Cloudflare Pages terhubung ke branch `main`, Framework preset **None**, build command kosong, output directory `/`.
+- Setiap commit ke `main` memicu deployment ulang otomatis. Setelah upload foto, audio, atau edit `js/content.js`, tunggu deployment terbaru berstatus **Success** sebelum mengirim link.
+
+### Upload aset lewat GitHub web
+
+1. Buka repo, masuk ke folder `assets/photos/`, lalu pilih **Add file → Upload files**.
+2. Upload JPG bernama `foto-01.jpg`, `foto-02.jpg`, dan seterusnya, lalu klik **Commit changes**.
+3. Masuk ke `assets/audio/`, pilih **Add file → Upload files**, lalu upload `monokrom-tulus.mp3` dan commit.
+4. Pantau tab **Actions** atau Cloudflare Pages untuk memastikan deployment otomatis selesai.
 
 ## Privasi dan tes
 
