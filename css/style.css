@@ -1226,6 +1226,6 @@ body {
   #s11 .finale-stage { min-height:330px; }
 }
 @media (prefers-reduced-motion:reduce) {
-  .lion-art,.lion-art.lion-revealed { transition:none!important; }
+  .lion-art,.lion-art.lion-revealed { animation:none!important; transition:none!important; }
   #s11 .gift-wrap,#s11 .gift-lid { transition:none!important; }
 }
