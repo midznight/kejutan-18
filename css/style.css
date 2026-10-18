@@ -118,6 +118,18 @@ h1, h2 { text-wrap: balance; }
 .balloon-progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--purple),var(--blue)); transition: width .3s ease; }
 .burst-heart { position: absolute; width: 10px; height: 10px; border-radius: 2px; background: var(--burst-color); pointer-events: none; animation: burst-out .8s ease-out forwards; }
 @keyframes burst-out { from { opacity: 1; transform: translate3d(0,0,0) rotate(0) scale(1); } to { opacity: 0; transform: translate3d(var(--dx),var(--dy),0) rotate(180deg) scale(.1); } }
+
+.bouquet-copy { max-width: 590px; }
+.bouquet-art { width: min(100%, 380px); margin: -4px auto 4px; position: relative; cursor: pointer; }
+.bouquet-svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 12px 9px rgba(12,7,19,.12)); }
+.bouquet-stem { will-change: stroke-dashoffset; }
+.bouquet-leaf { transform-box: fill-box; transform-origin: center; transform: scale(0); will-change: transform, opacity; }
+.bouquet-flower { transform-box: fill-box; transform-origin: center; transform: scale(0); will-change: transform, opacity; }
+.bouquet-svg .bouquet-flower { cursor: pointer; pointer-events: visiblePainted; }
+.bouquet-body { max-width: 440px; margin: 0 auto; }
+#s5 .section-title { font-size: clamp(27px,6vw,43px); margin-bottom: 3px; }
+#s5 .bouquet-art { margin-top: -2px; }
+
 .reason-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin: 24px 0 0; }
 .reason-card { min-height: 168px; position: relative; overflow: hidden; padding: 17px 15px 16px; border: 1px solid rgba(222,208,255,.16); border-radius: 19px; background: linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.018)); transform-style: preserve-3d; }
 .reason-card::after { content: ""; position: absolute; width: 110px; height: 110px; right: -49px; bottom: -58px; border-radius: 50%; background: var(--glow); opacity: .18; filter: blur(16px); }
