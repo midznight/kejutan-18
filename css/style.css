@@ -1062,3 +1062,37 @@ body {
   .scene[data-signature="finale-curtain"].is-active .curtain-left { transform:translateX(-65%); opacity:.3; }
   .scene[data-signature="finale-curtain"].is-active .curtain-right { transform:translateX(65%); opacity:.3; }
 }
+
+/* Metric-adjusted local fallbacks avoid major title reflow while web fonts load. */
+@font-face {
+  font-family: "Bodoni Moda Fallback";
+  src: local("Didot"), local("Bodoni MT"), local("Georgia");
+  size-adjust: 99%;
+  ascent-override: 91%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Cormorant Fallback";
+  src: local("Georgia");
+  size-adjust: 102%;
+  ascent-override: 88%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+:root {
+  --display-font: "Bodoni Moda", "Bodoni Moda Fallback", Didot, Georgia, serif;
+  --accent-font: "Cormorant Garamond", "Cormorant Fallback", Georgia, serif;
+}
+.primary-btn:active::before, .secondary-btn:active::before {
+  background:linear-gradient(105deg,transparent 35%,rgba(243,223,176,.52) 50%,transparent 65%);
+  background-size:260% 100%;
+  animation:button-foil-sweep .46s ease-out both;
+}
+@keyframes button-foil-sweep {
+  0% { background-position:130% 0; opacity:0; }
+  22% { opacity:1; }
+  100% { background-position:-120% 0; opacity:0; }
+}
+#s0 .primary-btn:active::before { border-color:rgba(243,223,176,.6); border-radius:50%; }
+#s11 .voucher::selection, #s10 .letter-paper::selection { background:rgba(201,161,90,.35); color:#1b0f24; }
