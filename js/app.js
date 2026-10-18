@@ -216,7 +216,7 @@
         <div class="actions">${button(c.interludeButton, 'next')}</div>
       </div>`;
 
-    const photos = C.photos.map((photo, i) => `<article class="gallery-card" style="--rot:${i % 2 ? '1.5deg' : '-1.5deg'};--lift:${i % 3 ? '3px' : '-3px'}" data-photo-index="${i}"><div class="gallery-photo"><div class="photo-placeholder"><div class="frame-icon">${imageIcon}</div><p>${formatted(c.photoEmpty)}</p><small>${formatted(c.photoEmptyNote)}</small></div><img data-src="${safe(photo.src)}" loading="lazy" decoding="async" alt="${safe(c.photoAlt)} ${i + 1}"></div><div class="gallery-caption"><span class="caption-count">${String(i + 1).padStart(2, '0')}</span><span>${formatted(photo.caption)}</span></div></article>`).join('');
+    const photos = C.photos.map((photo, i) => `<article class="gallery-card" style="--rot:${(-3 + Math.random() * 7).toFixed(2)}deg;--lift:${(-4 + Math.random() * 8).toFixed(1)}px" data-photo-index="${i}"><span class="polaroid-tape" aria-hidden="true"></span><div class="gallery-photo"><div class="photo-placeholder"><div class="frame-icon">${imageIcon}</div><p>${formatted(c.photoEmpty)}</p><small>${formatted(c.photoEmptyNote)}</small></div><img data-src="${safe(photo.src)}" loading="lazy" decoding="async" alt="${safe(c.photoAlt)} ${i + 1}"></div><div class="gallery-caption"><span class="caption-count">${String(i + 1).padStart(2, '0')}</span><span>${formatted(photo.caption)}</span></div></article>`).join('');
     const s7 = `
       ${makeTopline(c.galleryEyebrow, 8)}
       <p class="kicker">${String(C.photos.length).padStart(2, '0')} ${formatted(c.galleryKicker)}</p>
@@ -469,6 +469,57 @@
     overlay.remove();
   }
 
+  function animateSceneDecorations(scene) {
+    if (reducedMotion || !window.gsap) return;
+    const targets = Array.from(scene.querySelectorAll('.scene-topline, .hero-orbit, .kicker, .hero-title, .section-title, .actions'));
+    if (!targets.length) return;
+    window.gsap.fromTo(targets, { y: 11, opacity: 0 }, {
+      y: 0, opacity: 1, duration: .48, stagger: .045, delay: .045,
+      ease: 'power4.out', clearProps: 'transform,opacity'
+    });
+  }
+
+  function playSceneWipe(index) {
+    if (reducedMotion) return;
+    const modes = ['iris', 'curtain', 'cross'];
+    const mode = modes[index % modes.length];
+    const layer = document.createElement('div');
+    layer.className = 'scene-wipe scene-wipe-' + mode;
+    layer.setAttribute('aria-hidden', 'true');
+    if (mode === 'iris') {
+      const orb = document.createElement('span');
+      orb.className = 'wipe-orb';
+      layer.appendChild(orb);
+    } else if (mode === 'curtain') {
+      for (let i = 0; i < 3; i++) {
+        const strip = document.createElement('span');
+        strip.className = 'wipe-strip wipe-strip-' + i;
+        layer.appendChild(strip);
+      }
+    } else {
+      const horizontal = document.createElement('span');
+      horizontal.className = 'wipe-band wipe-band-horizontal';
+      const vertical = document.createElement('span');
+      vertical.className = 'wipe-band wipe-band-vertical';
+      layer.append(horizontal, vertical);
+    }
+    document.body.appendChild(layer);
+    const remove = () => layer.remove();
+    if (window.gsap) {
+      const timeline = window.gsap.timeline({ onComplete: remove });
+      if (mode === 'iris') {
+        timeline.fromTo(layer.firstElementChild, { scale: 0, opacity: .96 }, { scale: 14, opacity: 0, duration: .72, ease: 'power4.inOut' });
+      } else if (mode === 'curtain') {
+        timeline.fromTo(layer.children, { yPercent: -110, opacity: 1 }, { yPercent: 110, opacity: 0, duration: .64, stagger: .07, ease: 'power4.inOut' });
+      } else {
+        timeline.fromTo(layer.children, { scale: 0, opacity: .94 }, { scale: 1, opacity: 0, duration: .56, stagger: .05, ease: 'power4.inOut' });
+      }
+    } else {
+      layer.classList.add('is-running');
+      window.setTimeout(remove, 900);
+    }
+  }
+
   function setScene(index) {
     index = Math.max(0, Math.min(sceneIds.length - 1, index));
     if (index === 1 && !unlocked) { /* riddle is the expected first gate */ }
@@ -482,6 +533,8 @@
     currentScene = index;
     next.classList.add('is-active');
     next.setAttribute('aria-hidden', 'false');
+    playSceneWipe(index);
+    animateSceneDecorations(next);
     window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
     if (!reducedMotion && window.gsap) {
       const inner = next.querySelector('.scene-inner');
@@ -540,7 +593,7 @@
       const [a,b] = palettes[i % palettes.length];
       const tilt = [-7,-4,4,7,1, -2][i % 6];
       const carrier = i < charCount;
-      return `<button type="button" class="balloon" data-carrier="${carrier ? 'true' : 'false'}" style="--x:${x}%;--y:${y}%;--tilt:${tilt}deg;--balloon-a:${a};--balloon-b:${b};--float:${3.2 + (i%4)*.48}s" aria-label="${safe(withName(C.copy.balloonButtonLabel).replaceAll('{{count}}', i + 1))}"><span class="balloon-mark" aria-hidden="true">${carrier ? TINY_HEART : ''}</span></button>`;
+      return `<button type="button" class="balloon" data-carrier="${carrier ? 'true' : 'false'}" style="--x:${x}%;--y:${y}%;--tilt:${tilt}deg;--balloon-a:${a};--balloon-b:${b};--float:${3.2 + (i%4)*.48}s" aria-label="${safe(withName(C.copy.balloonButtonLabel).replaceAll('{{count}}', i + 1))}"><svg class="balloon-svg" viewBox="0 0 80 118" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="balloon-grad-${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf4" stop-opacity=".88"/><stop offset=".22" stop-color="${a}"/><stop offset=".72" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><linearGradient id="balloon-edge-${i}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#3a2348" stop-opacity=".4"/></linearGradient></defs><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-grad-${i})" stroke="rgba(255,248,240,.76)" stroke-width="1.1"/><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-edge-${i})"/><path d="M24 20 C18 28 18 38 22 45" fill="none" stroke="#fffaf4" stroke-opacity=".85" stroke-width="4" stroke-linecap="round"/><ellipse cx="23" cy="17" rx="3.4" ry="5.5" fill="#fffaf4" fill-opacity=".78" transform="rotate(22 23 17)"/><path d="M40 92 C34 99 47 102 39 110 C35 114 39 116 42 117" fill="none" stroke="#ead9e7" stroke-opacity=".82" stroke-width="1.2" stroke-linecap="round"/></svg><span class="balloon-mark" aria-hidden="true">${carrier ? TINY_HEART : ''}</span></button>`;
     }).join('');
     const counter = document.getElementById('balloon-counter');
     const total = document.getElementById('balloon-total');
@@ -747,6 +800,8 @@
       let distance = Infinity;
       cards.forEach((card, i) => {
         const center = card.offsetLeft + card.offsetWidth / 2;
+        const signedOffset = (center - midpoint) / Math.max(1, strip.clientWidth / 2);
+        card.style.setProperty('--parallax', `${Math.max(-5, Math.min(5, signedOffset * 5))}px`);
         const currentDistance = Math.abs(midpoint - center);
         if (currentDistance < distance) { distance = currentDistance; nearest = i; }
       });
