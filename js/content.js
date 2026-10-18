@@ -71,8 +71,7 @@ window.SURPRISE_CONTENT = {
     balloonsDone: "HAPPY 18 {{name}}",
     balloonsButton: "Lanjut, yang ulang tahun",
     reasonsEyebrow: "HAL-HAL KECIL YANG AKU SIMPAN",
-    reasonsTitle: "Sedikit Notes
-      ",
+    reasonsTitle: "Sedikit notes tentang kamu.",
     reasonsBody: "Beberapa mungkin kelihatan sederhana. Tapi justru hal-hal ini yang bikin kamu jadi kamu.",
     reasonsButton: "Ada satu harapan lagi",
     cakeEyebrow: "SEBELUM KAMU MEMBUAT PERMINTAAN",
