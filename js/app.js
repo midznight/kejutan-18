@@ -187,7 +187,7 @@
   }
 
   function installSignatureCompositions() {
-    const map = { s0: 'seal', s1: 'telegram', s2: 'birthday-arch', s3: 'dusk-sky', s4: 'candle-table', s5: 'specimen', s6: 'tarot-deck' };
+    const map = { s0: 'seal', s1: 'telegram', s2: 'birthday-arch', s3: 'dusk-sky', s4: 'candle-table', s5: 'specimen', s6: 'tarot-deck', s7: 'interlude-editorial', s8: 'gallery-wall', s9: 'sealed-envelope', s10: 'letter-stationery', s11: 'finale-curtain' };
     Object.entries(map).forEach(([id, signature]) => {
       const scene = document.getElementById(id);
       const scenery = scene && scene.querySelector('.scene-scenery');
@@ -197,7 +197,7 @@
       const mark = document.createElement('span');
       mark.className = 'signature-ornament';
       mark.setAttribute('aria-hidden', 'true');
-      mark.textContent = signature === 'specimen' ? 'SPECIMEN N° 18' : signature === 'tarot-deck' ? 'ARCANA · VIII' : '✦';
+      mark.textContent = signature === 'specimen' ? 'SPECIMEN N° 18' : signature === 'tarot-deck' ? 'ARCANA · VIII' : signature === 'gallery-wall' ? 'GALERIE PRIVÉE · 10' : signature === 'letter-stationery' ? 'VIA HAMID · 18' : signature === 'finale-curtain' ? 'ÉDITION LIMITÉE · 18' : '✦';
       scenery.appendChild(mark);
       const extras = {
         seal: '<svg class="constellation-etch" viewBox="0 0 320 240"><g fill="none" stroke="#f3dfb0" stroke-width="1"><path d="M25 150 L68 74 L126 102 L174 36 L226 91 L281 50 M68 74 L88 174 L126 102 L165 190 L226 91"/></g><g fill="#f3dfb0"><circle cx="25" cy="150" r="2"/><circle cx="68" cy="74" r="3"/><circle cx="126" cy="102" r="2"/><circle cx="174" cy="36" r="3"/><circle cx="226" cy="91" r="2.5"/><circle cx="281" cy="50" r="2"/></g></svg>',
@@ -206,7 +206,12 @@
         specimen: '<div class="specimen-label"><span>HERBIER DU SOIR</span><strong>Specimen N° 18</strong><i>flore pour Nor</i><b>— H. / 18 —</b></div><svg class="specimen-corners" viewBox="0 0 340 440"><path d="M8 58 V8 H58 M282 8 H332 V58 M8 382 V432 H58 M282 432 H332 V382" fill="none" stroke="#c9a15a" stroke-width="1.1"/></svg>',
         telegram: '<div class="telegram-perforation"></div><span class="telegram-side-note">SERVICE DES ÉTOILES · 18</span>',
         'candle-table': '<div class="candle-table-edge"></div><span class="candle-table-note">une petite lumière · 18</span>',
-        'tarot-deck': '<div class="tarot-heading-mark"><span>ARCANA</span><strong>VIII</strong><i>petites raisons, grand amour</i></div>'
+        'tarot-deck': '<div class="tarot-heading-mark"><span>ARCANA</span><strong>VIII</strong><i>petites raisons, grand amour</i></div>',
+        'interlude-editorial': '<span class="editorial-marginalia">on garde les beaux jours</span><span class="editorial-pencil-mark">—</span>',
+        'gallery-wall': '<div class="gallery-room-label">GALERIE PRIVÉE <span>·</span> N° 10</div>',
+        'sealed-envelope': '<div class="envelope-seal"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="#8e5fb0" stroke="#c9a15a" stroke-width="1.5"/><circle cx="32" cy="32" r="23" fill="none" stroke="#f3dfb0" stroke-dasharray="1.5 3"/><path d="M32 22 C22 11 13 24 22 33 L32 43 L42 33 C51 24 42 11 32 22Z" fill="#7A89C2" stroke="#f3dfb0" stroke-width="1"/></svg></div>',
+        'letter-stationery': '<div class="letter-postmark"><span>VIA</span><strong>HAMID</strong><i>18 · JEMBER</i></div><span class="letter-washi"></span><svg class="pressed-botanical" viewBox="0 0 80 130" aria-hidden="true"><path d="M7 124 Q42 66 65 8 M34 79 Q10 68 12 43 Q34 55 34 79 M45 51 Q70 47 74 22 Q53 28 45 51" fill="none" stroke="#9a9972" stroke-width="1.2"/><path d="M34 79 Q10 68 12 43 Q34 55 34 79 M45 51 Q70 47 74 22 Q53 28 45 51" fill="#8e5fb0" fill-opacity=".4" stroke="#9a9972" stroke-width=".7"/></svg>',
+        'finale-curtain': '<span class="velvet-curtain-panel curtain-left"></span><span class="velvet-curtain-panel curtain-right"></span><div class="marquee-frame"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>'
       };
       if (extras[signature]) scenery.insertAdjacentHTML('beforeend', extras[signature]);
     });
