@@ -262,7 +262,20 @@
       <p id="balloon-reveal" class="closing-line" aria-live="polite" style="font-size:clamp(17px,4.4vw,25px);min-height:28px"></p>
       <div class="actions" id="balloon-actions" hidden>${button(c.balloonsButton, 'next')}</div>`;
 
-    const reasons = C.reasons.map((reason, i) => `<article class="reason-card" style="--glow:${i % 3 === 0 ? '#bca6ff' : i % 3 === 1 ? '#7dd3fc' : '#ffd69b'}"><span class="reason-index">0${i + 1} / ${String(C.reasons.length).padStart(2, '0')}</span><h3>${formatted(reason.title)}</h3><p>${formatted(reason.body)}</p></article>`).join('');
+    const romanNumerals = ['I','II','III','IV','V','VI','VII','VIII'];
+    const reasons = C.reasons.map((reason, i) => `<article class="reason-card tarot-card" data-tarot-index="${i}" tabindex="0" role="button" aria-pressed="false" aria-label="${safe(reason.title)}">
+      <div class="tarot-face tarot-front">
+        <span class="tarot-number">${romanNumerals[i % romanNumerals.length]}</span>
+        <svg class="tarot-botanical" viewBox="0 0 120 150" aria-hidden="true"><path d="M60 145 C51 108 67 76 56 16 M58 103 Q21 91 18 57 Q49 69 58 103 M62 83 Q95 74 103 43 Q74 53 62 83" fill="none" stroke="#b7a174" stroke-width="1.3"/><circle cx="56" cy="16" r="4" fill="#eaa98b"/><circle cx="18" cy="57" r="3" fill="#f3dfb0"/><circle cx="103" cy="43" r="3" fill="#f3dfb0"/></svg>
+        <span class="tarot-index-label">ARCANA · N° ${String(i + 1).padStart(2, '0')}</span>
+        <span class="tarot-flip-hint">balik kartu ↻</span>
+      </div>
+      <div class="tarot-face tarot-back">
+        <span class="reason-index">N° ${String(i + 1).padStart(2, '0')} / ${String(C.reasons.length).padStart(2, '0')}</span>
+        <h3>${formatted(reason.title)}</h3><p>${formatted(reason.body)}</p>
+        <span class="tarot-back-mark">— H. / 18 —</span>
+      </div>
+    </article>`).join('');
     const s4 = `
       ${makeTopline(c.reasonsEyebrow, 6)}
       <p class="kicker">${formatted(c.reasonsKicker)}</p>
