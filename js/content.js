@@ -175,6 +175,7 @@ window.SURPRISE_CONTENT = {
     balloonCount: 18,
     balloonAutoPopMs: 25000,
     reducedMotionRespect: true,
-    canvasParticleMax: 400,
+    canvasParticleMax: 350,
+    sfx: true,
   },
 };
