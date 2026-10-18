@@ -821,7 +821,13 @@
       }
       if (popped >= buttons.length && letterCount >= charCount) actions.hidden = false;
     };
-    buttons.forEach((item) => item.addEventListener('click', () => pop(item, false)));
+    buttons.forEach((item) => {
+      item.addEventListener('pointerdown', () => {
+        if (item.classList.contains('popped') || reducedMotion || !window.gsap) return;
+        window.gsap.to(item, { scale: .94, duration: .075, ease: 'power1.out', yoyo: true, repeat: 1, overwrite: true });
+      }, { passive: true });
+      item.addEventListener('click', () => pop(item, false));
+    });
   }
 
   function animateBalloonEntrance() {
@@ -835,9 +841,9 @@
     });
     if (reducedMotion || !window.gsap) { finish(); return; }
     window.gsap.fromTo(buttons,
-      { y: arena.clientHeight + 130, opacity: 0, scale: .91, rotation: (index, target) => Number.parseFloat(target.style.getPropertyValue('--tilt')) || 0 },
-      { y: 0, opacity: 1, scale: 1, rotation: (index, target) => (Number.parseFloat(target.style.getPropertyValue('--tilt')) || 0) + (Math.random() - .5) * 2,
-        duration: .72, ease: 'back.out(1.22)', stagger: () => .04 + Math.random() * .05,
+      { y: arena.clientHeight + 150, opacity: 0, scale: .86, rotation: (index, target) => (Number.parseFloat(target.style.getPropertyValue('--tilt')) || 0) + (Math.random() - .5) * 7 },
+      { y: 0, opacity: 1, scale: 1, rotation: (index, target) => (Number.parseFloat(target.style.getPropertyValue('--tilt')) || 0) + (Math.random() - .5) * 3,
+        duration: index => .72 + Math.random() * .18, ease: 'back.out(1.32)', stagger: () => .04 + Math.random() * .05,
         onComplete: () => { finish(); window.gsap.set(buttons, { clearProps: 'transform,opacity' }); } });
   }
 
@@ -975,12 +981,13 @@
         if (after) after.hidden = false;
         if (actions) actions.hidden = false;
         playSfx('blow');
+        window.setTimeout(() => { playTone(740, .36, 'sine', .055, 1120); playTone(1110, .28, 'sine', .025, 1480); }, 360);
         spawnCandleSmoke(stage);
         sprinkleCakeSparks(stage);
         if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
           try { navigator.vibrate(35); } catch (_) { /* no-op */ }
         }
-        window.setTimeout(() => { if (scene) scene.classList.remove('candle-dimming'); }, 320);
+        window.setTimeout(() => { if (scene) scene.classList.remove('candle-dimming'); }, 1850);
         return;
       }
       holdRAF = requestAnimationFrame(tick);
