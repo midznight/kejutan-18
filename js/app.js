@@ -11,6 +11,7 @@
   const HEART = '<svg class="heart-mark" aria-hidden="true"><use href="#heart-libra"></use></svg>';
   const BIG_HEART = '<svg class="heart-mark big" aria-hidden="true"><use href="#heart-libra"></use></svg>';
   const TINY_HEART = '<svg class="heart-mark tiny" aria-hidden="true"><use href="#heart-libra"></use></svg>';
+  const LIBRA_SIGIL = '<svg class="libra-sigil-svg" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path d="M16 29a16 16 0 0 1 32 0" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M9 35h46M16 47h32" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>';
   const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const withName = (value) => String(value ?? '').replaceAll('{{name}}', C.name);
   const formatted = (value) => safe(withName(value)).replaceAll('{{heart}}', HEART).replaceAll('\n', '<br>');
@@ -61,7 +62,7 @@
   const makeTopline = (label, number) => `<div class="scene-topline"><span class="eyebrow">${formatted(label)}</span><span class="scene-number">${String(number + 1).padStart(2, '0')} / ${String(sceneIds.length).padStart(2, '0')}</span></div>`;
   const makeProgress = (active) => `<div class="progress-dots" aria-hidden="true">${sceneIds.map((_, i) => `<span class="${i === active ? 'active' : ''}"></span>`).join('')}</div>`;
   const button = (label, action, secondary = false, extra = '') => `<button type="button" class="${secondary ? 'secondary-btn' : 'primary-btn'}" data-action="${action}" ${extra}>${formatted(label)}</button>`;
-  const makeScene = (id, content, num) => `<section id="${id}" class="scene${num === 0 ? ' is-active' : ''}" aria-label="${safe(id)}"><span class="scene-zodiac-mark" aria-hidden="true">♎</span><div class="scene-inner">${content}${makeProgress(num)}</div></section>`;
+  const makeScene = (id, content, num) => `<section id="${id}" class="scene${num === 0 ? ' is-active' : ''}" aria-label="${safe(id)}"><span class="scene-zodiac-mark" aria-hidden="true">${LIBRA_SIGIL}</span><div class="scene-inner">${content}${makeProgress(num)}</div></section>`;
 
   function makeBouquetSVG() {
     const plants = [
@@ -135,8 +136,8 @@
       <path d="M132 329 Q227 372 328 329 L260 480 Q230 497 200 480 Z" fill="url(#kraft-paper)" stroke="#9c755f" stroke-width="1.4"/>
       <path d="M132 329 Q230 391 328 329 L310 365 Q230 412 150 365 Z" fill="url(#kraft-fold)"/>
       <path d="M150 365 Q230 412 310 365" fill="none" stroke="#ead2af" stroke-width="2" opacity=".7"/>
-      <path d="M230 418 C217 406 193 395 193 380 C193 360 219 360 230 382 C241 360 267 360 267 380 C267 395 243 406 230 418Z" fill="#7A89C2" stroke="#d7d8ee" stroke-width="1.5"/>
-      <path d="M222 407 Q216 431 192 447 Q219 444 230 419 Q241 444 268 447 Q244 429 238 407Z" fill="#7A89C2" stroke="#d7d8ee" stroke-width="1.4"/>
+      <path d="M230 418 C217 406 193 395 193 380 C193 360 219 360 230 382 C241 360 267 360 267 380 C267 395 243 406 230 418Z" fill="#d9b779" stroke="#d7d8ee" stroke-width="1.5"/>
+      <path d="M222 407 Q216 431 192 447 Q219 444 230 419 Q241 444 268 447 Q244 429 238 407Z" fill="#d9b779" stroke="#d7d8ee" stroke-width="1.4"/>
       <path d="M145 344 Q230 395 315 344" fill="none" stroke="#f1d9ba" stroke-width="2.3" opacity=".75"/>
     </svg>`;
   }
@@ -153,12 +154,12 @@
         <symbol id="art-arch" viewBox="0 0 320 420"><path d="M24 420 V165 A136 136 0 0 1 296 165 V420" fill="#8e5fb0" fill-opacity=".05" stroke="#c9a15a" stroke-width="2"/><path d="M37 420 V165 A123 123 0 0 1 283 165 V420" fill="none" stroke="#f3dfb0" stroke-opacity=".5" stroke-width=".8"/><path d="M24 242 Q160 199 296 242 M24 278 Q160 235 296 278" fill="none" stroke="#b28a50" stroke-opacity=".48"/></symbol>
         <symbol id="art-hills" viewBox="0 0 520 240"><path d="M0 155 Q72 68 146 129 T290 112 T520 126 V240 H0Z" fill="#4a2260" fill-opacity=".58" stroke="#8e5fb0" stroke-width="1.4"/><path d="M0 189 Q88 117 165 169 T337 165 T520 149 V240 H0Z" fill="#2a1638" fill-opacity=".8" stroke="#b7a174" stroke-width=".8"/><path d="M0 213 Q107 174 189 204 T375 190 T520 201 V240 H0Z" fill="#1b0f24" fill-opacity=".92" stroke="#8e5fb0" stroke-opacity=".65"/></symbol>
         <symbol id="art-lamps" viewBox="0 0 520 220"><path d="M5 6 Q260 115 515 6" fill="none" stroke="#c9a15a" stroke-width="1.3"/><g stroke="#d9bf87" stroke-width="1.1"><path d="M72 32 v24 M155 57 v24 M260 67 v24 M365 56 v24 M450 33 v24"/></g><g fill="#f3dfb0" stroke="#9e793b" stroke-width="1.2"><path d="M54 54 Q72 36 90 54 L86 78 Q72 91 58 78Z"/><path d="M137 79 Q155 61 173 79 L169 103 Q155 116 141 103Z"/><path d="M242 89 Q260 71 278 89 L274 113 Q260 126 246 113Z"/><path d="M347 78 Q365 60 383 78 L379 102 Q365 115 351 102Z"/><path d="M432 55 Q450 37 468 55 L464 79 Q450 92 436 79Z"/></g></symbol>
-        <symbol id="art-tarot" viewBox="0 0 240 360"><path d="M14 20 Q120 -2 226 20 V340 Q120 360 14 340Z" fill="#f4ecdf" fill-opacity=".08" stroke="#c9a15a" stroke-width="1.6"/><path d="M25 31 Q120 11 215 31 V329 Q120 349 25 329Z" fill="none" stroke="#f3dfb0" stroke-width=".7"/><path d="M120 83 C91 50 60 76 80 106 L120 145 L160 106 C180 76 149 50 120 83Z" fill="#7A89C2" fill-opacity=".86" stroke="#f3dfb0" stroke-width="1.4"/></symbol>
-        <symbol id="art-envelope" viewBox="0 0 360 240"><path d="M15 58 Q180 24 345 58 L330 218 Q180 240 30 218Z" fill="#f4ecdf" fill-opacity=".1" stroke="#c9a15a" stroke-width="2"/><path d="M30 68 L180 160 L330 68 M30 218 L130 135 M330 218 L230 135" fill="none" stroke="#e5c786" stroke-width="1.5"/><path d="M180 122 C156 100 138 118 151 136 L180 163 L209 136 C222 118 204 100 180 122Z" fill="#7A89C2" stroke="#f3dfb0" stroke-width="1.2"/></symbol>
+        <symbol id="art-tarot" viewBox="0 0 240 360"><path d="M14 20 Q120 -2 226 20 V340 Q120 360 14 340Z" fill="#f4ecdf" fill-opacity=".08" stroke="#c9a15a" stroke-width="1.6"/><path d="M25 31 Q120 11 215 31 V329 Q120 349 25 329Z" fill="none" stroke="#f3dfb0" stroke-width=".7"/><path d="M120 83 C91 50 60 76 80 106 L120 145 L160 106 C180 76 149 50 120 83Z" fill="#d9b779" fill-opacity=".86" stroke="#f3dfb0" stroke-width="1.4"/></symbol>
+        <symbol id="art-envelope" viewBox="0 0 360 240"><path d="M15 58 Q180 24 345 58 L330 218 Q180 240 30 218Z" fill="#f4ecdf" fill-opacity=".1" stroke="#c9a15a" stroke-width="2"/><path d="M30 68 L180 160 L330 68 M30 218 L130 135 M330 218 L230 135" fill="none" stroke="#e5c786" stroke-width="1.5"/><path d="M180 122 C156 100 138 118 151 136 L180 163 L209 136 C222 118 204 100 180 122Z" fill="#d9b779" stroke="#f3dfb0" stroke-width="1.2"/></symbol>
         <symbol id="art-gallery" viewBox="0 0 380 420"><path d="M20 420 V155 A170 170 0 0 1 360 155 V420" fill="#f4ecdf" fill-opacity=".05" stroke="#c9a15a" stroke-width="3"/><path d="M34 420 V155 A156 156 0 0 1 346 155 V420" fill="none" stroke="#e5c786" stroke-width=".9"/><circle cx="190" cy="60" r="8" fill="#f3dfb0"/><path d="M190 68 V98" stroke="#c9a15a" stroke-width="1.3"/></symbol>
         <symbol id="art-curtain" viewBox="0 0 520 520"><path d="M0 0 H135 Q105 125 140 260 T110 520 H0Z" fill="#4a2260" fill-opacity=".72" stroke="#8e5fb0" stroke-width="1.2"/><path d="M0 0 Q82 82 40 205 T56 405 Q80 468 0 520Z" fill="#2a1638" fill-opacity=".78"/><path d="M520 0 H385 Q415 125 380 260 T410 520 H520Z" fill="#4a2260" fill-opacity=".72" stroke="#8e5fb0" stroke-width="1.2"/><path d="M520 0 Q438 82 480 205 T464 405 Q440 468 520 520Z" fill="#2a1638" fill-opacity=".78"/></symbol>
         <symbol id="art-star" viewBox="0 0 32 32"><path d="M16 1 L19 12 L31 16 L19 19 L16 31 L13 19 L1 16 L13 12Z" fill="#e5c786"/></symbol>
-        <symbol id="art-sigil" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="#c9a15a" stroke-width="1.4"/><circle cx="40" cy="40" r="26" fill="none" stroke="#e5c786" stroke-width=".8" stroke-dasharray="1.5 3.5"/><path d="M40 20 C29 8 15 21 25 33 L40 47 L55 33 C65 21 51 8 40 20Z" fill="#7A89C2" stroke="#f3dfb0" stroke-width="1.1"/></symbol>
+        <symbol id="art-sigil" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="#c9a15a" stroke-width="1.4"/><circle cx="40" cy="40" r="26" fill="none" stroke="#e5c786" stroke-width=".8" stroke-dasharray="1.5 3.5"/><path d="M40 20 C29 8 15 21 25 33 L40 47 L55 33 C65 21 51 8 40 20Z" fill="#d9b779" stroke="#f3dfb0" stroke-width="1.1"/></symbol>
         <symbol id="art-moth" viewBox="0 0 80 60"><path d="M40 28 C13 -3 3 12 17 38 L34 35 M40 28 C67 -3 77 12 63 38 L46 35" fill="#8e5fb0" fill-opacity=".42" stroke="#c9a15a" stroke-width="1.1"/><path d="M40 19 V48 M35 24 L28 16 M45 24 L52 16" stroke="#e5c786" stroke-width="1.2" fill="none"/></symbol>
       `;
       document.body.prepend(library);
@@ -213,7 +214,7 @@
         'tarot-deck': '<div class="tarot-heading-mark"><span>ARCANA</span><strong>VIII</strong><i>petites raisons, grand amour</i></div>',
         'interlude-editorial': '<span class="editorial-marginalia">on garde les beaux jours</span><span class="editorial-pencil-mark">—</span>',
         'gallery-wall': '<div class="gallery-room-label">GALERIE PRIVÉE <span>·</span> N° 10</div>',
-        'sealed-envelope': '<div class="envelope-seal"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="#8e5fb0" stroke="#c9a15a" stroke-width="1.5"/><circle cx="32" cy="32" r="23" fill="none" stroke="#f3dfb0" stroke-dasharray="1.5 3"/><path d="M32 22 C22 11 13 24 22 33 L32 43 L42 33 C51 24 42 11 32 22Z" fill="#7A89C2" stroke="#f3dfb0" stroke-width="1"/></svg></div>',
+        'sealed-envelope': '<div class="envelope-seal"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="#8e5fb0" stroke="#c9a15a" stroke-width="1.5"/><circle cx="32" cy="32" r="23" fill="none" stroke="#f3dfb0" stroke-dasharray="1.5 3"/><path d="M32 22 C22 11 13 24 22 33 L32 43 L42 33 C51 24 42 11 32 22Z" fill="#d9b779" stroke="#f3dfb0" stroke-width="1"/></svg></div>',
         'letter-stationery': '<div class="letter-postmark"><span>VIA</span><strong>HAMID</strong><i>18 · JEMBER</i></div><span class="letter-washi"></span><svg class="pressed-botanical" viewBox="0 0 80 130" aria-hidden="true"><path d="M7 124 Q42 66 65 8 M34 79 Q10 68 12 43 Q34 55 34 79 M45 51 Q70 47 74 22 Q53 28 45 51" fill="none" stroke="#9a9972" stroke-width="1.2"/><path d="M34 79 Q10 68 12 43 Q34 55 34 79 M45 51 Q70 47 74 22 Q53 28 45 51" fill="#8e5fb0" fill-opacity=".4" stroke="#9a9972" stroke-width=".7"/></svg>',
         'finale-curtain': '<span class="velvet-curtain-panel curtain-left"></span><span class="velvet-curtain-panel curtain-right"></span><div class="marquee-frame"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>'
       };
@@ -238,7 +239,7 @@
         ${makeTopline(c.startEyebrow, 0)}
         <p class="kicker">${formatted(c.startKicker)}</p>
         <div class="zodiac-hero-badge" aria-label="${formatted(zodiac.name || 'Libra')} · ${formatted(zodiac.birthday || '18 Oktober')}">
-          <span class="zodiac-hero-sigil" aria-hidden="true">♎</span>
+          <span class="zodiac-hero-sigil" aria-hidden="true">${LIBRA_SIGIL}</span>
           <span class="zodiac-hero-copy"><strong>${formatted(zodiac.name || 'Libra')} · ${formatted(zodiac.birthday || '18 Oktober')}</strong><small>THE BALANCE OF BEAUTY & HEART</small></span>
           <span class="zodiac-hero-spark" aria-hidden="true">✦</span>
         </div>
@@ -273,7 +274,7 @@
         <p class="kicker">${formatted(c.heroEyebrow)}</p>
         <h1 class="hero-title"><span class="accent">${formatted(c.heroTitle)}</span></h1>
         <p class="body-copy">${formatted(c.heroAge)}</p>
-        <div class="zodiac-mini-badge"><span aria-hidden="true">♎</span> LIBRA · 18 OKTOBER</div>
+        <div class="zodiac-mini-badge"><span class="libra-mini-sigil" aria-hidden="true">${LIBRA_SIGIL}</span> LIBRA · 18 OKTOBER</div>
         <p class="body-copy">${formatted(c.heroBody)}</p>
         <div class="actions">${button(c.heroButton, 'next')}</div>
       </div>`;
@@ -369,7 +370,7 @@
           </div>
         </div>
         <div class="zodiac-meta" aria-label="Ringkasan zodiak">
-          <span><strong>${formatted(zodiac.symbol || '♎')}</strong> ${formatted(zodiac.name || 'Libra')}</span>
+          <span><strong class="zodiac-meta-symbol">${LIBRA_SIGIL}</strong> ${formatted(zodiac.name || 'Libra')}</span>
           <span>Rentang: ${formatted(zodiac.dateRange || '23 September – 22 Oktober')}</span>
           <span>${formatted(zodiac.element || 'Unsur udara')}</span>
           <span>Planet: ${formatted(zodiac.rulingPlanet || 'Venus')}</span>
@@ -1772,7 +1773,7 @@
     }, { passive: true });
   }
 
-  const FIREWORK_PALETTE = ['#f3dfb0', '#c9a15a', '#8f6b32', '#eaa98b', '#f4ecdf', '#7A89C2', '#8e5fb0'];
+  const FIREWORK_PALETTE = ['#f3dfb0', '#c9a15a', '#8f6b32', '#eaa98b', '#f4ecdf', '#d9b779', '#8e5fb0'];
   const EMBER_COLOR = '#ff9b58';
   const SPRITE_COLORS = [...FIREWORK_PALETTE, EMBER_COLOR, '#fff9ee', '#ffffff'];
 
@@ -2040,7 +2041,7 @@
         vy: .26 + Math.random() * .55, rotation: Math.random() * Math.PI,
         spin: (Math.random() - .5) * .018, radius: 2.5 + Math.random() * 4.5,
         life: .9 + Math.random() * .1, decay: .0012 + Math.random() * .0018,
-        color: ['#d9c6ed', '#f3d9ca', '#7A89C2', '#b79acb'][Math.floor(Math.random() * 4)],
+        color: ['#d9c6ed', '#f3d9ca', '#d9b779', '#b79acb'][Math.floor(Math.random() * 4)],
         sway: Math.random() * Math.PI * 2
       });
     }
@@ -2069,7 +2070,7 @@
         type: 'petal', x, y, vx: Math.cos(angle) * (1.1 + Math.random() * 1.25),
         vy: Math.sin(angle) * (1.1 + Math.random() * 1.25), rotation: angle, spin: .02 * (Math.random() - .5),
         radius: 2.2 + Math.random() * 2.6, life: 1, decay: .018 + Math.random() * .009,
-        color: ['#d9c6ed', '#f3d9ca', '#7A89C2', '#b79acb'][i % 4], sway: 0
+        color: ['#d9c6ed', '#f3d9ca', '#d9b779', '#b79acb'][i % 4], sway: 0
       });
     }
   }
@@ -2254,7 +2255,7 @@
         p.rotation += p.spin * dt;
         p.life -= p.decay * dt;
         const scaleY = .15 + .85 * Math.abs(Math.cos(p.phase));
-        const sprite = getPetalSprite(p.color || '#f3d9ca', p.color2 || '#7A89C2');
+        const sprite = getPetalSprite(p.color || '#f3d9ca', p.color2 || '#d9b779');
         canvasContext.globalAlpha = Math.max(0, p.life);
         canvasContext.save();
         canvasContext.translate(p.x, p.y);
