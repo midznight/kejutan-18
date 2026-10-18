@@ -22,9 +22,9 @@ Buka `js/content.js` di GitHub, klik ikon pensil, cari `// GANTI:`, ubah teksnya
 Jawaban tidak disimpan dalam bentuk teks biasa. Untuk menggantinya:
 
 1. Tentukan jawaban baru, misalnya `kita berdua`.
-2. Normalisasi sama seperti web: ubah jadi huruf kecil, hapus tanda baca/simbol, rapikan spasi berulang menjadi satu spasi, lalu hapus spasi di awal/akhir. Untuk contoh itu teks normalisasinya `kita berdua`.
+2. Normalisasi sama seperti web: huruf dibuat kecil, aksen dilebur, tanda baca/simbol diubah menjadi spasi, spasi berulang dijadikan satu, lalu spasi awal/akhir dibuang. Untuk contoh itu hasil normalisasinya `kita berdua`.
 3. Hitung SHA-256 dari teks normalisasi UTF-8 dengan alat lokal yang dipercaya (contoh di Termux: `printf 'kita berdua' | sha256sum`). Salin 64 karakter heksadesimal hasilnya.
-4. Ganti nilai di `riddles[0].acceptedHashes` dengan hash baru. Untuk beberapa jawaban valid, masukkan beberapa hash dalam array yang sama.
+4. Ganti nilai di `riddles[0].acceptedHashes` dengan hash baru. Untuk beberapa jawaban valid pada level yang sama, masukkan semua hash ke array itu. Kalau ingin 2 atau 3 level, tambahkan objek baru ke array `riddles` dan isi `question`, `acceptedHashes`, `hint`, serta `wrongMessages` masing-masing. Pemain harus menyelesaikan level secara berurutan; maksimal 3 level.
 
 Hash di sini hanya mengurangi spoiler kasual. Karena pengecekan berjalan di browser, ini **bukan pengamanan sungguhan**; seseorang yang memeriksa source tetap dapat memodifikasi permainan.
 
@@ -47,6 +47,8 @@ Buka folder ini di editor lalu jalankan server statis sederhana, misalnya VS Cod
 
 ## Privasi dan tes
 
-Meta robots dan `robots.txt` memblokir crawling biasa tetapi **tidak membuat URL privat**. Siapa pun yang memiliki URL tetap bisa membukanya. Jangan simpan hal sensitif dalam konten. Tidak ada analytics/tracker; hanya GSAP versi dipin dari cdnjs dan aset lokal.
+Repo GitHub sudah dibuat private dan Cloudflare Pages terhubung ke branch `main`: https://github.com/midznight/kejutan-18. URL situs: https://kejutan-18.pages.dev/. Framework preset **None**, build command kosong, output directory `/`. Setiap commit pada `main` memicu deployment otomatis.
+
+Meta robots dan `robots.txt` memblokir crawling biasa tetapi **tidak membuat URL situs privat**. Siapa pun yang memiliki URL tetap bisa membukanya. Jangan simpan hal sensitif dalam konten. Tidak ada analytics/tracker; hanya GSAP versi dipin dari cdnjs dan aset lokal.
 
 Sebelum mengirim link, tes di Chrome Android dan Safari iOS: tombol mulai; jawaban salah dan benar; petunjuk setelah dua kali salah; audio dan mute bila MP3 sudah diupload; balon bisa selesai manual dan otomatis; tahan lilin; swipe galeri; surat; buka hadiah; rotasi portrait; serta mode tanpa foto/audio. Cek lebar 360, 390, dan 430 px.
