@@ -1097,3 +1097,10 @@ body {
 }
 #s0 .primary-btn:active::before { border-color:rgba(243,223,176,.6); border-radius:50%; }
 #s11 .voucher::selection, #s10 .letter-paper::selection { background:rgba(201,161,90,.35); color:#1b0f24; }
+
+/* Remove legacy hover bloom from the former blue-lavender button theme. */
+.primary-btn:hover, .secondary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 3px rgba(201,161,90,.1), 0 6px 0 rgba(11,5,14,.2);
+}
+.balloon-svg { filter: none; }
