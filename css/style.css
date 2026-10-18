@@ -1178,13 +1178,14 @@ body {
 /* Reveal order: guardian lion, a short dramatic pause, then a playful cub. */
 #s11 .finale-stage { min-height:clamp(330px,78vw,390px); overflow:hidden; isolation:isolate; }
 #s11 .gift-stage { overflow:visible; }
-#s11 .gift-wrap { z-index:2; transition:transform .85s cubic-bezier(.16,.76,.2,1),opacity .4s ease; }
-#s11 .gift-wrap.open { transform:translateY(25px) scale(.83) rotateX(9deg); }
+#s11 .gift-wrap { z-index:2; transform:translateY(42px); transition:transform .85s cubic-bezier(.16,.76,.2,1),opacity .4s ease; }
+#s11 .gift-wrap.open { transform:translateY(50px) scale(.83) rotateX(9deg); }
 #s11 .gift-wrap.open .gift-lid { transform:translate3d(-34px,-76px,0) rotate(-34deg); }
 .lion-stage { position:absolute; inset:0; z-index:6; pointer-events:none; }
 .lion-caption { position:absolute; z-index:2; top:10px; left:12px; right:12px; margin:0; text-align:center; color:#f3dfb0; font:italic 600 clamp(15px,4vw,20px)/1.2 var(--accent-font); text-shadow:0 2px 12px rgba(0,0,0,.8); }
-.lion-art { position:absolute; left:0; right:0; bottom:1px; width:min(100%,340px); height:auto; margin-inline:auto; overflow:visible; opacity:0; transform:translateY(70%) scale(.64); transform-origin:50% 100%; filter:drop-shadow(0 15px 15px rgba(0,0,0,.34)); will-change:transform,opacity; }
-.lion-art.lion-revealed { opacity:1; transform:translateY(0) scale(1); transition:opacity .4s ease,transform 1.25s cubic-bezier(.16,.85,.24,1); }
+.lion-art { position:absolute; left:0; right:0; bottom:1px; width:min(100%,340px); height:auto; margin-inline:auto; overflow:visible; opacity:0; transform:none; transform-origin:50% 100%; filter:drop-shadow(0 15px 15px rgba(0,0,0,.34)); will-change:transform,opacity; }
+.lion-art.lion-revealed { animation:lion-rise 1.25s cubic-bezier(.16,.85,.24,1) both; }
+@keyframes lion-rise { from { opacity:0; transform:translateY(42%) scale(.64); } to { opacity:1; transform:translateY(0) scale(1); } }
 .lion-cub { width:min(100%,320px); bottom:0; }
 #s11 .gift-stage.gift-opened::before { z-index:1; }
 #s11 .voucher { position:relative; z-index:8; }
