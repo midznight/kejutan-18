@@ -32,6 +32,14 @@ window.SURPRISE_CONTENT = {
     preletterKicker: "KALI INI, BIAR KATA-KATA YANG BICARA",
     letterKicker: "SEDIKIT CATATAN DARI AKU",
     finaleKicker: "SEBUAH HAL KECIL BUAT KAMU",
+    // GANTI: teks hitung mundur sebelum kejutan ulang tahun.
+    countdownCopy: "Siap-siap, Nor. Hari ini semua sorotan buat kamu.",
+    // GANTI: copy bunga untuk merayakan hal-hal yang sedang tumbuh.
+    flowerKicker: "HAL BAIK SEDANG TUMBUH",
+    flowerTitle: "Buat semua hal indah yang sedang kamu tumbuhkan.",
+    flowerBody: "Semoga usia 18 membuka banyak pintu, cerita baru, dan orang-orang baik. Kamu pantas punya hari-hari yang penuh warna.",
+    flowerButton: "Sekarang, alasan aku sayang kamu",
+    flowerAria: "Buket bunga ungu untuk Nor",
     rotate: "Biar kejutan ini terasa utuh, putar kembali layar ke posisi portrait.",
     startEyebrow: "SEBUAH HAL KECIL, DARI HAMID",
     startTitle: "Hari ini,\nsemua lampu buat kamu.",
