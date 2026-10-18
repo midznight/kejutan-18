@@ -138,6 +138,54 @@
     </svg>`;
   }
 
+  function installAtelierDecor() {
+    if (!document.getElementById('atelier-art-library')) {
+      const library = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      library.id = 'atelier-art-library';
+      library.classList.add('atelier-art-library');
+      library.setAttribute('aria-hidden', 'true');
+      library.innerHTML = \`
+        <symbol id="art-moon" viewBox="0 0 160 180"><path d="M108 13 A70 70 0 1 0 145 132 A58 58 0 0 1 108 13Z" fill="#c9a15a" fill-opacity=".12" stroke="#e5c786" stroke-width="1.6"/><path d="M105 24 A57 57 0 0 0 136 125" fill="none" stroke="#f3dfb0" stroke-width=".8" stroke-dasharray="2 5"/><circle cx="65" cy="48" r="2.6" fill="#f3dfb0"/><path d="M35 81 l4 9 9 4-9 4-4 9-4-9-9-4 9-4Z" fill="#e8d09a"/></symbol>
+        <symbol id="art-branch" viewBox="0 0 320 380"><g fill="none" stroke="#b7a174" stroke-width="1.35" stroke-linecap="round"><path d="M20 0 C68 60 70 116 128 163 S214 250 299 380"/><path d="M67 88 Q23 48 12 25 Q54 31 67 88Z"/><path d="M81 114 Q120 71 154 73 Q133 112 81 114Z"/><path d="M111 151 Q63 139 44 103 Q93 112 111 151Z"/><path d="M146 184 Q185 132 225 140 Q207 180 146 184Z"/><path d="M171 220 Q131 218 108 184 Q154 191 171 220Z"/><path d="M210 268 Q242 220 279 233 Q260 268 210 268Z"/></g><g stroke="#d8b0c1" stroke-width="1" fill="#8e5fb0" fill-opacity=".55"><path d="M91 124 C76 110 81 91 96 94 C107 96 108 114 91 124Z"/><path d="M100 138 C85 124 90 105 105 108 C116 110 117 128 100 138Z"/><path d="M111 151 C96 137 101 118 116 121 C127 123 128 141 111 151Z"/><path d="M214 244 C199 230 204 211 219 214 C230 216 231 234 214 244Z"/></g></symbol>
+        <symbol id="art-arch" viewBox="0 0 320 420"><path d="M24 420 V165 A136 136 0 0 1 296 165 V420" fill="#8e5fb0" fill-opacity=".05" stroke="#c9a15a" stroke-width="2"/><path d="M37 420 V165 A123 123 0 0 1 283 165 V420" fill="none" stroke="#f3dfb0" stroke-opacity=".5" stroke-width=".8"/><path d="M24 242 Q160 199 296 242 M24 278 Q160 235 296 278" fill="none" stroke="#b28a50" stroke-opacity=".48"/></symbol>
+        <symbol id="art-hills" viewBox="0 0 520 240"><path d="M0 155 Q72 68 146 129 T290 112 T520 126 V240 H0Z" fill="#4a2260" fill-opacity=".58" stroke="#8e5fb0" stroke-width="1.4"/><path d="M0 189 Q88 117 165 169 T337 165 T520 149 V240 H0Z" fill="#2a1638" fill-opacity=".8" stroke="#b7a174" stroke-width=".8"/><path d="M0 213 Q107 174 189 204 T375 190 T520 201 V240 H0Z" fill="#1b0f24" fill-opacity=".92" stroke="#8e5fb0" stroke-opacity=".65"/></symbol>
+        <symbol id="art-lamps" viewBox="0 0 520 220"><path d="M5 6 Q260 115 515 6" fill="none" stroke="#c9a15a" stroke-width="1.3"/><g stroke="#d9bf87" stroke-width="1.1"><path d="M72 32 v24 M155 57 v24 M260 67 v24 M365 56 v24 M450 33 v24"/></g><g fill="#f3dfb0" stroke="#9e793b" stroke-width="1.2"><path d="M54 54 Q72 36 90 54 L86 78 Q72 91 58 78Z"/><path d="M137 79 Q155 61 173 79 L169 103 Q155 116 141 103Z"/><path d="M242 89 Q260 71 278 89 L274 113 Q260 126 246 113Z"/><path d="M347 78 Q365 60 383 78 L379 102 Q365 115 351 102Z"/><path d="M432 55 Q450 37 468 55 L464 79 Q450 92 436 79Z"/></g></symbol>
+        <symbol id="art-tarot" viewBox="0 0 240 360"><path d="M14 20 Q120 -2 226 20 V340 Q120 360 14 340Z" fill="#f4ecdf" fill-opacity=".08" stroke="#c9a15a" stroke-width="1.6"/><path d="M25 31 Q120 11 215 31 V329 Q120 349 25 329Z" fill="none" stroke="#f3dfb0" stroke-width=".7"/><path d="M120 83 C91 50 60 76 80 106 L120 145 L160 106 C180 76 149 50 120 83Z" fill="#7A89C2" fill-opacity=".86" stroke="#f3dfb0" stroke-width="1.4"/></symbol>
+        <symbol id="art-envelope" viewBox="0 0 360 240"><path d="M15 58 Q180 24 345 58 L330 218 Q180 240 30 218Z" fill="#f4ecdf" fill-opacity=".1" stroke="#c9a15a" stroke-width="2"/><path d="M30 68 L180 160 L330 68 M30 218 L130 135 M330 218 L230 135" fill="none" stroke="#e5c786" stroke-width="1.5"/><path d="M180 122 C156 100 138 118 151 136 L180 163 L209 136 C222 118 204 100 180 122Z" fill="#7A89C2" stroke="#f3dfb0" stroke-width="1.2"/></symbol>
+        <symbol id="art-gallery" viewBox="0 0 380 420"><path d="M20 420 V155 A170 170 0 0 1 360 155 V420" fill="#f4ecdf" fill-opacity=".05" stroke="#c9a15a" stroke-width="3"/><path d="M34 420 V155 A156 156 0 0 1 346 155 V420" fill="none" stroke="#e5c786" stroke-width=".9"/><circle cx="190" cy="60" r="8" fill="#f3dfb0"/><path d="M190 68 V98" stroke="#c9a15a" stroke-width="1.3"/></symbol>
+        <symbol id="art-curtain" viewBox="0 0 520 520"><path d="M0 0 H135 Q105 125 140 260 T110 520 H0Z" fill="#4a2260" fill-opacity=".72" stroke="#8e5fb0" stroke-width="1.2"/><path d="M0 0 Q82 82 40 205 T56 405 Q80 468 0 520Z" fill="#2a1638" fill-opacity=".78"/><path d="M520 0 H385 Q415 125 380 260 T410 520 H520Z" fill="#4a2260" fill-opacity=".72" stroke="#8e5fb0" stroke-width="1.2"/><path d="M520 0 Q438 82 480 205 T464 405 Q440 468 520 520Z" fill="#2a1638" fill-opacity=".78"/></symbol>
+        <symbol id="art-star" viewBox="0 0 32 32"><path d="M16 1 L19 12 L31 16 L19 19 L16 31 L13 19 L1 16 L13 12Z" fill="#e5c786"/></symbol>
+        <symbol id="art-sigil" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="#c9a15a" stroke-width="1.4"/><circle cx="40" cy="40" r="26" fill="none" stroke="#e5c786" stroke-width=".8" stroke-dasharray="1.5 3.5"/><path d="M40 20 C29 8 15 21 25 33 L40 47 L55 33 C65 21 51 8 40 20Z" fill="#7A89C2" stroke="#f3dfb0" stroke-width="1.1"/></symbol>
+        <symbol id="art-moth" viewBox="0 0 80 60"><path d="M40 28 C13 -3 3 12 17 38 L34 35 M40 28 C67 -3 77 12 63 38 L46 35" fill="#8e5fb0" fill-opacity=".42" stroke="#c9a15a" stroke-width="1.1"/><path d="M40 19 V48 M35 24 L28 16 M45 24 L52 16" stroke="#e5c786" stroke-width="1.2" fill="none"/></symbol>
+      \`;
+      document.body.prepend(library);
+    }
+    const motifs = {
+      s0: ['moon','art-moon','art-branch'], s1: ['telegram','art-envelope','art-sigil'],
+      s2: ['arch','art-arch','art-branch'], s3: ['dusk','art-hills','art-moon'],
+      s4: ['candle','art-lamps','art-moth'], s5: ['herbarium','art-branch','art-moth'],
+      s6: ['tarot','art-tarot','art-branch'], s7: ['interlude','art-herbarium','art-star'],
+      s8: ['gallery','art-gallery','art-lamps'], s9: ['envelope','art-envelope','art-moth'],
+      s10: ['letter','art-branch','art-envelope'], s11: ['curtain','art-curtain','art-star']
+    };
+    Object.entries(motifs).forEach(([id, item], index) => {
+      const scene = document.getElementById(id);
+      if (!scene || scene.querySelector('.scene-scenery')) return;
+      scene.dataset.motif = item[0];
+      scene.insertAdjacentHTML('afterbegin', \`
+        <div class="scene-scenery" aria-hidden="true">
+          <svg class="scenery-large scenery-main" viewBox="0 0 520 620" preserveAspectRatio="xMidYMid meet"><use href="#\${item[1]}" x="0" y="0" width="520" height="620"/></svg>
+          <svg class="scenery-large scenery-secondary" viewBox="0 0 320 380"><use href="#\${item[2]}" x="0" y="0" width="320" height="380"/></svg>
+          <span class="scenery-corner corner-a"></span><span class="scenery-corner corner-b"></span>
+          <span class="scenery-note">N° \${String(index + 1).padStart(2, '0')} <i>édition du soir</i></span>
+          <svg class="scenery-mini mini-star" viewBox="0 0 32 32"><use href="#art-star"/></svg>
+          <svg class="scenery-mini mini-moth" viewBox="0 0 80 60"><use href="#art-moth"/></svg>
+          <svg class="scenery-mini mini-sigil" viewBox="0 0 80 80"><use href="#art-sigil"/></svg>
+          <span class="scenery-rule"></span>
+        </div>\`);
+    });
+  }
+
   function renderApp() {
     const c = C.copy;
     const s0 = `
@@ -270,6 +318,7 @@
       <div class="hero-copy"><button type="button" class="primary-btn" id="gift-button">${formatted(c.giftButton)}</button><h2 class="closing-line" id="closing-line">${formatted(C.finale.message || C.finale.closing || c.closing)}</h2><div class="replay-row">${button(c.replay, 'replay', true)}</div></div>`;
 
     app.innerHTML = [s0,s1,s2,s3,s5,sFlower,s4,s6,s7,s8,s9,s10].map((html, i) => makeScene(sceneIds[i], html, i)).join('');
+    installAtelierDecor();
     installEventHandlers();
     observePhotos();
     setupLetterReveal();
