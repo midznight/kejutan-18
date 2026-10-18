@@ -365,6 +365,12 @@
 
   function installEventHandlers() {
     app.addEventListener('click', (event) => {
+      const tarotCard = event.target.closest('.tarot-card');
+      if (tarotCard) {
+        const flipped = tarotCard.classList.toggle('is-flipped');
+        tarotCard.setAttribute('aria-pressed', String(flipped));
+        return;
+      }
       const actionButton = event.target.closest('[data-action]');
       if (!actionButton) return;
       const action = actionButton.dataset.action;
@@ -377,6 +383,14 @@
         // A full reload resets timers, balloon/candle/gift state, and all particle pools.
         window.location.reload();
       }
+    });
+
+    app.addEventListener('keydown', (event) => {
+      const card = event.target.closest('.tarot-card');
+      if (!card || !['Enter', ' '].includes(event.key)) return;
+      event.preventDefault();
+      const flipped = card.classList.toggle('is-flipped');
+      card.setAttribute('aria-pressed', String(flipped));
     });
 
     const form = document.getElementById('answer-form');
