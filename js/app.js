@@ -31,6 +31,7 @@
   let canvasWidth = 0;
   let canvasHeight = 0;
   const sceneIds = ['s0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10'];
+  const riddleLevels = Array.isArray(C.riddles) ? C.riddles.slice(0, 3) : [];
 
   if (rotateCopy) rotateCopy.textContent = C.copy.rotate;
   const loadingLabel = document.getElementById('loading-state');
@@ -58,7 +59,6 @@
         <p class="fine-copy" style="margin-top:22px">${formatted(c.startFooter)}</p>
       </div>`;
 
-    const riddleLevels = Array.isArray(C.riddles) ? C.riddles.slice(0, 3) : [];
     const riddle = riddleLevels[0] || { question: "", hint: "" };
     const riddleTotal = Math.max(1, riddleLevels.length);
     const s1 = `
