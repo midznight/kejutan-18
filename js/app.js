@@ -460,6 +460,14 @@
         const messages = Array.isArray(level.wrongMessages) && level.wrongMessages.length ? level.wrongMessages : [C.copy.lockWrong];
         feedback.textContent = withName(messages[Math.min(incorrectAttempts - 1, messages.length - 1)]);
         feedback.classList.remove('success');
+        const gatePanel = document.querySelector('#s1 .lock-panel');
+        const gateLock = document.querySelector('#s1 .lock-symbol');
+        [gatePanel, gateLock].filter(Boolean).forEach((element) => {
+          element.classList.remove('gate-error');
+          void element.offsetWidth;
+          element.classList.add('gate-error');
+          window.setTimeout(() => element.classList.remove('gate-error'), 420);
+        });
         if (incorrectAttempts >= 2) hint.classList.add('visible');
         answer.value = '';
         answer.focus();
