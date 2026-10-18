@@ -58,16 +58,19 @@
         <p class="fine-copy" style="margin-top:22px">${formatted(c.startFooter)}</p>
       </div>`;
 
-    const riddle = C.riddles[0];
+    const riddleLevels = Array.isArray(C.riddles) ? C.riddles.slice(0, 3) : [];
+    const riddle = riddleLevels[0] || { question: "", hint: "" };
+    const riddleTotal = Math.max(1, riddleLevels.length);
     const s1 = `
       ${makeTopline(c.lockEyebrow, 1)}
       <div class="glass-card lock-panel">
         <div class="lock-symbol">${lockIcon}</div>
         <p class="kicker">${formatted(c.lockKicker)}</p>
-        <h2 class="lock-question">${formatted(riddle.question)}</h2>
+        <p class="fine-copy lock-level" id="lock-level-progress">${formatted(c.lockLevelProgress).replaceAll('{{current}}', '1').replaceAll('{{total}}', String(riddleTotal))}</p>
+        <h2 class="lock-question" id="lock-question">${formatted(riddle.question)}</h2>
         <p class="body-copy">${formatted(c.lockBody)}</p>
         <form id="answer-form" class="answer-form">
-          <input class="answer-input" id="answer-input" type="text" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${safe(c.lockPlaceholder)}" aria-label="${safe(c.lockPlaceholder)}">
+          <input class="answer-input" id="answer-input" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${safe(c.lockPlaceholder)}" aria-label="${safe(c.lockPlaceholder)}">
           <button class="primary-btn" type="submit">${formatted(c.lockButton)}</button>
         </form>
         <p class="lock-feedback" id="lock-feedback" role="status" aria-live="polite"></p>
@@ -193,19 +196,43 @@
     const answer = document.getElementById('answer-input');
     const feedback = document.getElementById('lock-feedback');
     const hint = document.getElementById('lock-hint');
+    const question = document.getElementById('lock-question');
+    const progress = document.getElementById('lock-level-progress');
+    let activeRiddleIndex = 0;
     let incorrectAttempts = 0;
     if (form) form.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (unlocked) return;
+      const level = riddleLevels[activeRiddleIndex];
+      if (!level) return;
       const typed = normalizeAnswer(answer.value);
       if (!typed) {
         feedback.textContent = C.copy.lockWrong;
         answer.focus();
         return;
       }
-      const hash = await sha256(typed);
-      const accepted = C.riddles.some(level => level.acceptedHashes.some(value => constantTimeEqual(value, hash)));
-      if (accepted) {
+      let hash;
+      try {
+        hash = await sha256(typed);
+      } catch (_) {
+        feedback.textContent = C.copy.lockCryptoUnavailable;
+        return;
+      }
+      const validHashes = Array.isArray(level.acceptedHashes) ? level.acceptedHashes : [];
+      const accepted = validHashes.some(value => constantTimeEqual(value, hash));
+      if (accepted && activeRiddleIndex < riddleLevels.length - 1) {
+        activeRiddleIndex += 1;
+        incorrectAttempts = 0;
+        const nextLevel = riddleLevels[activeRiddleIndex];
+        question.textContent = withName(nextLevel.question);
+        hint.textContent = withName(nextLevel.hint);
+        hint.classList.remove('visible');
+        progress.textContent = withName(C.copy.lockLevelProgress).replaceAll('{{current}}', String(activeRiddleIndex + 1)).replaceAll('{{total}}', String(riddleLevels.length));
+        feedback.textContent = C.copy.lockLevelSuccess;
+        feedback.classList.add('success');
+        answer.value = '';
+        answer.focus();
+      } else if (accepted) {
         unlocked = true;
         feedback.textContent = C.copy.lockSuccess;
         feedback.classList.add('success');
@@ -214,7 +241,9 @@
         setTimeout(() => setScene(2), reducedMotion ? 100 : 750);
       } else {
         incorrectAttempts += 1;
-        feedback.textContent = (C.riddles[0].wrongMessages || [C.copy.lockWrong])[Math.min(incorrectAttempts - 1, (C.riddles[0].wrongMessages || [C.copy.lockWrong]).length - 1)];
+        const messages = Array.isArray(level.wrongMessages) && level.wrongMessages.length ? level.wrongMessages : [C.copy.lockWrong];
+        feedback.textContent = withName(messages[Math.min(incorrectAttempts - 1, messages.length - 1)]);
+        feedback.classList.remove('success');
         if (incorrectAttempts >= 2) hint.classList.add('visible');
         answer.value = '';
         answer.focus();
