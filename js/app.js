@@ -8,9 +8,9 @@
   const audio = document.getElementById('birthday-audio');
   const rotateCopy = document.getElementById('rotate-copy');
   const reducedMotion = !!(C.settings.reducedMotionRespect && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const HEART = '<svg class="heart-mark" aria-hidden="true"><use href="#heart-blue"></use></svg>';
-  const BIG_HEART = '<svg class="heart-mark big" aria-hidden="true"><use href="#heart-blue"></use></svg>';
-  const TINY_HEART = '<svg class="heart-mark tiny" aria-hidden="true"><use href="#heart-blue"></use></svg>';
+  const HEART = '<svg class="heart-mark" aria-hidden="true"><use href="#heart-libra"></use></svg>';
+  const BIG_HEART = '<svg class="heart-mark big" aria-hidden="true"><use href="#heart-libra"></use></svg>';
+  const TINY_HEART = '<svg class="heart-mark tiny" aria-hidden="true"><use href="#heart-libra"></use></svg>';
   const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const withName = (value) => String(value ?? '').replaceAll('{{name}}', C.name);
   const formatted = (value) => safe(withName(value)).replaceAll('{{heart}}', HEART).replaceAll('\n', '<br>');
@@ -370,6 +370,7 @@
         </div>
         <div class="zodiac-meta" aria-label="Ringkasan zodiak">
           <span><strong>${formatted(zodiac.symbol || '♎')}</strong> ${formatted(zodiac.name || 'Libra')}</span>
+          <span>Rentang: ${formatted(zodiac.dateRange || '23 September – 22 Oktober')}</span>
           <span>${formatted(zodiac.element || 'Unsur udara')}</span>
           <span>Planet: ${formatted(zodiac.rulingPlanet || 'Venus')}</span>
         </div>
@@ -1004,7 +1005,7 @@
     if (index === 5) animateBouquet();
     if (index === 11) revealVisibleLetterParagraphs();
     const audioToggle = document.getElementById('audio-toggle');
-    if (audioToggle) audioToggle.hidden = index < 2 || index === 11;
+    if (audioToggle) audioToggle.hidden = index < 2 || index >= sceneIds.length - 2;
   }
 
   function animateReasonCards() {
@@ -1049,7 +1050,7 @@
     ];
     const palettes = [
       ['#f3dfb0','#8f6b32'], ['#9e75ba','#4a2260'], ['#eaa98b','#9d5e54'],
-      ['#d7c3e5','#8e5fb0'], ['#f4ecdf','#a9895d'], ['#7A89C2','#4b467e'],
+      ['#d7c3e5','#8e5fb0'], ['#f4ecdf','#a9895d'], ['#d9b779','#7a5330'],
     ];
     arena.innerHTML = Array.from({ length: count }, (_, i) => {
       const [x,y] = coords[i % coords.length];
@@ -1276,7 +1277,7 @@
           radius: 3 + Math.random() * 2.5, life: 1, decay: .004 + Math.random() * .002,
           gravity: .012, friction: .993, maxVy: 1.8, phase: Math.random() * 6.28,
           phaseSpeed: .08 + Math.random() * .05, sway: Math.random() * 6.28,
-          swayAmplitude: .42, color: ['#d9c6ed','#f3d9ca','#7A89C2','#b79acb'][Math.floor(Math.random()*4)],
+          swayAmplitude: .42, color: ['#d9c6ed','#f3d9ca','#e2bd73','#b79acb'][Math.floor(Math.random()*4)],
           color2: '#f4e8e0'
         });
       }
@@ -1447,23 +1448,34 @@
 
   function observePhotos() {
     const photos = Array.from(document.querySelectorAll('.gallery-card img'));
-    const load = async (img) => {
+    const load = (img) => {
       if (img.dataset.checked === 'true') return;
       img.dataset.checked = 'true';
       const src = img.dataset.src;
-      try {
-        const result = await fetch(src, { method: 'HEAD', cache: 'force-cache', credentials: 'same-origin' });
-        if (!result.ok) return;
-        img.src = src;
-        img.addEventListener('load', () => {
-          img.classList.add('loaded');
-          const placeholder = img.parentElement.querySelector('.photo-placeholder');
-          if (placeholder) placeholder.hidden = true;
-        }, { once: true });
-        img.addEventListener('error', () => { img.hidden = true; }, { once: true });
-      } catch (_) {
-        // Placeholder sengaja dipertahankan kalau foto belum di-upload.
+      const placeholder = img.parentElement?.querySelector('.photo-placeholder');
+      if (!src) {
+        img.hidden = true;
+        return;
       }
+
+      let settled = false;
+      const reveal = () => {
+        if (settled || !img.naturalWidth) return;
+        settled = true;
+        img.classList.add('loaded');
+        if (placeholder) placeholder.hidden = true;
+      };
+      img.addEventListener('load', reveal, { once: true });
+      img.addEventListener('error', () => {
+        if (settled) return;
+        settled = true;
+        img.hidden = true;
+        if (placeholder) placeholder.hidden = false;
+      }, { once: true });
+
+      // Defer the real image request until the card approaches view; no extra HEAD round-trip.
+      img.src = src;
+      if (img.complete && img.naturalWidth > 0) reveal();
     };
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver((entries) => {
