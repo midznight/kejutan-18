@@ -286,8 +286,8 @@
       } else if (action === 'next') {
         setScene(Math.min(sceneIds.length - 1, currentScene + 1));
       } else if (action === 'replay') {
-        particles = particles.filter(p => p.type === 'firefly');
-        setScene(0);
+        // A full reload resets timers, balloon/candle/gift state, and all particle pools.
+        window.location.reload();
       }
     });
 
@@ -618,7 +618,7 @@
   }
 
   function playSceneWipe(index) {
-    if (reducedMotion) return;
+    if (reducedMotion || ![2, 5, 10].includes(index)) return;
     const modes = ['iris', 'curtain', 'cross'];
     const mode = modes[index % modes.length];
     const layer = document.createElement('div');
@@ -922,10 +922,18 @@
     }
     window.gsap.killTweensOf([stems, leaves, flowers]);
     const timeline = window.gsap.timeline();
-    timeline.to(stems, { strokeDashoffset: 0, duration: .95, stagger: .075, ease: 'power2.out' });
-    timeline.to(leaves, { opacity: 1, scale: 1, duration: .32, stagger: .045, ease: 'back.out(1.7)' }, '-=.48');
-    timeline.to(flowers, { opacity: 1, scale: 1, rotate: (i) => (i % 2 ? 8 : -8), duration: .48, stagger: .027, ease: 'back.out(1.7)', transformOrigin: 'center center' }, '-=.28');
-    timeline.call(() => releasePetals(34, canvasWidth * .5, canvasHeight * .18), null, '+=.12');
+    window.gsap.set(flowers, { scale: .2, rotation: (i) => (Math.random() - .5) * 26, transformOrigin: 'center center' });
+    timeline.to(stems, { strokeDashoffset: 0, duration: .95, stagger: .055, ease: 'power2.out' });
+    timeline.to(leaves, { opacity: 1, scale: 1, rotation: (i) => (i % 2 ? 22 : -22), duration: .34, stagger: .035, ease: 'back.out(1.7)', transformOrigin: 'center bottom' }, '-=.5');
+    timeline.to(flowers, { opacity: 1, scale: 1, rotation: (i) => (i % 2 ? 8 : -8), duration: .48, stagger: .025, ease: 'back.out(1.4)', transformOrigin: 'center center' }, '-=.24');
+    const groups = Array.from(svg.querySelectorAll('.bouquet-stem-group'));
+    groups.forEach((group, i) => {
+      window.gsap.set(group, { transformBox: 'fill-box', transformOrigin: '50% 100%' });
+      window.gsap.to(group, { rotation: i % 2 ? 1.5 : -1.5, duration: 2 + Math.random() * 1.5, repeat: -1, yoyo: true, delay: Math.random() * 1.2, ease: 'sine.inOut' });
+    });
+    flowers.forEach((flower, i) => window.gsap.to(flower, { rotation: (i % 2 ? 5 : -5), duration: 2.4 + Math.random() * 1.8, repeat: -1, yoyo: true, delay: Math.random() * .8, ease: 'sine.inOut' }));
+    timeline.call(() => releasePetals(20, canvasWidth * .5, canvasHeight * .18), null, '+=.12');
+    scheduleBouquetPetalDrop();
   }
 
   function setupCakeHold() {
