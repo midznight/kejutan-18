@@ -574,14 +574,25 @@
       digit.className = 'countdown-number';
       digit.textContent = String(value);
       overlay.appendChild(digit);
+      const shockwave = document.createElement('span');
+      shockwave.className = 'countdown-shockwave';
+      shockwave.setAttribute('aria-hidden', 'true');
+      overlay.appendChild(shockwave);
+      overlay.classList.remove('countdown-beat');
+      void overlay.offsetWidth;
+      overlay.classList.add('countdown-beat');
       if (window.gsap && !reducedMotion) {
-        window.gsap.fromTo(digit, { scale: 1.5, opacity: 0 }, { scale: 1, opacity: 1, duration: .29, ease: 'power4.out' });
+        window.gsap.fromTo(digit, { scale: 1.8, opacity: 0 }, { scale: 1, opacity: 1, duration: .46, ease: 'expo.out' });
         const older = Array.from(overlay.querySelectorAll('.countdown-number')).filter(node => node !== digit);
-        if (older.length) window.gsap.to(older, { opacity: 0, scale: .78, duration: .18, ease: 'power4.in' });
+        if (older.length) window.gsap.to(older, { opacity: 0, scale: .78, duration: .16, ease: 'power4.in' });
+        window.gsap.fromTo(shockwave, { scale: .15, opacity: .82 }, { scale: 1.55, opacity: 0, duration: .56, ease: 'power2.out', onComplete: () => shockwave.remove() });
       } else {
         digit.style.opacity = '1';
+        window.setTimeout(() => shockwave.remove(), 600);
       }
-      if (canvasActive) spawnCelebrationBurst(canvasWidth * (.25 + Math.random() * .5), canvasHeight * (.22 + Math.random() * .32), 52);
+      playSfx('count', value);
+      if (value === 1) playSfx('riser');
+      if (canvasActive) spawnCelebrationBurst(canvasWidth * (.25 + Math.random() * .5), canvasHeight * (.22 + Math.random() * .32), 96);
       if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
         try { navigator.vibrate(value === 1 ? 30 : 14); } catch (_) { /* no-op */ }
       }
@@ -590,7 +601,8 @@
     const flash = document.createElement('div');
     flash.className = 'countdown-flash';
     overlay.appendChild(flash);
-    await delay(reducedMotion ? 40 : 135);
+    playSfx('boom');
+    await delay(reducedMotion ? 40 : 125);
     setScene(2);
     await delay(reducedMotion ? 20 : 90);
     overlay.remove();
