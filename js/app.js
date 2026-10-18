@@ -48,13 +48,17 @@
 
   function makeBouquetSVG() {
     const plants = [
-      { x: 118, y: 110, type: 'lavender', color: '#9c80bb' },
-      { x: 158, y: 145, type: 'wisteria', color: '#c1a2d3' },
-      { x: 190, y: 91, type: 'aster', color: '#e8c4b0' },
+      { x: 118, y: 112, type: 'lavender', color: '#9c80bb' },
+      { x: 140, y: 96, type: 'aster', color: '#d6b3c6' },
+      { x: 158, y: 137, type: 'wisteria', color: '#c1a2d3' },
+      { x: 181, y: 76, type: 'peony', color: '#c9a2d7' },
+      { x: 190, y: 101, type: 'aster', color: '#e8c4b0' },
       { x: 222, y: 70, type: 'peony', color: '#b8a3d5' },
+      { x: 244, y: 118, type: 'wisteria', color: '#9f83bd' },
       { x: 263, y: 106, type: 'lavender', color: '#8c70ae' },
       { x: 300, y: 89, type: 'aster', color: '#f0d8c4' },
-      { x: 337, y: 135, type: 'wisteria', color: '#bda0d3' },
+      { x: 318, y: 66, type: 'peony', color: '#e4bcb1' },
+      { x: 337, y: 128, type: 'wisteria', color: '#bda0d3' },
       { x: 365, y: 117, type: 'baby', color: '#e7daca' },
     ];
     const stems = plants.map((plant, i) => {
@@ -67,14 +71,14 @@
         const yy = 335 - j * 45 - (i % 2) * 10;
         const xx = baseX + (tipX - baseX) * ((426 - yy) / (426 - tipY));
         const side = (j + i) % 2 ? 1 : -1;
-        return `<path class="bouquet-leaf" d="M ${xx} ${yy} q ${side*21} -20 ${side*35} -5 q -${side*12} 19 -${side*35} 5 Z" fill="${i%2?'#8c9b78':'#a2ab87'}" opacity="0" transform-box="fill-box" transform-origin="center"/>`;
+        return `<path class="bouquet-leaf" d="M ${xx} ${yy} q ${side*21} -20 ${side*35} -5 q ${-side*12} 19 ${-side*35} 5 Z" fill="${i%2?'#8c9b78':'#a2ab87'}" opacity="0" transform-box="fill-box" transform-origin="center"/>`;
       }).join('');
       let bloom = '';
       if (plant.type === 'lavender') {
         bloom = Array.from({length:7}, (_,j) => {
           const yy = tipY + j * 8;
           const xx = tipX + Math.sin(j*.7+i) * 5;
-          return `<ellipse class="bouquet-flower" cx="${xx}" cy="${yy}" rx="5.2" ry="8.2" transform="rotate(-26 ${xx} ${yy})" fill="${plant.color}" opacity="0"/>`;
+          return `<ellipse class="bouquet-flower" cx="${xx}" cy="${yy}" rx="7.6" ry="12.1" transform="rotate(-26 ${xx} ${yy})" fill="${plant.color}" opacity="0"/>`;
         }).join('');
       } else if (plant.type === 'wisteria') {
         bloom = Array.from({length:11}, (_,j) => {
@@ -82,7 +86,7 @@
           const col = j%3;
           const xx = tipX + (col-1)*9 + Math.sin(j+i)*2;
           const yy = tipY + row*11 + (col===1?0:5);
-          return `<circle class="bouquet-flower" cx="${xx}" cy="${yy}" r="${5.2-row*.35}" fill="${j%3===0?'#d6b9e3':plant.color}" opacity="0"/>`;
+          return `<circle class="bouquet-flower" cx="${xx}" cy="${yy}" r="${7.1-row*.45}" fill="${j%3===0?'#d6b9e3':plant.color}" opacity="0"/>`;
         }).join('');
       } else if (plant.type === 'baby') {
         bloom = Array.from({length:15}, (_,j) => {
@@ -92,15 +96,15 @@
         }).join('');
       } else {
         const count = plant.type === 'peony' ? 12 : 9;
-        const radius = plant.type === 'peony' ? 18 : 14;
+        const radius = plant.type === 'peony' ? 21 : 17;
         bloom = Array.from({length:count}, (_,j) => {
           const angle = Math.PI*2*j/count;
           const xx = tipX + Math.cos(angle)*radius*.68;
           const yy = tipY + Math.sin(angle)*radius*.68;
-          return `<ellipse class="bouquet-flower" cx="${xx}" cy="${yy}" rx="${plant.type==='peony'?7:5.5}" ry="${plant.type==='peony'?13:9}" transform="rotate(${j*360/count} ${xx} ${yy})" fill="${j%3===0?'#f4dfcb':plant.color}" opacity="0"/>`;
-        }).join('') + `<circle class="bouquet-flower" cx="${tipX}" cy="${tipY}" r="7" fill="#efc78f" opacity="0"/>`;
+          return `<ellipse class="bouquet-flower" cx="${xx}" cy="${yy}" rx="${plant.type==='peony'?10.5:8.2}" ry="${plant.type==='peony'?18:13.5}" transform="rotate(${j*360/count} ${xx} ${yy})" fill="${j%3===0?'#f4dfcb':plant.color}" opacity="0"/>`;
+        }).join('') + `<circle class="bouquet-flower" cx="${tipX}" cy="${tipY}" r="8.5" fill="#efc78f" opacity="0"/>`;
       }
-      return `<g class="bouquet-stem-group"><path class="bouquet-stem" d="${path}" fill="none" stroke="${i%3===0?'#78876d':'#91a080'}" stroke-width="${i%2?2.4:3}" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="520"/>${leaves}${bloom}</g>`;
+      return `<g class="bouquet-stem-group"><path class="bouquet-stem" d="${path}" fill="none" stroke="${i%3===0?'#78876d':'#91a080'}" stroke-width="${i%2?3:3.3}" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="520"/>${leaves}${bloom}</g>`;
     }).join('');
     const babyBreath = Array.from({length:14}, (_,i) => {
       const x = 122 + (i*37)%216;
@@ -111,12 +115,12 @@
       <defs><linearGradient id="kraft-paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d5b18a"/><stop offset=".55" stop-color="#b98f6d"/><stop offset="1" stop-color="#9c755f"/></linearGradient><linearGradient id="kraft-fold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ead2af"/><stop offset="1" stop-color="#c39a76"/></linearGradient></defs>
       <ellipse cx="228" cy="471" rx="116" ry="16" fill="#0f0a1d" opacity=".18"/>
       <g class="bouquet-blooms">${stems}${babyBreath}</g>
-      <path d="M142 330 Q221 370 318 326 L278 472 Q227 494 176 471 Z" fill="url(#kraft-paper)" stroke="#9c755f" stroke-width="1.4"/>
-      <path d="M142 330 Q225 385 318 326 L304 368 Q230 405 157 365 Z" fill="url(#kraft-fold)"/>
-      <path d="M153 365 Q228 406 306 365" fill="none" stroke="#ead2af" stroke-width="2" opacity=".7"/>
-      <path d="M194 395 C168 377 153 400 177 418 C194 429 213 411 225 402 C237 411 256 429 274 418 C299 399 281 377 256 395 C243 403 237 406 225 402 C213 406 207 403 194 395Z" fill="#7A89C2" stroke="#d7d8ee" stroke-width="1.5"/>
-      <path d="M225 401 Q218 421 199 443 Q224 440 229 414 Q247 437 252 438 Q240 414 225 401Z" fill="#7A89C2" stroke="#d7d8ee" stroke-width="1.4"/>
-      <path d="M150 344 Q230 386 310 340" fill="none" stroke="#f1d9ba" stroke-width="2.3" opacity=".75"/>
+      <path d="M132 329 Q227 372 328 329 L260 480 Q230 497 200 480 Z" fill="url(#kraft-paper)" stroke="#9c755f" stroke-width="1.4"/>
+      <path d="M132 329 Q230 391 328 329 L310 365 Q230 412 150 365 Z" fill="url(#kraft-fold)"/>
+      <path d="M150 365 Q230 412 310 365" fill="none" stroke="#ead2af" stroke-width="2" opacity=".7"/>
+      <path d="M230 418 C217 406 193 395 193 380 C193 360 219 360 230 382 C241 360 267 360 267 380 C267 395 243 406 230 418Z" fill="#7A89C2" stroke="#d7d8ee" stroke-width="1.5"/>
+      <path d="M222 407 Q216 431 192 447 Q219 444 230 419 Q241 444 268 447 Q244 429 238 407Z" fill="#7A89C2" stroke="#d7d8ee" stroke-width="1.4"/>
+      <path d="M145 344 Q230 395 315 344" fill="none" stroke="#f1d9ba" stroke-width="2.3" opacity=".75"/>
     </svg>`;
   }
 
@@ -248,7 +252,6 @@
       <div class="hero-copy">
         <p class="kicker">${formatted(c.finaleKicker)}</p>
         <h2 class="section-title">${formatted(c.finaleTitle)}</h2>
-        <p class="body-copy">${formatted(c.closing)}</p>
       </div>
       <div class="finale-stage" id="finale-stage"><div class="gift-stage" id="gift-stage"><button type="button" class="gift-wrap" id="gift-wrap" aria-label="${safe(c.giftButton)}"><span class="gift-bow"></span><span class="gift-lid"></span><span class="gift-box"></span></button></div><div class="voucher" id="voucher"><div class="voucher-label">${formatted(c.voucherLabel)}</div><h3>${formatted(C.finale.title || c.voucherTitle)}</h3><p>${formatted(C.finale.body || c.voucherBody)}</p><div class="voucher-bottom"><span>${formatted(c.voucherFoot)}</span>${BIG_HEART}</div></div></div>
       <div class="hero-copy"><button type="button" class="primary-btn" id="gift-button">${formatted(c.giftButton)}</button><h2 class="closing-line" id="closing-line">${formatted(C.finale.message || C.finale.closing || c.closing)}</h2><div class="replay-row">${button(c.replay, 'replay', true)}</div></div>`;
@@ -464,7 +467,6 @@
     overlay.appendChild(flash);
     await delay(reducedMotion ? 40 : 135);
     setScene(2);
-    launchFireworkSequence(6);
     await delay(reducedMotion ? 20 : 90);
     overlay.remove();
   }
@@ -540,7 +542,11 @@
       const inner = next.querySelector('.scene-inner');
       if (inner) window.gsap.fromTo(inner, { y: 24, rotateX: 1.4, opacity: 0.2, transformPerspective: 900 }, { y: 0, rotateX: 0, opacity: 1, duration: .9, ease: 'power4.out', clearProps: 'transform,opacity' });
     }
-    if (index === 2) startMusicForHero();
+    if (index === 2) {
+      startMusicForHero();
+      launchFireworkSequence(8);
+    }
+    if (index === sceneIds.length - 1) launchFireworkSequence(8);
     if (index === 6) animateReasonCards();
     if (index === 5) animateBouquet();
     if (index === 10) revealVisibleLetterParagraphs();
@@ -982,7 +988,7 @@
 
   function explodeFirework(x, y, shape = 'round', requestedCount = 64) {
     if (!canvasActive || reducedMotion) return;
-    const count = Math.max(50, Math.min(80, requestedCount || 64));
+    const count = Math.max(80, Math.min(120, requestedCount || 96));
     const palette = FIREWORK_PALETTE;
     for (let i = 0; i < count; i++) {
       const t = i / count * Math.PI * 2;
@@ -990,18 +996,18 @@
       if (shape === 'heart') {
         const hx = 16 * Math.pow(Math.sin(t), 3);
         const hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-        vx = hx * (.16 + Math.random() * .055);
-        vy = -hy * (.16 + Math.random() * .055);
+        vx = hx * (.24 + Math.random() * .07);
+        vy = -hy * (.24 + Math.random() * .07);
       } else {
         const angle = t + (Math.random() - .5) * (shape === 'ring' ? .035 : .18);
-        const speed = shape === 'ring' ? 2.6 + Math.random() * .4 : 1.35 + Math.random() * 2.35;
+        const speed = shape === 'ring' ? 3.1 + Math.random() * .9 : 1.8 + Math.random() * 2.8;
         vx = Math.cos(angle) * speed;
         vy = Math.sin(angle) * speed;
       }
       addParticle({
         type: 'spark', x, y, previousX: x, previousY: y, vx, vy,
-        radius: .7 + Math.random() * 1.75, life: .76 + Math.random() * .24,
-        decay: .008 + Math.random() * .009, gravity: .035 + Math.random() * .025,
+        radius: 1.5 + Math.random() * 2, life: .95 + Math.random() * .2,
+        decay: .004 + Math.random() * .003, gravity: .028 + Math.random() * .02,
         friction: .984 + Math.random() * .008,
         color: palette[(i + Math.floor(Math.random() * palette.length)) % palette.length],
         twinkle: Math.random() * Math.PI * 2, shape
@@ -1011,20 +1017,21 @@
       const t = Math.random() * Math.PI * 2;
       addParticle({
         type: 'spark', x, y, previousX: x, previousY: y, vx: Math.cos(t) * (3 + Math.random() * 2),
-        vy: Math.sin(t) * (3 + Math.random() * 2), radius: 1.2 + Math.random(), life: .98,
-        decay: .02, gravity: .02, friction: .97, color: '#fff4df', twinkle: t
+        vy: Math.sin(t) * (3 + Math.random() * 2), radius: 1.7 + Math.random(), life: 1.1,
+        decay: .006, gravity: .02, friction: .975, color: '#fff4df', twinkle: t
       });
     }
   }
 
   function spawnCelebrationBurst(x, y, count = 64) {
-    explodeFirework(x, y, ['round', 'ring', 'heart'][Math.floor(Math.random() * 3)], Math.min(80, Math.max(50, count)));
+    explodeFirework(x, y, ['round', 'ring', 'heart'][Math.floor(Math.random() * 3)], Math.min(120, Math.max(80, count)));
   }
 
   function launchFireworkSequence(count = 6) {
     if (reducedMotion || !canvasActive) return;
-    const shapes = ['round', 'ring', 'heart', 'round', 'ring', 'round'];
-    for (let i = 0; i < Math.max(1, Math.min(6, count)); i++) {
+    const shapes = ['round', 'ring', 'heart', 'round', 'ring', 'round', 'heart', 'ring'];
+    const sequenceCount = Math.max(1, Math.min(8, count));
+    for (let i = 0; i < sequenceCount; i++) {
       window.setTimeout(() => {
         if (!canvasActive || document.hidden) return;
         const x = canvasWidth * (.16 + Math.random() * .68);
@@ -1096,15 +1103,22 @@
       if (p.type === 'rocket') {
         p.x += p.vx * dt; p.y += p.vy * dt; p.age += delta;
         p.vy += .035 * dt;
-        canvasContext.globalAlpha = .82;
+        const tailX = p.x - p.vx * 4.2;
+        const tailY = p.y - p.vy * 4.2;
         canvasContext.strokeStyle = p.color;
-        canvasContext.lineWidth = 1.6;
-        canvasContext.beginPath(); canvasContext.moveTo(p.previousX, p.previousY); canvasContext.lineTo(p.x, p.y); canvasContext.stroke();
-        canvasContext.globalAlpha = .95;
+        canvasContext.globalAlpha = .24;
+        canvasContext.lineWidth = 4.2;
+        canvasContext.beginPath(); canvasContext.moveTo(tailX, tailY); canvasContext.lineTo(p.x, p.y); canvasContext.stroke();
+        canvasContext.globalAlpha = .92;
+        canvasContext.lineWidth = 1.35;
+        canvasContext.beginPath(); canvasContext.moveTo(tailX, tailY); canvasContext.lineTo(p.x, p.y); canvasContext.stroke();
+        canvasContext.globalAlpha = .28;
         canvasContext.fillStyle = '#fff4df';
-        canvasContext.beginPath(); canvasContext.arc(p.x, p.y, 1.8, 0, Math.PI * 2); canvasContext.fill();
+        canvasContext.beginPath(); canvasContext.arc(p.x, p.y, 3.6, 0, Math.PI * 2); canvasContext.fill();
+        canvasContext.globalAlpha = .98;
+        canvasContext.beginPath(); canvasContext.arc(p.x, p.y, 1.65, 0, Math.PI * 2); canvasContext.fill();
         if (p.y <= p.targetY || p.age > 1250) {
-          explodeFirework(p.x, p.y, p.shape, 62);
+          explodeFirework(p.x, p.y, p.shape, 96);
           particles.splice(i, 1);
         }
         continue;
@@ -1165,7 +1179,7 @@
       if (p.life > .2 && p.radius > 1.1) {
         canvasContext.globalAlpha = Math.max(0, p.life) * .56;
         canvasContext.strokeStyle = p.color; canvasContext.lineWidth = Math.max(.5, p.radius * .46);
-        canvasContext.beginPath(); canvasContext.moveTo(p.previousX, p.previousY); canvasContext.lineTo(p.x, p.y); canvasContext.stroke();
+        canvasContext.beginPath(); canvasContext.moveTo(p.previousX - p.vx * 1.65, p.previousY - p.vy * 1.65); canvasContext.lineTo(p.x, p.y); canvasContext.stroke();
       }
       if (p.life <= 0 || p.y > canvasHeight + 25) particles.splice(i, 1);
     }
