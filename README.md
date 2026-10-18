@@ -40,11 +40,10 @@ Buka folder ini di editor lalu jalankan server statis sederhana, misalnya VS Cod
 
 ## Deploy Cloudflare Pages
 
-1. Buat repo **private** bernama `kejutan-18` di GitHub.
-2. Upload/commit semua file dan folder dari root proyek ini.
-3. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-4. Pilih repo `kejutan-18`, Production branch `main`, Framework preset `None`, Build command kosong, Build output directory `/` (atau root sesuai UI Pages saat ini).
-5. Klik **Save and Deploy**. Setiap commit berikutnya akan memicu deploy ulang otomatis.
+1. Repo **private** bernama `kejutan-18` berada di GitHub.
+2. Proyek Cloudflare Pages `kejutan-18` terhubung ke repo ini pada branch `main`.
+3. Pengaturan: Framework preset **None**, build command kosong, output directory `/`.
+4. Setiap commit ke `main` akan memicu deploy ulang otomatis setelah integrasi GitHub aktif.
 
 ## Privasi dan tes
 
