@@ -174,10 +174,10 @@
       scene.dataset.motif = item[0];
       scene.insertAdjacentHTML('afterbegin', `
         <div class="scene-scenery" aria-hidden="true">
-          <svg class="scenery-large scenery-main" viewBox="0 0 520 620" preserveAspectRatio="xMidYMid meet"><use href="#\${item[1]}" x="0" y="0" width="520" height="620"/></svg>
-          <svg class="scenery-large scenery-secondary" viewBox="0 0 320 380"><use href="#\${item[2]}" x="0" y="0" width="320" height="380"/></svg>
+          <svg class="scenery-large scenery-main" viewBox="0 0 520 620" preserveAspectRatio="xMidYMid meet"><use href="#${item[1]}" x="0" y="0" width="520" height="620"/></svg>
+          <svg class="scenery-large scenery-secondary" viewBox="0 0 320 380"><use href="#${item[2]}" x="0" y="0" width="320" height="380"/></svg>
           <span class="scenery-corner corner-a"></span><span class="scenery-corner corner-b"></span>
-          <span class="scenery-note">N° \${String(index + 1).padStart(2, '0')} <i>édition du soir</i></span>
+          <span class="scenery-note">N° ${String(index + 1).padStart(2, '0')} <i>édition du soir</i></span>
           <svg class="scenery-mini mini-star" viewBox="0 0 32 32"><use href="#art-star"/></svg>
           <svg class="scenery-mini mini-moth" viewBox="0 0 80 60"><use href="#art-moth"/></svg>
           <svg class="scenery-mini mini-sigil" viewBox="0 0 80 80"><use href="#art-sigil"/></svg>
