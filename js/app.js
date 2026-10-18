@@ -102,7 +102,7 @@
       }
       return `<g class="bouquet-stem-group"><path class="bouquet-stem" d="${path}" fill="none" stroke="${i%3===0?'#78876d':'#91a080'}" stroke-width="${i%2?2.4:3}" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="520"/>${leaves}${bloom}</g>`;
     }).join('');
-    const baby'sBreath = Array.from({length:21}, (_,i) => {
+    const babyBreath = Array.from({length:21}, (_,i) => {
       const x = 120 + (i*37)%220;
       const y = 175 + (i*23)%135;
       return `<g class="bouquet-flower" opacity="0"><path d="M 225 426 Q ${x} ${y+20} ${x} ${y}" fill="none" stroke="#9aa586" stroke-width="1.2"/><circle cx="${x}" cy="${y}" r="3.3" fill="#f4e8d7"/><circle cx="${x}" cy="${y}" r="1.2" fill="#f0c6ad"/></g>`;
@@ -110,7 +110,7 @@
     return `<svg class="bouquet-svg" id="bouquet-svg" viewBox="0 0 460 520" role="img" aria-label="${safe(C.copy.flowerAria || 'Buket bunga untuk '+C.name)}" xmlns="http://www.w3.org/2000/svg">
       <defs><linearGradient id="kraft-paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d5b18a"/><stop offset=".55" stop-color="#b98f6d"/><stop offset="1" stop-color="#9c755f"/></linearGradient><linearGradient id="kraft-fold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ead2af"/><stop offset="1" stop-color="#c39a76"/></linearGradient></defs>
       <ellipse cx="228" cy="471" rx="116" ry="16" fill="#0f0a1d" opacity=".18"/>
-      <g class="bouquet-blooms">${stems}${baby'sBreath}</g>
+      <g class="bouquet-blooms">${stems}${babyBreath}</g>
       <path d="M142 330 Q221 370 318 326 L278 472 Q227 494 176 471 Z" fill="url(#kraft-paper)" stroke="#9c755f" stroke-width="1.4"/>
       <path d="M142 330 Q225 385 318 326 L304 368 Q230 405 157 365 Z" fill="url(#kraft-fold)"/>
       <path d="M153 365 Q228 406 306 365" fill="none" stroke="#ead2af" stroke-width="2" opacity=".7"/>
@@ -174,7 +174,7 @@
 
     const reasons = C.reasons.map((reason, i) => `<article class="reason-card" style="--glow:${i % 3 === 0 ? '#bca6ff' : i % 3 === 1 ? '#7dd3fc' : '#ffd69b'}"><span class="reason-index">0${i + 1} / ${String(C.reasons.length).padStart(2, '0')}</span><h3>${formatted(reason.title)}</h3><p>${formatted(reason.body)}</p></article>`).join('');
     const s4 = `
-      ${makeTopline(c.reasonsEyebrow, 4)}
+      ${makeTopline(c.reasonsEyebrow, 6)}
       <p class="kicker">${formatted(c.reasonsKicker)}</p>
       <h2 class="section-title">${formatted(c.reasonsTitle)}</h2>
       <p class="body-copy">${formatted(c.reasonsBody)}</p>
@@ -337,6 +337,7 @@
 
     setupBalloons();
     setupCakeHold();
+    setupBouquetInteractions();
     setupFinale();
     createAudioToggle();
   }
@@ -523,7 +524,7 @@
     if (!arena) return;
     const count = Math.max(1, Math.min(18, Number(C.settings.balloonCount) || 18));
     const phrasePrefix = C.copy.balloonPhrasePrefix || 'HAPPY 18';
-    const phrase = `${phrasePrefix}${String(C.name).replace(/\s+/g, '')}`;
+    const phrase = `${phrasePrefix.trimEnd()} ${String(C.name).replace(/\s+/g, '').toUpperCase()}`;
     const charCount = Math.min(phrase.length, count);
     const coords = [
       [2,8], [19,3], [36,12], [54,4], [72,11], [88,5],
@@ -531,8 +532,8 @@
       [19,61], [37,70], [55,62], [72,69], [88,62], [43,81],
     ];
     const palettes = [
-      ['#a98aff','#714fd0'], ['#82dfff','#3689c7'], ['#f6bde9','#bd66b5'],
-      ['#c3a5ff','#7351c6'], ['#ffe0a6','#dd9b62'], ['#89e6d4','#39a99d'],
+      ['#c0a6d9','#7c629b'], ['#d6bce7','#a783c4'], ['#f0c3aa','#b87576'],
+      ['#bda2d6','#76618e'], ['#f5dfc4','#cb9d79'], ['#9f9ac4','#6d689d'],
     ];
     arena.innerHTML = Array.from({ length: count }, (_, i) => {
       const [x,y] = coords[i % coords.length];
@@ -556,6 +557,11 @@
       if (!item || item.classList.contains('popped')) return;
       item.classList.add('popped');
       item.disabled = true;
+      const balloonRect = item.getBoundingClientRect();
+      spawnConfettiBurst(balloonRect.left + balloonRect.width / 2, balloonRect.top + balloonRect.height / 2, isSmallScreen() ? 10 : 15);
+      if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
+        try { navigator.vibrate(12); } catch (_) { /* no-op */ }
+      }
       popped++;
       const isCarrier = item.dataset.carrier === 'true';
       if (isCarrier && letterCount < charCount) {
@@ -569,8 +575,6 @@
         reveal.textContent = gotPhrase;
         if (counter) counter.textContent = String(letterCount);
         if (fill) fill.style.width = `${(letterCount / charCount) * 100}%`;
-      } else {
-        burstConfetti(arena, item);
       }
       if (automatic && isCarrier) {
         const mark = item.querySelector('.balloon-mark');
@@ -599,23 +603,18 @@
     remaining.forEach((item, index) => window.setTimeout(() => popFn(item, true), reducedMotion ? index * 12 : index * 125));
   }
 
-  function burstConfetti(parent, source) {
-    const originRect = source.getBoundingClientRect();
-    const parentRect = parent.getBoundingClientRect();
-    const x = originRect.left - parentRect.left + originRect.width / 2;
-    const y = originRect.top - parentRect.top + originRect.height / 2;
-    const colors = ['#bba6ff','#7dd3fc','#ffd69b','#f4c3ea'];
-    for (let i = 0; i < (reducedMotion ? 3 : 7); i++) {
-      const bit = document.createElement('span');
-      bit.className = 'burst-heart';
-      bit.style.left = `${x}px`;
-      bit.style.top = `${y}px`;
-      bit.style.setProperty('--burst-color', colors[(i + Math.floor(x)) % colors.length]);
-      bit.style.setProperty('--dx', `${Math.cos(i * Math.PI / 3.5) * (24 + i*5)}px`);
-      bit.style.setProperty('--dy', `${Math.sin(i * Math.PI / 3.5) * (23 + i*5)}px`);
-      parent.appendChild(bit);
-      window.setTimeout(() => bit.remove(), 950);
-    }
+  function isSmallScreen() { return window.matchMedia('(max-width: 600px)').matches; }
+
+  function setupBouquetInteractions() {
+    const art = document.getElementById('bouquet-art');
+    if (!art) return;
+    art.addEventListener('click', (event) => {
+      if (!event.target.closest || !event.target.closest('.bouquet-flower')) return;
+      spawnFlowerBurst(event.clientX, event.clientY);
+      if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
+        try { navigator.vibrate(10); } catch (_) { /* no-op */ }
+      }
+    });
   }
 
   function animateBouquet() {
@@ -991,6 +990,21 @@
     }
   }
 
+  function spawnConfettiBurst(x, y, count = 14) {
+    if (!canvasActive || reducedMotion) return;
+    const amount = Math.max(4, Math.min(20, count));
+    for (let i = 0; i < amount; i++) {
+      const angle = Math.PI * 2 * i / amount + (Math.random() - .5) * .25;
+      const speed = .8 + Math.random() * 2.3;
+      addParticle({
+        type: 'confetti', x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - .45,
+        radius: 2 + Math.random() * 4, rotation: Math.random() * 6.28, spin: (Math.random() - .5) * .22,
+        life: .9 + Math.random() * .1, decay: .019 + Math.random() * .013,
+        color: FIREWORK_PALETTE[Math.floor(Math.random() * FIREWORK_PALETTE.length)]
+      });
+    }
+  }
+
   function spawnFlowerBurst(x, y) {
     if (!canvasActive || reducedMotion) return;
     for (let i = 0; i < 16; i++) {
@@ -1055,6 +1069,17 @@
         canvasContext.beginPath(); canvasContext.arc(p.x, p.y, p.radius * 2.2, 0, Math.PI * 2); canvasContext.fill();
         canvasContext.globalAlpha = pulse * .55;
         canvasContext.beginPath(); canvasContext.arc(p.x, p.y, p.radius * 4.2, 0, Math.PI * 2); canvasContext.fill();
+        continue;
+      }
+      if (p.type === 'confetti') {
+        p.x += p.vx * dt; p.y += p.vy * dt; p.vy += .035 * dt; p.rotation += p.spin * dt;
+        p.vx *= .992; p.life -= p.decay * dt;
+        canvasContext.globalAlpha = Math.max(0, p.life);
+        canvasContext.fillStyle = p.color;
+        canvasContext.save(); canvasContext.translate(p.x, p.y); canvasContext.rotate(p.rotation);
+        canvasContext.fillRect(-p.radius * .55, -p.radius * .8, p.radius * 1.1, p.radius * 1.6);
+        canvasContext.restore();
+        if (p.life <= 0 || p.y > canvasHeight + 15) particles.splice(i, 1);
         continue;
       }
       if (p.type === 'petal') {
