@@ -479,7 +479,8 @@
             </svg>
           </div>
         </div>
-        <div class="voucher" id="voucher"><div class="voucher-label">${formatted(c.voucherLabel)}</div><h3>${formatted(C.finale.title || c.voucherTitle)}</h3><p>${formatted(C.finale.body || c.voucherBody)}</p><div class="voucher-bottom"><span>${formatted(c.voucherFoot)}</span>${BIG_HEART}</div></div></div>
+      </div>
+      <div class="voucher" id="voucher"><div class="voucher-label">${formatted(c.voucherLabel)}</div><h3>${formatted(C.finale.title || c.voucherTitle)}</h3><p>${formatted(C.finale.body || c.voucherBody)}</p><div class="voucher-bottom"><span>${formatted(c.voucherFoot)}</span>${BIG_HEART}</div></div>
       <div class="hero-copy"><button type="button" class="primary-btn" id="gift-button">${formatted(c.giftButton)}</button><h2 class="closing-line" id="closing-line">${formatted(C.finale.message || C.finale.closing || c.closing)}</h2><div class="replay-row">${button(c.replay, 'replay', true)}</div></div>`;
 
     app.innerHTML = [s0,s1,s2,s3,s5,sFlower,s4,s6,sZodiac,s7,s8,s9,s10].map((html, i) => makeScene(sceneIds[i], html, i)).join('');
@@ -1606,7 +1607,7 @@
       } else {
         roaringLion.classList.add('lion-revealed');
       }
-      window.setTimeout(transformToCub, 4100);
+      window.setTimeout(transformToCub, 4700);
     };
 
     buttonElement.addEventListener('click', openGift);
