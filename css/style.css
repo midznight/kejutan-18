@@ -32,6 +32,14 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .ambient-one { top: -26vw; left: -20vw; background: #6f507b; animation: ambient-drift 17s ease-in-out infinite alternate; }
 .ambient-two { bottom: -30vw; right: -20vw; background: #b76e64; animation: ambient-drift 21s ease-in-out infinite alternate-reverse; }
 @keyframes ambient-drift { to { transform: translate3d(9vw, 4vh, 0) scale(1.14); } }
+
+#atmosphere-canvas { position: fixed; inset: 0; width: 100vw; height: 100dvh; z-index: 1; pointer-events: none; }
+.countdown-overlay { position: fixed; z-index: 120; inset: 0; display: grid; place-items: center; overflow: hidden; isolation: isolate; background: rgba(33,21,46,.96); color: #fff0df; padding: 24px; }
+.countdown-caption { position: absolute; top: 21%; left: 12%; right: 12%; margin: 0; text-align: center; font: 600 clamp(16px,4vw,21px)/1.35 'Caveat', cursive; color: #f0c6b2; }
+.countdown-number { position: absolute; left: 0; right: 0; top: 50%; margin: 0; text-align: center; transform: translateY(-50%); transform-origin: center; font: 800 clamp(150px,48vw,300px)/.8 'Fraunces', Georgia, serif; letter-spacing: -.08em; color: #f5eadb; text-shadow: 7px 8px 0 rgba(122,137,194,.42), 0 18px 38px rgba(14,8,28,.28); will-change: transform, opacity; }
+.countdown-flash { position: absolute; z-index: 10; inset: 0; pointer-events: none; background: #fff8f0; animation: birthday-flash .19s ease-out both; }
+@keyframes birthday-flash { 0% { opacity: 0; } 30% { opacity: .94; } 100% { opacity: 0; } }
+
 .app-shell { position: relative; z-index: 2; display: grid; place-items: center; min-height: 100dvh; padding: calc(16px + var(--safe-top)) calc(14px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(14px + var(--safe-left)); }
 .scene { position: relative; display: none; width: min(100%, 760px); min-height: min(820px, calc(100dvh - var(--safe-top) - var(--safe-bottom) - 32px)); isolation: isolate; }
 .scene.is-active { display: flex; flex-direction: column; justify-content: center; animation: scene-arrive .85s cubic-bezier(.19, 1, .22, 1) both; }
