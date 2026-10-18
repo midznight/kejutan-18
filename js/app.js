@@ -25,8 +25,21 @@
   let canvasRAF = 0;
   let canvasActive = false;
   let particles = [];
+  const particlePool = [];
+  const glowSprites = new Map();
+  const petalSprites = new Map();
   let lastBurst = 0;
   let canvasContext = null;
+  let audioContext = null;
+  let sfxMasterGain = null;
+  let musicGain = null;
+  let audioAnalyser = null;
+  let mediaSource = null;
+  let frequencyData = null;
+  let lastAnalyserSample = 0;
+  let lastBassTrigger = 0;
+  let nextFinaleRocketAt = 0;
+  let ambientPulseTimer = 0;
   let canvasElement = null;
   let canvasWidth = 0;
   let canvasHeight = 0;
@@ -355,13 +368,14 @@
     toggle.title = C.music.title;
     toggle.setAttribute('aria-label', C.copy.audioOn);
     toggle.addEventListener('click', () => {
-      if (!audioAvailable) {
-        toggle.textContent = C.copy.audioUnavailable;
-        return;
-      }
       audioMuted = !audioMuted;
       audio.muted = audioMuted;
-      toggle.textContent = audioMuted ? C.copy.audioOn : C.copy.audioOff;
+      if (sfxMasterGain && audioContext) {
+        sfxMasterGain.gain.setTargetAtTime(audioMuted ? 0 : .3, audioContext.currentTime, .025);
+      }
+      toggle.textContent = audioAvailable
+        ? (audioMuted ? C.copy.audioOn : C.copy.audioOff)
+        : (audioMuted ? 'Nyalakan suara' : 'Matikan suara');
       toggle.setAttribute('aria-label', toggle.textContent);
     });
     document.body.appendChild(toggle);
@@ -383,14 +397,125 @@
     }
   }
 
-  async function unlockAudioOnGesture() {
-    if (audioUnlocked) return;
-    audioUnlocked = true;
+  function initAudioEngine() {
+    if (!window.AudioContext && !window.webkitAudioContext) return;
+    try {
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+      if (!sfxMasterGain) {
+        sfxMasterGain = audioContext.createGain();
+        sfxMasterGain.gain.value = audioMuted ? 0 : .3;
+        sfxMasterGain.connect(audioContext.destination);
+      }
+      if (audio && !mediaSource) {
+        try {
+          mediaSource = audioContext.createMediaElementSource(audio);
+          audioAnalyser = audioContext.createAnalyser();
+          audioAnalyser.fftSize = 256;
+          audioAnalyser.smoothingTimeConstant = .78;
+          frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
+          musicGain = audioContext.createGain();
+          musicGain.gain.value = 1;
+          mediaSource.connect(audioAnalyser);
+          audioAnalyser.connect(musicGain);
+          musicGain.connect(audioContext.destination);
+        } catch (_) {
+          audioAnalyser = null;
+          frequencyData = null;
+        }
+      }
+    } catch (_) {
+      audioContext = null;
+      sfxMasterGain = null;
+    }
+  }
+
+  function playTone(startHz, duration = .14, type = 'sine', volume = .12, endHz = startHz) {
+    if (!C.settings?.sfx || audioMuted || !audioContext || !sfxMasterGain || audioContext.state !== 'running') return;
+    try {
+      const now = audioContext.currentTime;
+      const oscillator = audioContext.createOscillator();
+      const envelope = audioContext.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(Math.max(20, startHz), now);
+      oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, endHz), now + Math.max(.025, duration));
+      envelope.gain.setValueAtTime(.0001, now);
+      envelope.gain.exponentialRampToValueAtTime(Math.max(.0002, volume), now + .012);
+      envelope.gain.exponentialRampToValueAtTime(.0001, now + Math.max(.04, duration));
+      oscillator.connect(envelope);
+      envelope.connect(sfxMasterGain);
+      oscillator.start(now);
+      oscillator.stop(now + duration + .025);
+      oscillator.onended = () => { try { oscillator.disconnect(); envelope.disconnect(); } catch (_) {} };
+    } catch (_) { /* Web Audio is optional; visual flow must never depend on audio. */ }
+  }
+
+  function playNoise(duration = .12, volume = .1, filterType = 'lowpass', frequency = 2600) {
+    if (!C.settings?.sfx || audioMuted || !audioContext || !sfxMasterGain || audioContext.state !== 'running') return;
+    try {
+      const now = audioContext.currentTime;
+      const frames = Math.max(1, Math.floor(audioContext.sampleRate * Math.min(1.5, duration)));
+      const buffer = audioContext.createBuffer(1, frames, audioContext.sampleRate);
+      const channel = buffer.getChannelData(0);
+      for (let i = 0; i < frames; i++) channel[i] = (Math.random() * 2 - 1) * (1 - i / frames * .3);
+      const source = audioContext.createBufferSource();
+      const filter = audioContext.createBiquadFilter();
+      const envelope = audioContext.createGain();
+      source.buffer = buffer;
+      filter.type = filterType;
+      filter.frequency.value = frequency;
+      envelope.gain.setValueAtTime(.0001, now);
+      envelope.gain.exponentialRampToValueAtTime(Math.max(.0002, volume), now + .008);
+      envelope.gain.exponentialRampToValueAtTime(.0001, now + duration);
+      source.connect(filter); filter.connect(envelope); envelope.connect(sfxMasterGain);
+      source.start(now); source.stop(now + duration + .02);
+      source.onended = () => { try { source.disconnect(); filter.disconnect(); envelope.disconnect(); } catch (_) {} };
+    } catch (_) { /* Unsupported audio graph; effects remain visual. */ }
+  }
+
+  function playSfx(name, value = 0) {
+    if (!C.settings?.sfx || audioMuted) return;
+    if (!audioContext) initAudioEngine();
+    if (name === 'rocket') {
+      playTone(630, .42, 'sawtooth', .035, 125);
+      playNoise(.22, .028, 'bandpass', 1050);
+    } else if (name === 'boom') {
+      playTone(105, .42, 'triangle', .17, 36);
+      playNoise(.32, .13, 'lowpass', 850);
+      window.setTimeout(() => playNoise(.1, .055, 'highpass', 3200), 90);
+      if (musicGain && audioContext) {
+        const now = audioContext.currentTime;
+        musicGain.gain.cancelScheduledValues(now);
+        musicGain.gain.setTargetAtTime(.48, now, .035);
+        musicGain.gain.setTargetAtTime(1, now + .22, .1);
+      }
+    } else if (name === 'count') {
+      const step = Math.max(0, Math.min(4, 5 - Number(value)));
+      playTone(420 + step * 115, .11, 'sine', .085, 560 + step * 125);
+    } else if (name === 'riser') {
+      playTone(190, .42, 'sawtooth', .055, 780);
+    } else if (name === 'pop') {
+      playNoise(.075, .085, 'bandpass', 2200);
+      playTone(570, .09, 'sine', .07, 210);
+    } else if (name === 'blow') {
+      playNoise(.46, .12, 'bandpass', 850);
+    } else if (name === 'flower') {
+      playTone(920 + Math.random() * 300, .25, 'sine', .055, 680 + Math.random() * 180);
+      playTone(1380, .16, 'sine', .018, 1060);
+    }
+  }
+
+  function unlockAudioOnGesture() {
+    if (!audioUnlocked) {
+      audioUnlocked = true;
+      initAudioEngine();
+    }
     if (!audioAvailable) return;
     try {
       audio.volume = 0;
       audio.muted = audioMuted;
-      await audio.play();
+      const playResult = audio.play();
+      if (playResult?.catch) playResult.catch(() => {});
     } catch (_) {
       // Audio opsional: situs tetap berjalan saat file tidak ada atau browser menolak playback.
     }
@@ -401,9 +526,9 @@
     if (toggle) toggle.hidden = false;
     if (!audioAvailable) {
       if (toggle) {
-        toggle.disabled = true;
-        toggle.textContent = C.copy.audioUnavailable;
-        toggle.setAttribute('aria-label', C.copy.audioUnavailable);
+        toggle.disabled = false;
+        toggle.textContent = audioMuted ? 'Nyalakan suara' : 'Matikan suara';
+        toggle.setAttribute('aria-label', toggle.textContent);
       }
       return;
     }
@@ -533,6 +658,7 @@
       previous.setAttribute('aria-hidden', 'true');
     }
     currentScene = index;
+    clearSceneParticles();
     next.classList.add('is-active');
     next.setAttribute('aria-hidden', 'false');
     playSceneWipe(index);
@@ -910,7 +1036,7 @@
     canvasContext = canvasElement.getContext('2d', { alpha: true });
     if (!canvasContext) return;
     resizeCanvas();
-    particleBudget = Math.min(window.innerWidth <= 600 ? 350 : 520, Number(C.settings.canvasParticleMax) || 350);
+    particleBudget = Math.max(80, Math.min(window.innerWidth <= 600 ? 350 : 520, Number(C.settings.canvasParticleMax) || 400));
     const starterCount = Math.min(window.innerWidth <= 600 ? 38 : 58, particleBudget);
     particles = particles.filter(p => p.type !== 'firefly');
     for (let i = 0; i < starterCount; i++) particles.push(makeFirefly());
@@ -949,15 +1075,136 @@
   }
 
   const FIREWORK_PALETTE = ['#bba7db', '#d8c7f0', '#b76f74', '#f2c4aa', '#fff0d9', '#7A89C2', '#9d7ab5'];
+  const EMBER_COLOR = '#ff9b58';
+  const SPRITE_COLORS = [...FIREWORK_PALETTE, EMBER_COLOR, '#fff9ee', '#ffffff'];
+
+  function hexToRgb(hex) {
+    const value = String(hex || '#ffffff').replace('#', '');
+    const full = value.length === 3 ? value.split('').map(ch => ch + ch).join('') : value;
+    const number = Number.parseInt(full, 16);
+    if (!Number.isFinite(number)) return [255, 255, 255];
+    return [(number >> 16) & 255, (number >> 8) & 255, number & 255];
+  }
+
+  function hexToRgba(hex, alpha) {
+    const rgb = hexToRgb(hex);
+    return 'rgba(' + rgb.join(',') + ',' + alpha + ')';
+  }
+
+  function resolveSpriteColor(color) {
+    const rgbMatch = String(color).match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    const input = rgbMatch ? rgbMatch.slice(1).map(Number) : hexToRgb(color);
+    let closest = SPRITE_COLORS[0], distance = Infinity;
+    for (const candidate of SPRITE_COLORS) {
+      const rgb = hexToRgb(candidate);
+      const d = (rgb[0] - input[0]) ** 2 + (rgb[1] - input[1]) ** 2 + (rgb[2] - input[2]) ** 2;
+      if (d < distance) { distance = d; closest = candidate; }
+    }
+    return closest;
+  }
+
+  function getGlowSprite(color) {
+    color = resolveSpriteColor(color);
+    if (glowSprites.has(color)) return glowSprites.get(color);
+    const sprite = document.createElement('canvas');
+    sprite.width = 64; sprite.height = 64;
+    const ctx = sprite.getContext('2d');
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradient.addColorStop(0, 'rgba(255,255,255,.98)');
+    gradient.addColorStop(.13, hexToRgba(color, .92));
+    gradient.addColorStop(.42, hexToRgba(color, .48));
+    gradient.addColorStop(1, hexToRgba(color, 0));
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 64, 64);
+    glowSprites.set(color, sprite);
+    return sprite;
+  }
+
+  function getPetalSprite(colorA, colorB) {
+    const key = colorA + ':' + colorB;
+    if (petalSprites.has(key)) return petalSprites.get(key);
+    const sprite = document.createElement('canvas');
+    sprite.width = 32; sprite.height = 48;
+    const ctx = sprite.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 32, 48);
+    gradient.addColorStop(0, colorA);
+    gradient.addColorStop(.52, '#f4e8e0');
+    gradient.addColorStop(1, colorB);
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.ellipse(16, 24, 9, 21, 0, 0, Math.PI * 2);
+    ctx.fill();
+    petalSprites.set(key, sprite);
+    return sprite;
+  }
+
+  function drawGlow(x, y, radius, color, alpha = 1) {
+    const ctx = canvasContext;
+    if (!ctx) return;
+    const sprite = getGlowSprite(color);
+    const size = Math.max(5, radius * 7);
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(sprite, x - size / 2, y - size / 2, size, size);
+  }
+
+  function releaseParticle(index) {
+    if (index < 0 || index >= particles.length) return;
+    const particle = particles.splice(index, 1)[0];
+    if (!particle || particle.type === 'firefly') return;
+    for (const key of Object.keys(particle)) delete particle[key];
+    if (particlePool.length < particleBudget * 2) particlePool.push(particle);
+  }
+
+  function clearSceneParticles() {
+    for (let i = particles.length - 1; i >= 0; i--) {
+      if (particles[i].type !== 'firefly') releaseParticle(i);
+    }
+    if (canvasContext && canvasWidth && canvasHeight) canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+    nextFinaleRocketAt = performance.now() + 1400 + Math.random() * 900;
+  }
 
   function addParticle(particle) {
     if (reducedMotion || !canvasActive) return;
     if (particles.length >= particleBudget) {
-      let replaceAt = particles.findIndex(p => p.type === 'firefly' || p.type === 'petal' || p.type === 'confetti');
-      if (replaceAt < 0) replaceAt = 0;
-      particles.splice(replaceAt, 1);
+      let replaceAt = particles.findIndex(p => p.type !== 'firefly' && (p.type === 'petal' || p.type === 'confetti' || p.type === 'trail'));
+      if (replaceAt < 0) replaceAt = particles.findIndex(p => p.type !== 'firefly');
+      if (replaceAt < 0) return;
+      releaseParticle(replaceAt);
     }
-    particles.push(particle);
+    const pooled = particlePool.pop();
+    if (pooled) {
+      Object.assign(pooled, particle);
+      particles.push(pooled);
+    } else {
+      particles.push(particle);
+    }
+  }
+
+  function colorMix(a, b, amount) {
+    const aa = hexToRgb(a), bb = hexToRgb(b);
+    const t = Math.max(0, Math.min(1, amount));
+    return 'rgb(' + aa.map((v, i) => Math.round(v + (bb[i] - v) * t)).join(',') + ')';
+  }
+
+  function triggerAmbientFlash() {
+    const ambient = Array.from(document.querySelectorAll('.ambient'));
+    ambient.forEach(el => {
+      el.style.transition = 'opacity 65ms ease-out';
+      el.style.opacity = '.16';
+    });
+    if (ambientPulseTimer) window.clearTimeout(ambientPulseTimer);
+    ambientPulseTimer = window.setTimeout(() => {
+      ambient.forEach(el => {
+        el.style.transition = 'opacity 160ms ease-out';
+        el.style.opacity = '';
+        window.setTimeout(() => { el.style.transition = ''; }, 220);
+      });
+      ambientPulseTimer = 0;
+    }, 85);
+  }
+
+  function addFlash(x, y, color = '#fff0d9', radius = 118) {
+    addParticle({ type: 'flash', x, y, vx: 0, vy: 0, color, life: 1, decay: .082, radius: 2, maxRadius: Math.min(radius, Math.max(70, canvasWidth * .42)) });
   }
 
   function makeFirefly() {
@@ -976,22 +1223,34 @@
 
   function spawnFireworkRocket(targetX, targetY, shape = 'round') {
     if (!canvasActive || reducedMotion) return;
-    const x = Math.max(18, Math.min(canvasWidth - 18, Number(targetX) || canvasWidth * .5));
-    const y = Math.max(canvasHeight * .12, Math.min(canvasHeight * .72, Number(targetY) || canvasHeight * .3));
-    const startX = Math.max(15, Math.min(canvasWidth - 15, x + (Math.random() - .5) * 90));
+    const x = Math.max(24, Math.min(canvasWidth - 24, Number(targetX) || canvasWidth * .5));
+    const y = Math.max(canvasHeight * .16, Math.min(canvasHeight * .48, Number(targetY) || canvasHeight * .29));
+    const startX = Math.max(18, Math.min(canvasWidth - 18, x + (Math.random() - .5) * 86));
+    const startY = canvasHeight + 10;
+    const gravity = .082 + Math.random() * .012;
+    const apexHeight = Math.max(100, startY - y);
+    const baseSpeed = Math.sqrt(2 * gravity * apexHeight);
     addParticle({
-      type: 'rocket', x: startX, y: canvasHeight + 10, previousX: startX, previousY: canvasHeight + 10,
-      targetX: x, targetY: y, vx: (x - startX) / 42, vy: -Math.max(4.3, (canvasHeight + 10 - y) / 42),
-      life: 1, shape, age: 0, color: FIREWORK_PALETTE[Math.floor(Math.random() * FIREWORK_PALETTE.length)]
+      type: 'rocket', x: startX, y: startY, previousX: startX, previousY: startY,
+      targetX: x, targetY: y, vx: (x - startX) / Math.max(45, baseSpeed / gravity), vy: -baseSpeed,
+      gravity, curve: (Math.random() - .5) * .018, sway: Math.random() * Math.PI * 2,
+      life: 1, shape, age: 0, trailClock: 0,
+      color: FIREWORK_PALETTE[Math.floor(Math.random() * FIREWORK_PALETTE.length)]
     });
+    playSfx('rocket');
   }
 
-  function explodeFirework(x, y, shape = 'round', requestedCount = 64) {
+  function explodeFirework(x, y, shape = 'round', requestedCount = 96) {
     if (!canvasActive || reducedMotion) return;
-    const count = Math.max(80, Math.min(120, requestedCount || 96));
+    const count = Math.max(90, Math.min(120, requestedCount || 96));
     const palette = FIREWORK_PALETTE;
+    addFlash(x, y, '#fff0d9', Math.min(canvasWidth * .42, 145));
+    triggerAmbientFlash();
+    playSfx('boom');
     for (let i = 0; i < count; i++) {
       const t = i / count * Math.PI * 2;
+      const angle = t + (Math.random() - .5) * (shape === 'ring' ? .028 : .2);
+      const speed = shape === 'willow' ? 1.05 + Math.random() * 2.25 : (shape === 'ring' ? 3.2 + Math.random() * 1.15 : 3.25 + Math.random() * 2.25);
       let vx, vy;
       if (shape === 'heart') {
         const hx = 16 * Math.pow(Math.sin(t), 3);
@@ -999,26 +1258,30 @@
         vx = hx * (.24 + Math.random() * .07);
         vy = -hy * (.24 + Math.random() * .07);
       } else {
-        const angle = t + (Math.random() - .5) * (shape === 'ring' ? .035 : .18);
-        const speed = shape === 'ring' ? 3.1 + Math.random() * .9 : 1.8 + Math.random() * 2.8;
         vx = Math.cos(angle) * speed;
-        vy = Math.sin(angle) * speed;
+        vy = Math.sin(angle) * speed + (shape === 'willow' ? -.7 : 0);
       }
+      const willow = shape === 'willow';
+      const baseColor = palette[(i + Math.floor(Math.random() * palette.length)) % palette.length];
       addParticle({
         type: 'spark', x, y, previousX: x, previousY: y, vx, vy,
-        radius: 1.5 + Math.random() * 2, life: .95 + Math.random() * .2,
-        decay: .004 + Math.random() * .003, gravity: .028 + Math.random() * .02,
-        friction: .984 + Math.random() * .008,
-        color: palette[(i + Math.floor(Math.random() * palette.length)) % palette.length],
-        twinkle: Math.random() * Math.PI * 2, shape
+        radius: 1.5 + Math.random() * 2, life: willow ? 1.8 + Math.random() * .35 : 1.05 + Math.random() * .25,
+        ageMs: 0, decay: willow ? .0028 + Math.random() * .0008 : .0045 + Math.random() * .002,
+        gravity: willow ? .055 + Math.random() * .018 : .035 + Math.random() * .018,
+        friction: willow ? .991 : .987 + Math.random() * .006, drag: willow ? .991 : .95,
+        baseColor, color: baseColor,
+        twinkle: Math.random() * Math.PI * 2, twinkleRate: 5 + Math.random() * 11, shape,
+        crackled: false, initialDragUntil: .22
       });
     }
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 7; i++) {
       const t = Math.random() * Math.PI * 2;
       addParticle({
-        type: 'spark', x, y, previousX: x, previousY: y, vx: Math.cos(t) * (3 + Math.random() * 2),
-        vy: Math.sin(t) * (3 + Math.random() * 2), radius: 1.7 + Math.random(), life: 1.1,
-        decay: .006, gravity: .02, friction: .975, color: '#fff4df', twinkle: t
+        type: 'spark', x, y, previousX: x, previousY: y,
+        vx: Math.cos(t) * (3 + Math.random() * 2), vy: Math.sin(t) * (3 + Math.random() * 2),
+        radius: 1.7 + Math.random(), life: 1.1, ageMs: 0, decay: .006,
+        gravity: .02, friction: .975, drag: .975, color: '#fff4df', baseColor: '#fff4df',
+        twinkle: t, twinkleRate: 9, crackled: true
       });
     }
   }
@@ -1027,17 +1290,45 @@
     explodeFirework(x, y, ['round', 'ring', 'heart'][Math.floor(Math.random() * 3)], Math.min(120, Math.max(80, count)));
   }
 
-  function launchFireworkSequence(count = 6) {
+  function launchFireworkSequence(count = 8) {
     if (reducedMotion || !canvasActive) return;
-    const shapes = ['round', 'ring', 'heart', 'round', 'ring', 'round', 'heart', 'ring'];
+    const shapes = ['round', 'ring', 'heart', 'round', 'willow', 'ring', 'heart', 'round'];
     const sequenceCount = Math.max(1, Math.min(8, count));
     for (let i = 0; i < sequenceCount; i++) {
       window.setTimeout(() => {
         if (!canvasActive || document.hidden) return;
-        const x = canvasWidth * (.16 + Math.random() * .68);
-        const y = canvasHeight * (.16 + Math.random() * .33);
+        const x = canvasWidth * (.14 + Math.random() * .72);
+        const y = canvasHeight * (.16 + Math.random() * .27);
         spawnFireworkRocket(x, y, shapes[i % shapes.length]);
-      }, i * 360);
+      }, i * (290 + Math.random() * 90));
+    }
+  }
+
+  function scheduleFinaleRocket(time) {
+    if (currentScene !== sceneIds.length - 1 || reducedMotion) return;
+    if (!nextFinaleRocketAt) nextFinaleRocketAt = time + 1200 + Math.random() * 1000;
+    let bassHit = false;
+    if (audioAnalyser && frequencyData && time - lastAnalyserSample > 120) {
+      lastAnalyserSample = time;
+      audioAnalyser.getByteFrequencyData(frequencyData);
+      const end = Math.min(12, frequencyData.length);
+      let total = 0;
+      for (let i = 1; i < end; i++) total += frequencyData[i];
+      const bassEnergy = total / Math.max(1, end - 1);
+      bassHit = bassEnergy > 112 && time - lastBassTrigger > 650;
+      if (bassHit) lastBassTrigger = time;
+    }
+    if (time >= nextFinaleRocketAt || bassHit) {
+      const salvo = Math.random() < .24 ? 2 + Math.floor(Math.random() * 2) : 1;
+      for (let i = 0; i < salvo; i++) {
+        window.setTimeout(() => {
+          if (canvasActive && !document.hidden && currentScene === sceneIds.length - 1) {
+            const shapePool = ['round', 'ring', 'heart', 'willow'];
+            spawnFireworkRocket(canvasWidth * (.15 + Math.random() * .7), canvasHeight * (.16 + Math.random() * .28), shapePool[Math.floor(Math.random() * shapePool.length)]);
+          }
+        }, i * (150 + Math.random() * 110));
+      }
+      nextFinaleRocketAt = time + 1200 + Math.random() * 1000;
     }
   }
 
@@ -1087,109 +1378,174 @@
   function drawCanvas(time) {
     if (!canvasActive || !canvasContext || document.hidden) { stopCanvas(); return; }
     const delta = Math.max(1, Math.min(70, time - (lastFrameTime || time)));
+    const dt = delta / 16.667;
     lastFrameTime = time;
     averageFrameTime = averageFrameTime * .92 + delta * .08;
     if (averageFrameTime > 24 && particleBudget > 110) {
       particleBudget = Math.max(110, Math.floor(particleBudget * .78));
-      if (particles.length > particleBudget) particles.length = particleBudget;
+      while (particles.length > particleBudget) releaseParticle(particles.length - 1);
     }
     if (canvasElement && (canvasWidth !== window.innerWidth || canvasHeight !== window.innerHeight)) resizeCanvas();
-    canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+    const trailsActive = currentScene === 2 || currentScene === sceneIds.length - 1 || !!document.querySelector('.countdown-overlay');
+    if (trailsActive) {
+      canvasContext.globalCompositeOperation = 'destination-out';
+      canvasContext.globalAlpha = .19;
+      canvasContext.fillStyle = '#000';
+      canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);
+      canvasContext.globalAlpha = 1;
+    } else {
+      canvasContext.globalCompositeOperation = 'source-over';
+      canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+    }
     canvasContext.globalCompositeOperation = 'lighter';
-    const dt = delta / 16.67;
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.previousX = p.x; p.previousY = p.y;
+      if (p.type === 'flash') {
+        p.ageMs = (p.ageMs || 0) + delta;
+        p.life -= p.decay * dt;
+        const progress = Math.max(0, Math.min(1, 1 - p.life));
+        const radius = 12 + p.maxRadius * progress;
+        const sprite = getGlowSprite(p.color);
+        canvasContext.globalAlpha = Math.max(0, p.life) * .82;
+        canvasContext.drawImage(sprite, p.x - radius, p.y - radius, radius * 2, radius * 2);
+        if (p.life <= 0) releaseParticle(i);
+        continue;
+      }
       if (p.type === 'rocket') {
-        p.x += p.vx * dt; p.y += p.vy * dt; p.age += delta;
-        p.vy += .035 * dt;
-        const tailX = p.x - p.vx * 4.2;
-        const tailY = p.y - p.vy * 4.2;
+        p.age += delta;
+        p.trailClock = (p.trailClock || 0) + delta;
+        p.vx += (p.curve || 0) * dt + Math.sin(p.age / 130 + p.sway) * .018 * dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += (p.gravity || .085) * dt;
+        const tailX = p.x - p.vx * 4.8;
+        const tailY = p.y - p.vy * 4.8;
         canvasContext.strokeStyle = p.color;
-        canvasContext.globalAlpha = .24;
-        canvasContext.lineWidth = 4.2;
+        canvasContext.globalAlpha = .2;
+        canvasContext.lineWidth = 4.6;
         canvasContext.beginPath(); canvasContext.moveTo(tailX, tailY); canvasContext.lineTo(p.x, p.y); canvasContext.stroke();
-        canvasContext.globalAlpha = .92;
+        canvasContext.globalAlpha = .86;
         canvasContext.lineWidth = 1.35;
         canvasContext.beginPath(); canvasContext.moveTo(tailX, tailY); canvasContext.lineTo(p.x, p.y); canvasContext.stroke();
-        canvasContext.globalAlpha = .28;
-        canvasContext.fillStyle = '#fff4df';
-        canvasContext.beginPath(); canvasContext.arc(p.x, p.y, 3.6, 0, Math.PI * 2); canvasContext.fill();
-        canvasContext.globalAlpha = .98;
-        canvasContext.beginPath(); canvasContext.arc(p.x, p.y, 1.65, 0, Math.PI * 2); canvasContext.fill();
-        if (p.y <= p.targetY || p.age > 1250) {
-          explodeFirework(p.x, p.y, p.shape, 96);
-          particles.splice(i, 1);
+        drawGlow(p.x, p.y, 2.2, '#fff0d9', .92);
+        while (p.trailClock >= 32) {
+          p.trailClock -= 32;
+          addParticle({
+            type: 'spark', x: p.x, y: p.y, previousX: p.x, previousY: p.y,
+            vx: (Math.random() - .5) * 1.2, vy: .65 + Math.random() * 1.8,
+            radius: .8 + Math.random() * 1.1, life: .38 + Math.random() * .18,
+            ageMs: 0, decay: .022 + Math.random() * .01, gravity: .055, friction: .965, drag: .965,
+            color: p.color, baseColor: p.color, twinkle: Math.random() * 6.28, twinkleRate: 12, crackled: true
+          });
+        }
+        if ((p.vy >= -.22 && p.age > 160) || p.age > 3600) {
+          explodeFirework(p.x, p.y, p.shape, p.shape === 'willow' ? 112 : 96);
+          releaseParticle(i);
         }
         continue;
       }
       if (p.type === 'firefly') {
         if (attractionPoint && currentScene === 0 && time < attractionPoint.until) {
-          p.vx += (attractionPoint.x - p.x) * .0009;
-          p.vy += (attractionPoint.y - p.y) * .0009;
-          p.vx *= .975; p.vy *= .975;
+          p.vx += (attractionPoint.x - p.x) * .0009 * dt;
+          p.vy += (attractionPoint.y - p.y) * .0009 * dt;
+          p.vx *= Math.pow(.975, dt); p.vy *= Math.pow(.975, dt);
         } else {
-          p.vx += Math.sin(time / 1800 + p.phase) * .004;
-          p.vy += Math.cos(time / 1900 + p.phase) * .003;
-          p.vx *= .994; p.vy *= .994;
+          p.vx += Math.sin(time / 1800 + p.phase) * .004 * dt;
+          p.vy += Math.cos(time / 1900 + p.phase) * .003 * dt;
+          p.vx *= Math.pow(.994, dt); p.vy *= Math.pow(.994, dt);
         }
         p.x += p.vx * dt; p.y += p.vy * dt;
         if (p.x < -4) p.x = canvasWidth + 4; if (p.x > canvasWidth + 4) p.x = -4;
         if (p.y < -4) p.y = canvasHeight + 4; if (p.y > canvasHeight + 4) p.y = -4;
-        const pulse = .35 + (Math.sin(time / 360 + p.phase) + 1) * .29;
-        canvasContext.globalAlpha = pulse;
-        canvasContext.fillStyle = p.color;
-        canvasContext.beginPath(); canvasContext.arc(p.x, p.y, p.radius * 2.2, 0, Math.PI * 2); canvasContext.fill();
-        canvasContext.globalAlpha = pulse * .55;
-        canvasContext.beginPath(); canvasContext.arc(p.x, p.y, p.radius * 4.2, 0, Math.PI * 2); canvasContext.fill();
+        const pulse = .32 + (Math.sin(time / 360 + p.phase) + 1) * .31;
+        drawGlow(p.x, p.y, p.radius * 1.9, p.color, pulse);
         continue;
       }
       if (p.type === 'confetti') {
-        p.x += p.vx * dt; p.y += p.vy * dt; p.vy += .035 * dt; p.rotation += p.spin * dt;
-        p.vx *= .992; p.life -= p.decay * dt;
-        canvasContext.globalAlpha = Math.max(0, p.life);
-        canvasContext.fillStyle = p.color;
-        canvasContext.save(); canvasContext.translate(p.x, p.y); canvasContext.rotate(p.rotation);
-        canvasContext.fillRect(-p.radius * .55, -p.radius * .8, p.radius * 1.1, p.radius * 1.6);
-        canvasContext.restore();
-        if (p.life <= 0 || p.y > canvasHeight + 15) particles.splice(i, 1);
-        continue;
-      }
-      if (p.type === 'petal') {
-        p.x += (p.vx + Math.sin(time / 620 + p.sway) * .18) * dt;
-        p.y += p.vy * dt;
-        p.vy += .006 * dt;
+        p.ageMs = (p.ageMs || 0) + delta;
+        p.vx *= Math.pow(p.friction || .992, dt);
+        p.vy = Math.min(p.maxVy || 3.2, p.vy + (p.gravity || .035) * dt);
+        p.x += p.vx * dt; p.y += p.vy * dt;
         p.rotation += p.spin * dt;
+        p.flipPhase = (p.flipPhase || 0) + (p.flipSpeed || .18) * dt;
         p.life -= p.decay * dt;
         canvasContext.globalAlpha = Math.max(0, p.life);
         canvasContext.fillStyle = p.color;
-        canvasContext.save(); canvasContext.translate(p.x, p.y); canvasContext.rotate(p.rotation);
-        canvasContext.beginPath(); canvasContext.ellipse(0, 0, p.radius * .62, p.radius * 1.25, 0, 0, Math.PI * 2); canvasContext.fill();
+        canvasContext.save();
+        canvasContext.translate(p.x, p.y);
+        canvasContext.rotate(p.rotation);
+        canvasContext.scale(Math.max(.08, Math.abs(Math.cos(p.flipPhase))), 1);
+        canvasContext.fillRect(-p.radius * .55, -p.radius * .8, p.radius * 1.1, p.radius * 1.6);
         canvasContext.restore();
-        if (p.life <= 0 || p.y > canvasHeight + 15) particles.splice(i, 1);
+        if (p.life <= 0 || p.y > canvasHeight + 15) releaseParticle(i);
         continue;
       }
-      p.x += p.vx * dt; p.y += p.vy * dt;
-      p.vx *= p.friction || .989; p.vy = p.vy * (p.friction || .989) + (p.gravity || .026) * dt;
-      p.life -= p.decay * dt;
-      const twinkle = .65 + .35 * Math.abs(Math.sin(time / 55 + p.twinkle));
-      canvasContext.globalAlpha = Math.max(0, p.life) * twinkle;
-      canvasContext.fillStyle = p.color;
-      canvasContext.beginPath(); canvasContext.arc(p.x, p.y, p.radius, 0, Math.PI * 2); canvasContext.fill();
-      if (p.life > .2 && p.radius > 1.1) {
-        canvasContext.globalAlpha = Math.max(0, p.life) * .56;
-        canvasContext.strokeStyle = p.color; canvasContext.lineWidth = Math.max(.5, p.radius * .46);
-        canvasContext.beginPath(); canvasContext.moveTo(p.previousX - p.vx * 1.65, p.previousY - p.vy * 1.65); canvasContext.lineTo(p.x, p.y); canvasContext.stroke();
+      if (p.type === 'petal') {
+        p.ageMs = (p.ageMs || 0) + delta;
+        p.phase = (p.phase || 0) + (p.phaseSpeed || .075) * dt;
+        const wind = Math.sin(time / 1700 + p.sway) * (p.swayAmplitude || .38);
+        p.vx += ((p.wind || 0) + wind) * .01 * dt;
+        p.vx *= Math.pow(p.friction || .992, dt);
+        p.vy = Math.min(p.maxVy || 1.9, p.vy + (p.gravity || .012) * dt);
+        p.x += (p.vx + Math.sin(p.phase) * (p.swayAmplitude || .38)) * dt;
+        p.y += p.vy * dt;
+        p.rotation += p.spin * dt;
+        p.life -= p.decay * dt;
+        const scaleY = .15 + .85 * Math.abs(Math.cos(p.phase));
+        const sprite = getPetalSprite(p.color || '#f3d9ca', p.color2 || '#7A89C2');
+        canvasContext.globalAlpha = Math.max(0, p.life);
+        canvasContext.save();
+        canvasContext.translate(p.x, p.y);
+        canvasContext.rotate(p.rotation);
+        canvasContext.drawImage(sprite, -p.radius * .7, -p.radius * 1.6, p.radius * 1.4, p.radius * 3.2 * scaleY);
+        canvasContext.restore();
+        if (p.life <= 0 || p.y > canvasHeight + 15) releaseParticle(i);
+        continue;
       }
-      if (p.life <= 0 || p.y > canvasHeight + 25) particles.splice(i, 1);
+      p.ageMs = (p.ageMs || 0) + delta;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      const drag = p.drag || p.friction || .987;
+      const adjustedDrag = p.ageMs < (p.initialDragUntil || .22) * 1000 ? Math.min(.94, drag) : drag;
+      p.vx *= Math.pow(adjustedDrag, dt);
+      p.vy = Math.min(p.maxVy || 10, p.vy + (p.gravity || .035) * dt);
+      p.life -= (p.decay || .006) * dt;
+      if (!p.crackled && p.life < .18) {
+        p.crackled = true;
+        if (Math.random() < .15 && particles.length < particleBudget - 2) {
+          const miniCount = 2 + Math.floor(Math.random() * 2);
+          for (let n = 0; n < miniCount; n++) {
+            addParticle({
+              type: 'spark', x: p.x, y: p.y, previousX: p.x, previousY: p.y,
+              vx: (Math.random() - .5) * 4, vy: (Math.random() - .5) * 4 - .3,
+              radius: .75 + Math.random() * .65, life: .33 + Math.random() * .16, ageMs: 0,
+              decay: .026 + Math.random() * .012, gravity: .045, friction: .972, drag: .972,
+              color: EMBER_COLOR, baseColor: EMBER_COLOR, twinkle: Math.random() * 6.28, twinkleRate: 14, crackled: true
+            });
+          }
+        }
+      }
+      const hot = p.ageMs < 160 ? 1 - p.ageMs / 160 : 0;
+      const ember = Math.max(0, Math.min(1, (p.ageMs - 650) / 850));
+      const core = colorMix(p.baseColor || p.color, EMBER_COLOR, ember);
+      const color = hot > 0 ? colorMix(core, '#fff9ee', hot) : core;
+      const twinkle = .68 + Math.random() * .32 * (.4 + .6 * Math.abs(Math.sin(time / 47 * (p.twinkleRate || 8) + (p.twinkle || 0))));
+      drawGlow(p.x, p.y, p.radius * (p.life < .2 ? .8 : 1), color, Math.max(0, p.life) * twinkle);
+      if (p.life > .28) {
+        canvasContext.globalAlpha = Math.max(0, p.life) * .36;
+        canvasContext.strokeStyle = resolveSpriteColor(color);
+        canvasContext.lineWidth = Math.max(.5, p.radius * .65);
+        canvasContext.beginPath();
+        canvasContext.moveTo(p.previousX - p.vx * 1.4, p.previousY - p.vy * 1.4);
+        canvasContext.lineTo(p.x, p.y);
+        canvasContext.stroke();
+      }
+      if (p.life <= 0 || p.y > canvasHeight + 40) releaseParticle(i);
     }
     canvasContext.globalAlpha = 1;
     canvasContext.globalCompositeOperation = 'source-over';
-    const finalSceneIndex = sceneIds.length - 1;
-    if (currentScene === finalSceneIndex && time - lastFinaleRocket > 1750) {
-      spawnFireworkRocket(canvasWidth * (.2 + Math.random() * .6), canvasHeight * (.18 + Math.random() * .33), ['round','ring','heart'][Math.floor(Math.random() * 3)]);
-      lastFinaleRocket = time;
-    }
+    scheduleFinaleRocket(time);
     canvasRAF = requestAnimationFrame(drawCanvas);
   }
 
