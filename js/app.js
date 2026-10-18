@@ -851,8 +851,8 @@
       [19,61], [37,70], [55,62], [72,69], [88,62], [43,81],
     ];
     const palettes = [
-      ['#c0a6d9','#7c629b'], ['#d6bce7','#a783c4'], ['#f0c3aa','#b87576'],
-      ['#bda2d6','#76618e'], ['#f5dfc4','#cb9d79'], ['#9f9ac4','#6d689d'],
+      ['#f3dfb0','#8f6b32'], ['#9e75ba','#4a2260'], ['#eaa98b','#9d5e54'],
+      ['#d7c3e5','#8e5fb0'], ['#f4ecdf','#a9895d'], ['#7A89C2','#4b467e'],
     ];
     arena.innerHTML = Array.from({ length: count }, (_, i) => {
       const [x,y] = coords[i % coords.length];
