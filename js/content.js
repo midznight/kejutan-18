@@ -8,7 +8,7 @@ window.SURPRISE_CONTENT = {
   name: "Nor",
   sender: "Hamid",
   age: 18,
-  colors: { primary: "#bba7db", blue: "#7A89C2", gold: "#f0bd9e" },
+  colors: { primary: "#c4a6dc", blue: "#9b7fc4", gold: "#e2bd73" },
 
   // GANTI: ubah pembuka dan seluruh kalimat di bawah sesukamu.
   copy: {
