@@ -1140,3 +1140,91 @@ body {
 @media (prefers-reduced-motion: reduce) {
   #s1 .lock-panel.gate-error, #s1 .lock-symbol.gate-error { animation:none!important; }
 }
+
+
+/* Libra card: readable editorial layout on small screens. */
+.scene[data-signature="libra-orbit"] .scene-scenery::before {
+  background: radial-gradient(ellipse at 50% 23%,rgba(201,161,90,.19),transparent 39%),radial-gradient(ellipse at 50% 80%,rgba(142,95,176,.18),transparent 48%),linear-gradient(180deg,#100b22,#21152e 54%,#120c20);
+}
+.scene[data-signature="libra-orbit"] .scenery-main { width: 112%; top: -4%; right: -10%; opacity: .28; }
+#zodiac-slide .scene-inner { max-width: 640px; }
+.zodiac-panel { position:relative; padding:clamp(17px,4.5vw,26px); border:1px solid rgba(201,161,90,.48); background:linear-gradient(145deg,rgba(50,29,63,.94),rgba(19,12,34,.96)); box-shadow:inset 0 0 0 4px rgba(243,223,176,.035),0 24px 60px rgba(0,0,0,.2); overflow:hidden; }
+.zodiac-panel::before,.zodiac-panel::after { content:""; position:absolute; width:90px; height:90px; border:1px solid rgba(243,223,176,.17); border-radius:50%; pointer-events:none; }
+.zodiac-panel::before { top:-46px; right:-34px; box-shadow:0 0 0 8px rgba(243,223,176,.025),0 0 0 16px rgba(243,223,176,.02); }
+.zodiac-panel::after { bottom:-58px; left:-40px; }
+.zodiac-intro { display:grid; grid-template-columns:82px minmax(0,1fr); gap:17px; align-items:start; }
+.zodiac-emblem { width:82px; aspect-ratio:1; color:#f3dfb0; border:1px solid rgba(201,161,90,.55); border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle,rgba(201,161,90,.13),transparent 72%); box-shadow:0 0 28px rgba(201,161,90,.09); }
+.zodiac-emblem svg { width:74%; height:74%; }
+.zodiac-emblem-ring { fill:none; stroke:currentColor; stroke-opacity:.42; stroke-width:1.1; }
+.zodiac-emblem-line { fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.zodiac-intro-copy .kicker { margin:1px 0 7px; color:#e2bc80; }
+.zodiac-intro-copy .section-title { margin:0 0 8px; font-size:clamp(25px,6vw,36px); }
+.zodiac-intro-copy .body-copy { margin:0; font-size:13px; line-height:1.7; }
+.zodiac-meta { display:flex; flex-wrap:wrap; gap:7px; margin:19px 0 18px; }
+.zodiac-meta span { display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(243,223,176,.21); border-radius:999px; padding:7px 10px; font-size:10px; letter-spacing:.06em; color:#e9d8c1; background:rgba(255,255,255,.025); }
+.zodiac-meta strong { font-size:16px; color:#f3dfb0; }
+.zodiac-facts-title { margin:0 0 11px; font:600 14px/1.3 var(--accent-font); letter-spacing:.04em; color:#f3dfb0; }
+.zodiac-facts-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+.zodiac-fact { position:relative; min-width:0; min-height:112px; padding:15px 13px 13px; border:1px solid rgba(201,161,90,.24); background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.012)); }
+.zodiac-fact:nth-child(5) { grid-column:1/-1; min-height:auto; }
+.zodiac-fact-number { display:block; margin-bottom:8px; color:#d9b779; font:600 10px var(--display-font); letter-spacing:.15em; }
+.zodiac-fact-star { position:absolute; top:12px; right:12px; color:rgba(243,223,176,.72); font-size:12px; }
+.zodiac-fact h3 { max-width:94%; margin:0 0 6px; color:#f7e8d5; font:600 16px/1.15 var(--display-font); letter-spacing:-.02em; }
+.zodiac-fact p { margin:0; color:#d9ccdc; font-size:11.5px; line-height:1.6; }
+.zodiac-note { display:flex; gap:8px; align-items:start; margin:15px 0 0; color:rgba(234,220,239,.69); font:italic 12px/1.6 var(--accent-font); }
+.zodiac-note span { color:#e6c47f; }
+.zodiac-actions { margin-top:16px; }
+
+/* Reveal order: guardian lion, a short dramatic pause, then a playful cub. */
+#s11 .finale-stage { min-height:clamp(330px,78vw,390px); overflow:hidden; isolation:isolate; }
+#s11 .gift-stage { overflow:visible; }
+#s11 .gift-wrap { z-index:2; transition:transform .85s cubic-bezier(.16,.76,.2,1),opacity .4s ease; }
+#s11 .gift-wrap.open { transform:translateY(25px) scale(.83) rotateX(9deg); }
+#s11 .gift-wrap.open .gift-lid { transform:translate3d(-34px,-76px,0) rotate(-34deg); }
+.lion-stage { position:absolute; inset:0; z-index:6; pointer-events:none; }
+.lion-caption { position:absolute; z-index:2; top:10px; left:12px; right:12px; margin:0; text-align:center; color:#f3dfb0; font:italic 600 clamp(15px,4vw,20px)/1.2 var(--accent-font); text-shadow:0 2px 12px rgba(0,0,0,.8); }
+.lion-art { position:absolute; left:0; right:0; bottom:1px; width:min(100%,340px); height:auto; margin-inline:auto; overflow:visible; opacity:0; transform:translateY(70%) scale(.64); transform-origin:50% 100%; filter:drop-shadow(0 15px 15px rgba(0,0,0,.34)); will-change:transform,opacity; }
+.lion-art.lion-revealed { opacity:1; transform:translateY(0) scale(1); transition:opacity .4s ease,transform 1.25s cubic-bezier(.16,.85,.24,1); }
+.lion-cub { width:min(100%,320px); bottom:0; }
+#s11 .gift-stage.gift-opened::before { z-index:1; }
+#s11 .voucher { position:relative; z-index:8; }
+#s11 .closing-line { position:relative; z-index:3; }
+#s11 #gift-button { position:relative; z-index:4; }
+#s11 #gift-button:disabled { opacity:.75; cursor:default; }
+
+/* Touch-first mobile layout and performance budget. */
+@media (max-width:600px) {
+  .app-shell { padding-top:calc(12px + var(--safe-top)); padding-bottom:calc(18px + var(--safe-bottom)); }
+  .scene { width:100%; min-width:0; }
+  .scene-inner { padding:17px 0 24px; }
+  .scene-topline { margin-bottom:clamp(15px,2.7vh,24px); }
+  .body-copy { max-width:36rem; margin-left:auto; margin-right:auto; }
+  .actions { width:100%; gap:9px; margin-top:19px; }
+  .actions > button { width:100%; min-height:50px; }
+  .answer-form { flex-direction:column; align-items:stretch; }
+  .answer-form .primary-btn { width:100%; }
+  .gallery-strip { gap:14px; padding-left:7px; padding-right:7px; }
+  .gallery-card { flex-basis:min(82vw,300px); }
+  .zodiac-intro { grid-template-columns:62px minmax(0,1fr); gap:12px; }
+  .zodiac-emblem { width:62px; }
+  .zodiac-panel { padding:16px 14px; }
+  .zodiac-fact { min-height:116px; padding:13px 11px; }
+  .zodiac-fact h3 { font-size:14px; }
+  .zodiac-fact p { font-size:12px; }
+  #s11 .finale-stage { min-height:350px; }
+  .lion-art { width:min(100%,320px); }
+  .lion-cub { width:min(100%,300px); }
+}
+@media (max-width:360px) {
+  .zodiac-facts-grid { grid-template-columns:minmax(0,1fr); }
+  .zodiac-fact:nth-child(5) { grid-column:auto; }
+  .zodiac-fact { min-height:0; }
+  .zodiac-intro { grid-template-columns:52px minmax(0,1fr); gap:10px; }
+  .zodiac-emblem { width:52px; }
+  .zodiac-intro-copy .section-title { font-size:24px; }
+  #s11 .finale-stage { min-height:330px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lion-art,.lion-art.lion-revealed { transition:none!important; }
+  #s11 .gift-wrap,#s11 .gift-lid { transition:none!important; }
+}
