@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#100b22">
+  <title></title>
+  <link rel="icon" href="assets/img/heart.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" referrerpolicy="no-referrer"></script>
+  <script defer src="js/content.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <svg aria-hidden="true" class="svg-defs" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="heart-blue" viewBox="0 0 24 24">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" fill="#7dd3fc" stroke="#c4b5fd" stroke-width=".8"/>
+    </symbol>
+  </svg>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <main id="app" class="app-shell" aria-live="off">
+    <div class="loading-state" id="loading-state" aria-label="Memuat kejutan">
+      <span class="loading-orbit"></span>
+      <span class="loading-dot"></span>
+    </div>
+  </main>
+  <div id="rotate-warning" class="rotate-warning" role="status" aria-live="polite">
+    <div class="rotate-card"><span class="rotate-glyph" aria-hidden="true">↻</span><p id="rotate-copy"></p></div>
+  </div>
+  <audio id="birthday-audio" loop preload="none" playsinline></audio>
+</body>
+</html>

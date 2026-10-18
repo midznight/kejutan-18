@@ -1,0 +1,150 @@
+/*
+ * SATU TEMPAT UNTUK MENGUBAH ISI KEJUTAN.
+ * Cari komentar // GANTI: untuk bagian yang paling mungkin ingin kamu ubah.
+ * Hash jawaban permainan sengaja tidak menyimpan jawaban dalam bentuk teks biasa.
+ */
+window.SURPRISE_CONTENT = {
+  // GANTI: ubah nama panggilan di sini; gunakan ejaan yang sama di seluruh cerita.
+  name: "Nor",
+  sender: "Hamid",
+  age: 18,
+  colors: { primary: "#a78bfa", blue: "#7dd3fc", gold: "#ffd69b" },
+
+  // GANTI: ubah pembuka dan seluruh kalimat di bawah sesukamu.
+  copy: {
+    documentTitle: "Ada kejutan kecil buat Nor",
+    rotate: "Biar kejutan ini terasa utuh, putar kembali layar ke posisi portrait.",
+    startEyebrow: "SEBUAH HAL KECIL, DARI HAMID",
+    startTitle: "Hari ini,\nsemua lampu buat kamu.",
+    startBody: "Sebelum hari ini lewat, ada sesuatu yang pengin aku kasih. Pelan-pelan aja bukanya, ya.",
+    startButton: "Buka kejutan",
+    lockEyebrow: "GERBANG PERTAMA",
+    lockTitle: "Masih ingat hitungan kecil kita?",
+    lockBody: "Jawab satu pertanyaan ini buat lanjut ke bagian berikutnya.",
+    lockPlaceholder: "Tulis jawabanmu di sini",
+    lockButton: "Coba buka",
+    lockHint: "Petunjuk: jumlahkan tanggal ulang tahun Nor dan Hamid. Tulis hasil akhirnya saja.",
+    lockWrong: "Belum tepat. Coba ingat-ingat lagi, jangan buru-buru.",
+    lockAlmost: "Sedikit lagi. Kamu pasti bisa.",
+    lockSuccess: "Nah, benar. Pintu kecilnya kebuka.",
+    heroEyebrow: "HARI INI PUNYA KAMU",
+    heroTitle: "HAPPY BIRTHDAY,\n{{name}}.",
+    heroAge: "18 tahun. Banyak hal indah sedang menunggu kamu.",
+    heroBody: "Semoga hari ini terasa seramai tawa kamu, sehangat orang-orang yang sayang kamu, dan seindah hal-hal yang belum sempat kamu bayangkan.",
+    heroButton: "Lihat yang berikutnya",
+    balloonsEyebrow: "SEDIKIT KERAMAIAN BUAT KAMU",
+    balloonsTitle: "Pecahin balonnya, satu per satu.",
+    balloonsBody: "Setiap sentuhan akan menyusun sebuah ucapan. Bebas mulai dari balon mana saja.",
+    balloonsProgress: "Huruf sudah terkumpul",
+    balloonsDone: "HAPPY 18 {{name}}",
+    balloonsButton: "Lanjut, yang ulang tahun",
+    reasonsEyebrow: "HAL-HAL KECIL YANG AKU SIMPAN",
+    reasonsTitle: "Ada banyak alasan aku sayang kamu.",
+    reasonsBody: "Beberapa mungkin kelihatan sederhana. Tapi justru hal-hal ini yang bikin kamu jadi kamu.",
+    reasonsButton: "Ada satu harapan lagi",
+    cakeEyebrow: "SEBELUM KAMU MEMBUAT PERMINTAAN",
+    cakeTitle: "Make a wish dulu.",
+    cakeInstruction: "Make a wish dulu. Tahan jarimu di atas lilin buat niup.",
+    cakeAfter: "Semoga satu per satu harapanmu nemu jalan pulang jadi nyata.",
+    cakeButton: "Simpan harapannya",
+    interludeEyebrow: "UNTUK TAHUN BARU DALAM HIDUPMU",
+    interludeTitle: "Semoga kamu tetap jadi Nor yang itu.",
+    interludeBody: "Yang gampang nyambung sama orang, bisa bikin suasana hidup, dan punya cara sendiri untuk bikin hari biasa terasa lebih seru. Semoga kamu tetap punya ruang untuk jadi diri sendiri, bahkan saat hidup mulai sibuk.",
+    interludeNote: "Kamu enggak harus punya semua jawaban sekarang. Jalanin pelan-pelan, aku dukung kamu.",
+    interludeButton: "Lihat potongan cerita kita",
+    galleryEyebrow: "SEPULUH BINGKAI, BANYAK RASA",
+    galleryTitle: "Kalau bisa, aku mau simpan semua momen.",
+    galleryBody: "Geser pelan. Kalau fotonya belum ada, tempatnya aku siapin dulu buat nanti.",
+    galleryButton: "Masih ada yang mau aku bilang",
+    preletterEyebrow: "SEBELUM KEJUTAN TERAKHIR",
+    preletterTitle: "Ada yang lebih panjang dari satu ucapan.",
+    preletterBody: "Aku enggak selalu jago merangkai kata pas lagi langsung ngomong. Jadi kali ini, biar aku tulis pelan-pelan buat kamu.",
+    preletterButton: "Baca surat kecilku",
+    letterEyebrow: "DARI HAMID, UNTUK NOR",
+    letterTitle: "Buat kamu, di usia 18.",
+    letterButton: "Buka hadiah terakhir",
+    finaleEyebrow: "YANG TERAKHIR, TAPI BUKAN AKHIR",
+    finaleTitle: "Satu hadiah kecil buat perjalananmu.",
+    giftLabel: "BUKA SAAT KAMU SIAP",
+    giftButton: "Buka kadonya",
+    voucherLabel: "VOUCHER DARI HAMID",
+    voucherTitle: "Satu hari khusus buat kamu",
+    voucherBody: "Bisa ditukar kapan saja: waktu berdua, cerita tanpa buru-buru, dan satu hari yang kita isi sesukamu.",
+    voucherFoot: "Berlaku kapan pun kamu butuh hari yang menyenangkan.",
+    closing: "Ini baru permulaan. Aku sayang kamu.",
+    replay: "Putar kembali dari awal",
+    audioOn: "Nyalakan lagu",
+    audioOff: "Matikan lagu",
+    audioUnavailable: "Lagu belum ditambahkan",
+    photoAlt: "Foto kenangan nomor",
+    photoEmpty: "Satu bingkai untuk cerita kita",
+    photoEmptyNote: "Tambahkan foto di assets/photos/ untuk mengisinya.",
+    backLabel: "Kembali",
+    nextLabel: "Lanjut",
+  },
+
+  // GANTI: jawaban valid ditulis dalam bentuk hash SHA-256 setelah normalisasi.
+  // Untuk mengganti: normalisasi jawaban baru (huruf kecil, tanda baca dibuang, spasi dirapikan),
+  // lalu hitung SHA-256-nya. Penjelasan singkat tersedia di README.md.
+  riddles: [
+    {
+      question: "Tanggal berapa ultah Nor sama ultah Hamid? Jumlahkan.",
+      acceptedHashes: ["d59eced1ded07f84c145592f65bdf854358e009c5cd705f5215bf18697fed103"],
+      hint: "Ingat angka hasil penjumlahan dua tanggal ulang tahun kita. Masukkan hasil akhirnya saja.",
+      wrongMessages: ["Belum tepat. Coba ingat-ingat lagi, jangan buru-buru.", "Sedikit lagi. Coba hitung sekali lagi, ya."],
+    },
+  ],
+
+  // GANTI: isi 5–10 alasan. Kamu bisa menambah atau mengurangi jumlah item.
+  reasons: [
+    { title: "Kamu bikin suasana hidup", body: "Kamu punya energi yang gampang nyebar. Kadang baru datang aja, suasana yang tadinya biasa bisa jadi jauh lebih rame." },
+    { title: "Kamu berani jadi diri sendiri", body: "Aku suka cara kamu hadir sebagai dirimu sendiri. Enggak harus jadi orang lain supaya bisa disukai." },
+    { title: "Tawamu punya efek", body: "Ada momen ketika dengar kamu ketawa aja udah cukup buat bikin hariku yang capek jadi sedikit lebih ringan." },
+    { title: "Kamu punya banyak warna", body: "Kamu bisa ceria, ramai, ekspresif, dan punya cara sendiri melihat sesuatu. Bersamamu, cerita rasanya enggak cepat habis." },
+    { title: "Kamu bikin hal sederhana terasa berkesan", body: "Obrolan singkat atau waktu yang kelihatannya biasa bisa jadi momen yang nanti kepikiran lagi." },
+    { title: "Kamu terus bertumbuh", body: "Aku senang melihat kamu belajar mengenal diri sendiri, mencoba hal baru, dan pelan-pelan jadi versi kamu yang makin kuat." },
+    { title: "Kamu punya tempat di hariku", body: "Di antara banyak hal yang harus dijalani, ada bagian hari yang terasa lebih lengkap karena aku bisa cerita atau dengar kabar kamu." },
+    { title: "Aku bisa belajar banyak dari kamu", body: "Cara kamu bergaul dan membawa diri ngingetin aku kalau hidup bukan cuma soal serius-serius terus. Kadang kita perlu ketawa dan menikmati momen." },
+  ],
+
+  // GANTI: teks surat ini muncul per paragraf dengan animasi tersendiri.
+  letter: [
+    "Nor, selamat ulang tahun yang ke-18, ya. Rasanya seru bisa sampai di hari ini dan ikut melihat kamu masuk ke bab baru dalam hidupmu. Semoga di umur yang baru, kamu makin kenal sama diri sendiri, makin berani memilih jalan yang kamu mau, dan tetap punya banyak alasan buat ketawa lepas.",
+    "Aku berharap hal-hal baik datang ke kamu, bukan cuma yang besar dan kelihatan orang lain, tapi juga hal kecil yang bikin kamu tenang. Semoga kamu ketemu orang-orang yang tulus, kesempatan yang bikin kamu berkembang, dan keberanian buat menjauh dari hal-hal yang bikin kamu kehilangan diri sendiri. Kamu enggak harus selalu kuat atau selalu tahu harus ke mana. Pelan-pelan juga enggak apa-apa.",
+    "Terima kasih sudah nemenin aku sejauh ini. Terima kasih buat cerita-cerita kamu, buat waktu yang kamu bagi, buat tawa, dan buat kehadiranmu yang sering kali berarti lebih dari yang mungkin kamu sadari. Aku tahu kita sama-sama masih belajar, dan aku enggak berharap semuanya selalu sempurna. Aku cuma bersyukur kita punya kesempatan untuk terus saling mengenal dan tumbuh.",
+    "Semoga umur 18 ini jadi awal dari banyak pengalaman yang bikin kamu bangga sama diri sendiri. Kejar hal-hal yang kamu impikan, nikmati hari-hari yang ramai, dan jangan lupa kasih diri sendiri waktu untuk istirahat. Apa pun yang nanti berubah, aku harap kamu enggak kehilangan bagian dirimu yang hangat, ceria, dan penuh warna itu.",
+    "Selamat ulang tahun, Nor. Semoga kamu selalu punya ruang untuk bahagia, tempat untuk pulang saat capek, dan orang-orang yang mendukungmu dengan tulus. Hari ini, aku ikut merayakan kamu—bukan cuma karena kamu bertambah umur, tapi juga karena kamu adalah kamu.\n\nDari aku, Hamid. {{heart}}",
+  ],
+
+  // GANTI: daftar foto dinamis. Tambah/hapus objek untuk mengubah jumlah kartu galeri.
+  photos: [
+    { src: "assets/photos/foto-01.jpg", caption: "Satu momen yang pengin kusimpan" },
+    { src: "assets/photos/foto-02.jpg", caption: "Cerita kecil yang masih kuingat" },
+    { src: "assets/photos/foto-03.jpg", caption: "Satu potongan hari kita" },
+    { src: "assets/photos/foto-04.jpg", caption: "Momen yang bikin senyum sendiri" },
+    { src: "assets/photos/foto-05.jpg", caption: "Hari biasa, rasa yang enggak biasa" },
+    { src: "assets/photos/foto-06.jpg", caption: "Satu lagi buat album kita" },
+    { src: "assets/photos/foto-07.jpg", caption: "Semoga masih banyak cerita baru" },
+    { src: "assets/photos/foto-08.jpg", caption: "Bingkai kecil untuk kenangan" },
+    { src: "assets/photos/foto-09.jpg", caption: "Hal yang ingin kuingat lebih lama" },
+    { src: "assets/photos/foto-10.jpg", caption: "Lanjut bikin cerita, ya" },
+  ],
+
+  // GANTI: lagu akan dicek dulu. File yang belum ada tidak akan diputar atau memunculkan error JS.
+  music: { title: "Monokrom — Tulus", src: "assets/audio/monokrom-tulus.mp3", enabled: true, fadeSeconds: 3 },
+
+  // GANTI: kejutan penutup. Kosongkan message untuk menggunakan voucher bawaan yang siap screenshot.
+  finale: {
+    message: "",
+    title: "Satu hari khusus buat kamu",
+    body: "Bisa ditukar kapan saja: waktu berdua, cerita tanpa buru-buru, dan satu hari yang kita isi sesukamu.",
+    closing: "Ini baru permulaan. Aku sayang kamu.",
+  },
+
+  settings: {
+    balloonCount: 18,
+    balloonAutoPopMs: 25000,
+    reducedMotionRespect: true,
+    canvasParticleMax: 400,
+  },
+};
