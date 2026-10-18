@@ -1,0 +1,31 @@
+name: Import static site bundle
+on:
+  push:
+    branches: [main]
+    paths:
+      - bundle.zip
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract project into repository root
+        shell: bash
+        run: |
+          if [ ! -f bundle.zip ]; then echo "bundle.zip is not present; skipping."; exit 0; fi
+          mkdir -p /tmp/kejutan-site
+          unzip -oq bundle.zip -d /tmp/kejutan-site
+          cp -a /tmp/kejutan-site/kejutan-18/. .
+          rm -f bundle.zip
+          rm -f .github/workflows/import-bundle.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: unpack static site source [skip ci]" || exit 0
+          git push
