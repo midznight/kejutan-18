@@ -484,3 +484,15 @@ h1, h2 { text-wrap: balance; }
 }
 .gift-stage.gift-opened .gift-box::before,
 .gift-stage.gift-opened .gift-lid::before { filter: brightness(1.18); }
+
+.scene.is-leaving {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  pointer-events: none;
+  animation: scene-leave .35s cubic-bezier(.4,0,.7,.2) forwards;
+}
+@keyframes scene-leave {
+  from { opacity: 1; transform: translate3d(0,0,0); }
+  to { opacity: 0; transform: translate3d(-16px,0,0); }
+}
