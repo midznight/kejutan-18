@@ -147,17 +147,17 @@ window.SURPRISE_CONTENT = {
   ],
 
   // GANTI: daftar foto dinamis. Tambah/hapus objek untuk mengubah jumlah kartu galeri.
-  photos: [
-    { src: "assets/photos/foto-01.jpg", caption: "Satu momen yang pengin kusimpan" },
-    { src: "assets/photos/foto-02.jpg", caption: "Cerita kecil yang masih kuingat" },
-    { src: "assets/photos/foto-03.jpg", caption: "Satu potongan hari kita" },
-    { src: "assets/photos/foto-04.jpg", caption: "Momen yang bikin senyum sendiri" },
-    { src: "assets/photos/foto-05.jpg", caption: "Hari biasa, rasa yang enggak biasa" },
-    { src: "assets/photos/foto-06.jpg", caption: "Satu lagi buat album kita" },
-    { src: "assets/photos/foto-07.jpg", caption: "Semoga masih banyak cerita baru" },
-    { src: "assets/photos/foto-08.jpg", caption: "Bingkai kecil untuk kenangan" },
-    { src: "assets/photos/foto-09.jpg", caption: "Hal yang ingin kuingat lebih lama" },
-    { src: "assets/photos/foto-10.jpg", caption: "Lanjut bikin cerita, ya" },
+    photos: [
+    { src: "assets/photos/-6078091706051008456_121.jpg", caption: "GANTI: cerita foto 1" },
+    { src: "assets/photos/-6095810533501112793_121.jpg", caption: "GANTI: cerita foto 2" },
+    { src: "assets/photos/-6116211469243323337_121.jpg", caption: "GANTI: cerita foto 3" },
+    { src: "assets/photos/-6131736547657715937_121.jpg", caption: "GANTI: cerita foto 4" },
+    { src: "assets/photos/-6181332351795794919_121.jpg", caption: "GANTI: cerita foto 5" },
+    { src: "assets/photos/-6217530744188376015_121.jpg", caption: "GANTI: cerita foto 6" },
+    { src: "assets/photos/-6221994383440024238_121.jpg", caption: "GANTI: cerita foto 7" },
+    { src: "assets/photos/-6242375489318228547_119.jpg", caption: "GANTI: cerita foto 8" },
+    { src: "assets/photos/IMG-20260521-WA0017.jpg", caption: "GANTI: cerita foto 9" },
+    { src: "assets/photos/IMG-20260703-WA0032.jpg", caption: "GANTI: cerita foto 10" },
   ],
 
   // GANTI: lagu akan dicek dulu. File yang belum ada tidak akan diputar atau memunculkan error JS.
