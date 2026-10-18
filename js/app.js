@@ -271,7 +271,7 @@
       ${makeTopline(c.heroEyebrow, 2)}
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring"></span><span class="orbit-ring ring-two"></span><div class="orbit-center"><span class="big-number">18</span></div></div>
-        <p class="kicker">${formatted(c.heroEyebrow)}</p>
+        <p class="kicker">${formatted(c.heroKicker || 'SATU BAB BARU DIMULAI')}</p>
         <h1 class="hero-title"><span class="accent">${formatted(c.heroTitle)}</span></h1>
         <p class="body-copy">${formatted(c.heroAge)}</p>
         <div class="zodiac-mini-badge"><span class="libra-mini-sigil" aria-hidden="true">${LIBRA_SIGIL}</span> LIBRA · 18 OKTOBER</div>
