@@ -1670,8 +1670,10 @@
       renderPhoto(index);
       overlay.hidden = false;
       document.body.classList.add('photo-lightbox-open');
-      window.requestAnimationFrame(() => overlay.classList.add('is-visible'));
-      closeButton.focus({ preventScroll: true });
+      window.requestAnimationFrame(() => {
+        overlay.classList.add('is-visible');
+        closeButton.focus({ preventScroll: true });
+      });
     };
 
     closeButton.addEventListener('click', close);
