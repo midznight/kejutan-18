@@ -1569,8 +1569,8 @@
     const transformToCub = () => {
       if (lionCaption) lionCaption.textContent = 'Ternyata cuma si kecil yang ingin merayakan kamu. ♡';
       if (reducedMotion || !window.gsap) {
-        roaringLion.hidden = true;
-        lionCub.hidden = false;
+        roaringLion.setAttribute('hidden', '');
+        lionCub.removeAttribute('hidden');
         lionCub.classList.add('lion-revealed');
         window.setTimeout(revealVoucher, reducedMotion ? 250 : 850);
         return;
@@ -1578,7 +1578,7 @@
       const gsap = window.gsap;
       const timeline = gsap.timeline({ onComplete: () => window.setTimeout(revealVoucher, 450) });
       timeline.to(roaringLion, { opacity: 0, scale: .68, y: 25, rotation: -3, duration: .48, ease: 'power2.in' });
-      timeline.call(() => { roaringLion.hidden = true; lionCub.hidden = false; });
+      timeline.call(() => { roaringLion.setAttribute('hidden', ''); lionCub.removeAttribute('hidden'); });
       timeline.fromTo(lionCub,
         { opacity: 0, scale: .48, y: 86, rotation: 5 },
         { opacity: 1, scale: 1, y: 0, rotation: 0, duration: .95, ease: 'back.out(1.45)' }
@@ -1604,8 +1604,8 @@
       buttonElement.disabled = true;
 
       if (reducedMotion) {
-        roaringLion.hidden = true;
-        lionCub.hidden = false;
+        roaringLion.setAttribute('hidden', '');
+        lionCub.removeAttribute('hidden');
         lionCub.classList.add('lion-revealed');
         if (lionCaption) lionCaption.textContent = 'Ternyata cuma si kecil yang ingin merayakan kamu. ♡';
         window.setTimeout(revealVoucher, 250);
