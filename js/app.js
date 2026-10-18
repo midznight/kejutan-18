@@ -1672,7 +1672,7 @@
       document.body.classList.add('photo-lightbox-open');
       window.requestAnimationFrame(() => {
         overlay.classList.add('is-visible');
-        closeButton.focus({ preventScroll: true });
+        window.requestAnimationFrame(() => closeButton.focus({ preventScroll: true }));
       });
     };
 
