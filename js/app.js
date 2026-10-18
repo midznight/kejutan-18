@@ -102,10 +102,10 @@
       }
       return `<g class="bouquet-stem-group"><path class="bouquet-stem" d="${path}" fill="none" stroke="${i%3===0?'#78876d':'#91a080'}" stroke-width="${i%2?2.4:3}" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="520"/>${leaves}${bloom}</g>`;
     }).join('');
-    const babyBreath = Array.from({length:21}, (_,i) => {
-      const x = 120 + (i*37)%220;
-      const y = 175 + (i*23)%135;
-      return `<g class="bouquet-flower" opacity="0"><path d="M 225 426 Q ${x} ${y+20} ${x} ${y}" fill="none" stroke="#9aa586" stroke-width="1.2"/><circle cx="${x}" cy="${y}" r="3.3" fill="#f4e8d7"/><circle cx="${x}" cy="${y}" r="1.2" fill="#f0c6ad"/></g>`;
+    const babyBreath = Array.from({length:14}, (_,i) => {
+      const x = 122 + (i*37)%216;
+      const y = 182 + (i*23)%122;
+      return `<g class="bouquet-flower" opacity="0"><circle cx="${x}" cy="${y}" r="3.2" fill="#f4e8d7"/><circle cx="${x}" cy="${y}" r="1.2" fill="#f0c6ad"/></g>`;
     }).join('');
     return `<svg class="bouquet-svg" id="bouquet-svg" viewBox="0 0 460 520" role="img" aria-label="${safe(C.copy.flowerAria || 'Buket bunga untuk '+C.name)}" xmlns="http://www.w3.org/2000/svg">
       <defs><linearGradient id="kraft-paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d5b18a"/><stop offset=".55" stop-color="#b98f6d"/><stop offset="1" stop-color="#9c755f"/></linearGradient><linearGradient id="kraft-fold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ead2af"/><stop offset="1" stop-color="#c39a76"/></linearGradient></defs>
@@ -593,7 +593,7 @@
       const [a,b] = palettes[i % palettes.length];
       const tilt = [-7,-4,4,7,1, -2][i % 6];
       const carrier = i < charCount;
-      return `<button type="button" class="balloon" data-carrier="${carrier ? 'true' : 'false'}" style="--x:${x}%;--y:${y}%;--tilt:${tilt}deg;--balloon-a:${a};--balloon-b:${b};--float:${3.2 + (i%4)*.48}s" aria-label="${safe(withName(C.copy.balloonButtonLabel).replaceAll('{{count}}', i + 1))}"><svg class="balloon-svg" viewBox="0 0 80 118" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="balloon-grad-${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf4" stop-opacity=".88"/><stop offset=".22" stop-color="${a}"/><stop offset=".72" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><linearGradient id="balloon-edge-${i}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#3a2348" stop-opacity=".4"/></linearGradient></defs><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-grad-${i})" stroke="rgba(255,248,240,.76)" stroke-width="1.1"/><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-edge-${i})"/><path d="M24 20 C18 28 18 38 22 45" fill="none" stroke="#fffaf4" stroke-opacity=".85" stroke-width="4" stroke-linecap="round"/><ellipse cx="23" cy="17" rx="3.4" ry="5.5" fill="#fffaf4" fill-opacity=".78" transform="rotate(22 23 17)"/><path d="M40 92 C34 99 47 102 39 110 C35 114 39 116 42 117" fill="none" stroke="#ead9e7" stroke-opacity=".82" stroke-width="1.2" stroke-linecap="round"/></svg><span class="balloon-mark" aria-hidden="true">${carrier ? TINY_HEART : ''}</span></button>`;
+      return `<button type="button" class="balloon" data-carrier="${carrier ? 'true' : 'false'}" style="--x:${x}%;--y:${y}%;--tilt:${tilt}deg;--balloon-a:${a};--balloon-b:${b};--float:${3.2 + (i%4)*.48}s" aria-label="${safe(withName(C.copy.balloonButtonLabel).replaceAll('{{count}}', i + 1))}"><svg class="balloon-svg" viewBox="0 0 80 118" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="balloon-grad-${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf4" stop-opacity=".88"/><stop offset=".22" stop-color="${a}"/><stop offset=".72" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><linearGradient id="balloon-edge-${i}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#3a2348" stop-opacity=".4"/></linearGradient></defs><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-grad-${i})" stroke="rgba(255,248,240,.76)" stroke-width="1.1"/><path d="M40 5 C21 5 8 20 8 41 C8 61 23 77 36 84 L40 91 L44 84 C57 77 72 61 72 41 C72 20 59 5 40 5Z" fill="url(#balloon-edge-${i})"/><path d="M24 20 C18 28 18 38 22 45" fill="none" stroke="#fffaf4" stroke-opacity=".85" stroke-width="4" stroke-linecap="round"/><ellipse cx="23" cy="17" rx="3.4" ry="5.5" fill="#fffaf4" fill-opacity=".78" transform="rotate(22 23 17)"/><path class="balloon-rope" d="M40 92 C34 99 47 102 39 110 C35 114 39 116 42 117" fill="none" stroke="#ead9e7" stroke-opacity=".82" stroke-width="1.2" stroke-linecap="round"/></svg><span class="balloon-mark" aria-hidden="true">${carrier ? TINY_HEART : ''}</span></button>`;
     }).join('');
     const counter = document.getElementById('balloon-counter');
     const total = document.getElementById('balloon-total');
@@ -662,7 +662,11 @@
     const art = document.getElementById('bouquet-art');
     if (!art) return;
     art.addEventListener('click', (event) => {
-      if (!event.target.closest || !event.target.closest('.bouquet-flower')) return;
+      const svg = art.querySelector('svg');
+      const rect = svg ? svg.getBoundingClientRect() : art.getBoundingClientRect();
+      const tappedBloom = event.target.closest && event.target.closest('.bouquet-flower');
+      const tappedBouquetArea = event.clientY - rect.top < rect.height * .72;
+      if (!tappedBloom && !tappedBouquetArea) return;
       spawnFlowerBurst(event.clientX, event.clientY);
       if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
         try { navigator.vibrate(10); } catch (_) { /* no-op */ }
