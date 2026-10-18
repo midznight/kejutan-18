@@ -164,7 +164,7 @@
       s0: ['moon','art-moon','art-branch'], s1: ['telegram','art-envelope','art-sigil'],
       s2: ['arch','art-arch','art-branch'], s3: ['dusk','art-hills','art-moon'],
       s4: ['candle','art-lamps','art-moth'], s5: ['herbarium','art-branch','art-moth'],
-      s6: ['tarot','art-tarot','art-branch'], s7: ['interlude','art-herbarium','art-star'],
+      s6: ['tarot','art-tarot','art-branch'], s7: ['interlude','art-branch','art-star'],
       s8: ['gallery','art-gallery','art-lamps'], s9: ['envelope','art-envelope','art-moth'],
       s10: ['letter','art-branch','art-envelope'], s11: ['curtain','art-curtain','art-star']
     };
