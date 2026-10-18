@@ -40,6 +40,7 @@
   const imageIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3.5" y="3.5" width="17" height="17" rx="2.6"/><circle cx="9" cy="9" r="1.7"/><path d="m4.5 17 5-5 3.5 3 2.2-2.1 4.3 4.1"/></svg>';
   const lockIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4.5" y="10" width="15" height="10.5" rx="2.5"/><path d="M8 10V7.3a4 4 0 0 1 8 0V10"/><circle cx="12" cy="15" r="1"/></svg>';
   let currentScene = 0;
+  let openPhotoLightbox = null;
   let sceneTransitioning = false;
   let unlocked = false;
   let balloonTimer = null;
@@ -403,7 +404,7 @@
       </div>
       <div class="actions zodiac-actions">${button(zodiac.button || 'Lanjut', 'next')}</div>`;
 
-    const photos = C.photos.map((photo, i) => `<article class="gallery-card" style="--rot:${(-3 + Math.random() * 7).toFixed(2)}deg;--lift:${(-4 + Math.random() * 8).toFixed(1)}px" data-photo-index="${i}"><span class="polaroid-tape" aria-hidden="true"></span><div class="gallery-photo"><div class="photo-placeholder"><div class="frame-icon">${imageIcon}</div><p>${formatted(c.photoEmpty)}</p><small>${formatted(c.photoEmptyNote)}</small></div><img data-src="${safe(photo.src)}" loading="lazy" decoding="async" alt="${safe(c.photoAlt)} ${i + 1}"></div><div class="gallery-caption"><span class="caption-count">${String(i + 1).padStart(2, '0')}</span><span ${String(photo.caption || '').trim() ? '' : 'hidden'}>${formatted(photo.caption)}</span></div></article>`).join('');
+    const photos = C.photos.map((photo, i) => `<article class="gallery-card" style="--rot:${(-3 + Math.random() * 7).toFixed(2)}deg;--lift:${(-4 + Math.random() * 8).toFixed(1)}px" data-photo-index="${i}"><span class="polaroid-tape" aria-hidden="true"></span><div class="gallery-photo"><div class="photo-placeholder"><div class="frame-icon">${imageIcon}</div><p>${formatted(c.photoEmpty)}</p><small>${formatted(c.photoEmptyNote)}</small></div><img data-src="${safe(photo.src)}" loading="lazy" decoding="async" tabindex="0" role="button" aria-haspopup="dialog" aria-label="${safe(c.photoAlt)} ${i + 1}, ketuk untuk memperbesar" alt="${safe(c.photoAlt)} ${i + 1}"></div><div class="gallery-caption"><span class="caption-count">${String(i + 1).padStart(2, '0')}</span><span ${String(photo.caption || '').trim() ? '' : 'hidden'}>${formatted(photo.caption)}</span></div></article>`).join('');
     const s7 = `
       ${makeTopline(c.galleryEyebrow, 9)}
       <p class="kicker">${String(C.photos.length).padStart(2, '0')} ${formatted(c.galleryKicker)}</p>
@@ -520,10 +521,19 @@
     observePhotos();
     setupLetterReveal();
     setupGalleryProgress();
+    openPhotoLightbox = setupPhotoLightbox();
   }
 
   function installEventHandlers() {
     app.addEventListener('click', (event) => {
+      const photoImage = event.target.closest?.('.gallery-photo img');
+      if (photoImage && openPhotoLightbox) {
+        const photoIndex = Number(photoImage.closest('.gallery-card')?.dataset.photoIndex);
+        if (Number.isInteger(photoIndex)) {
+          openPhotoLightbox(photoIndex);
+          return;
+        }
+      }
       const tarotCard = event.target.closest('.tarot-card');
       if (tarotCard) {
         const flipped = tarotCard.classList.toggle('is-flipped');
@@ -545,6 +555,13 @@
     });
 
     app.addEventListener('keydown', (event) => {
+      const photoImage = event.target.closest?.('.gallery-photo img');
+      if (photoImage && ['Enter', ' '].includes(event.key) && openPhotoLightbox) {
+        event.preventDefault();
+        const photoIndex = Number(photoImage.closest('.gallery-card')?.dataset.photoIndex);
+        if (Number.isInteger(photoIndex)) openPhotoLightbox(photoIndex);
+        return;
+      }
       const card = event.target.closest('.tarot-card');
       if (card && ['Enter', ' '].includes(event.key)) {
         event.preventDefault();
@@ -1554,6 +1571,161 @@
     strip.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update, { passive: true });
     update();
+  }
+
+  function setupPhotoLightbox() {
+    const photos = Array.isArray(C.photos) ? C.photos : [];
+    if (!photos.length || !document.getElementById('gallery-strip')) return null;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'photo-lightbox';
+    overlay.hidden = true;
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Lihat foto kenangan');
+
+    const panel = document.createElement('div');
+    panel.className = 'photo-lightbox-panel';
+
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'photo-lightbox-close';
+    closeButton.setAttribute('aria-label', 'Tutup foto');
+    closeButton.textContent = '×';
+
+    const figure = document.createElement('figure');
+    figure.className = 'photo-lightbox-figure';
+    const image = document.createElement('img');
+    image.className = 'photo-lightbox-image';
+    image.alt = '';
+    image.draggable = false;
+    image.decoding = 'async';
+
+    const caption = document.createElement('figcaption');
+    caption.className = 'photo-lightbox-caption';
+
+    const navigation = document.createElement('div');
+    navigation.className = 'photo-lightbox-navigation';
+    const previousButton = document.createElement('button');
+    previousButton.type = 'button';
+    previousButton.className = 'photo-lightbox-nav';
+    previousButton.setAttribute('aria-label', 'Foto sebelumnya');
+    previousButton.textContent = '‹';
+
+    const count = document.createElement('span');
+    count.className = 'photo-lightbox-count';
+    count.setAttribute('aria-live', 'polite');
+    count.setAttribute('aria-atomic', 'true');
+
+    const nextButton = document.createElement('button');
+    nextButton.type = 'button';
+    nextButton.className = 'photo-lightbox-nav';
+    nextButton.setAttribute('aria-label', 'Foto berikutnya');
+    nextButton.textContent = '›';
+
+    figure.append(image, caption);
+    navigation.append(previousButton, count, nextButton);
+    panel.append(closeButton, figure, navigation);
+    overlay.append(panel);
+    document.body.append(overlay);
+
+    let activeIndex = 0;
+    let lastFocus = null;
+    let pointerStart = null;
+
+    const renderPhoto = (index) => {
+      activeIndex = (index + photos.length) % photos.length;
+      const photo = photos[activeIndex] || {};
+      image.classList.remove('is-ready', 'is-missing');
+      image.hidden = false;
+      image.alt = `${C.copy.photoAlt || 'Foto kenangan'} ${activeIndex + 1}`;
+      image.onload = () => image.classList.add('is-ready');
+      image.onerror = () => {
+        image.classList.remove('is-ready');
+        image.classList.add('is-missing');
+        image.hidden = true;
+        caption.textContent = 'Foto ini belum bisa dimuat.';
+      };
+      image.src = String(photo.src || '');
+      if (image.complete && image.naturalWidth > 0) image.classList.add('is-ready');
+      caption.textContent = String(photo.caption || '').trim() || `Kenangan ${String(activeIndex + 1).padStart(2, '0')}`;
+      count.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(photos.length).padStart(2, '0')}`;
+      previousButton.hidden = photos.length < 2;
+      nextButton.hidden = photos.length < 2;
+    };
+
+    const close = () => {
+      if (overlay.hidden) return;
+      overlay.classList.remove('is-visible');
+      overlay.hidden = true;
+      document.body.classList.remove('photo-lightbox-open');
+      pointerStart = null;
+      if (lastFocus && lastFocus.isConnected && typeof lastFocus.focus === 'function') {
+        lastFocus.focus({ preventScroll: true });
+      }
+    };
+
+    const open = (index) => {
+      lastFocus = document.activeElement;
+      renderPhoto(index);
+      overlay.hidden = false;
+      document.body.classList.add('photo-lightbox-open');
+      window.requestAnimationFrame(() => overlay.classList.add('is-visible'));
+      closeButton.focus({ preventScroll: true });
+    };
+
+    closeButton.addEventListener('click', close);
+    previousButton.addEventListener('click', () => renderPhoto(activeIndex - 1));
+    nextButton.addEventListener('click', () => renderPhoto(activeIndex + 1));
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) close();
+    });
+
+    image.addEventListener('pointerdown', (event) => {
+      pointerStart = { x: event.clientX, y: event.clientY };
+    }, { passive: true });
+    image.addEventListener('pointerup', (event) => {
+      if (!pointerStart) return;
+      const dx = event.clientX - pointerStart.x;
+      const dy = event.clientY - pointerStart.y;
+      pointerStart = null;
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+      renderPhoto(activeIndex + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+    image.addEventListener('pointercancel', () => { pointerStart = null; }, { passive: true });
+
+    document.addEventListener('keydown', (event) => {
+      if (overlay.hidden) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close();
+        return;
+      }
+      if (event.key === 'ArrowLeft' && photos.length > 1) {
+        event.preventDefault();
+        renderPhoto(activeIndex - 1);
+        return;
+      }
+      if (event.key === 'ArrowRight' && photos.length > 1) {
+        event.preventDefault();
+        renderPhoto(activeIndex + 1);
+        return;
+      }
+      if (event.key === 'Tab') {
+        const controls = [closeButton, previousButton, nextButton].filter(node => !node.hidden && !node.disabled);
+        if (!controls.length) return;
+        const first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    return open;
   }
 
   let letterObserver = null;
