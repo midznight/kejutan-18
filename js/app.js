@@ -34,6 +34,9 @@
   let audioContext = null;
   let sfxMasterGain = null;
   let musicGain = null;
+  let musicDuckGain = null;
+  let musicMuteGain = null;
+  let musicFadeRaf = 0;
   let audioAnalyser = null;
   let mediaSource = null;
   let frequencyData = null;
@@ -118,7 +121,7 @@
           return `<ellipse class="bouquet-flower" cx="${xx}" cy="${yy}" rx="${plant.type==='peony'?10.5:8.2}" ry="${plant.type==='peony'?18:13.5}" transform="rotate(${j*360/count} ${xx} ${yy})" fill="${j%3===0?'#f4dfcb':plant.color}" opacity="0"/>`;
         }).join('') + `<circle class="bouquet-flower" cx="${tipX}" cy="${tipY}" r="8.5" fill="#efc78f" opacity="0"/>`;
       }
-      return `<g class="bouquet-stem-group"><path class="bouquet-stem" d="${path}" fill="none" stroke="${i%3===0?'#78876d':'#91a080'}" stroke-width="${i%2?3:3.3}" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="520"/>${leaves}${bloom}</g>`;
+      return `<g class="bouquet-stem-group"><path class="bouquet-stem" d="${path}" fill="none" stroke="${i%3===0?'#78876d':'#91a080'}" stroke-width="${i%2?3:3.3}" stroke-linecap="round" stroke-dasharray="520" stroke-dashoffset="520"/>${leaves}<g class="bouquet-flower-cluster" data-cx="${tipX}" data-cy="${tipY}" opacity="0">${bloom}</g></g>`;
     }).join('');
     const babyBreath = Array.from({length:14}, (_,i) => {
       const x = 122 + (i*37)%216;
@@ -493,7 +496,10 @@
     toggle.setAttribute('aria-label', C.copy.audioOn);
     toggle.addEventListener('click', () => {
       audioMuted = !audioMuted;
-      audio.muted = audioMuted;
+      audio.muted = audioMuted && !(musicMuteGain && audioContext);
+      if (musicMuteGain && audioContext) {
+        musicMuteGain.gain.setTargetAtTime(audioMuted ? 0 : 1, audioContext.currentTime, .025);
+      }
       if (sfxMasterGain && audioContext) {
         sfxMasterGain.gain.setTargetAtTime(audioMuted ? 0 : .3, audioContext.currentTime, .025);
       }
@@ -539,18 +545,30 @@
           audioAnalyser.smoothingTimeConstant = .78;
           frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
           musicGain = audioContext.createGain();
-          musicGain.gain.value = 1;
+          musicGain.gain.value = 0;
+          musicDuckGain = audioContext.createGain();
+          musicDuckGain.gain.value = 1;
+          musicMuteGain = audioContext.createGain();
+          musicMuteGain.gain.value = audioMuted ? 0 : 1;
           mediaSource.connect(audioAnalyser);
           audioAnalyser.connect(musicGain);
-          musicGain.connect(audioContext.destination);
+          musicGain.connect(musicDuckGain);
+          musicDuckGain.connect(musicMuteGain);
+          musicMuteGain.connect(audioContext.destination);
         } catch (_) {
           audioAnalyser = null;
           frequencyData = null;
+          musicGain = null;
+          musicDuckGain = null;
+          musicMuteGain = null;
         }
       }
     } catch (_) {
       audioContext = null;
       sfxMasterGain = null;
+      musicGain = null;
+      musicDuckGain = null;
+      musicMuteGain = null;
     }
   }
 
@@ -607,11 +625,11 @@
       playTone(105, .42, 'triangle', .17, 36);
       playNoise(.32, .13, 'lowpass', 850);
       window.setTimeout(() => playNoise(.1, .055, 'highpass', 3200), 90);
-      if (musicGain && audioContext) {
+      if (musicDuckGain && audioContext) {
         const now = audioContext.currentTime;
-        musicGain.gain.cancelScheduledValues(now);
-        musicGain.gain.setTargetAtTime(.48, now, .035);
-        musicGain.gain.setTargetAtTime(1, now + .22, .1);
+        musicDuckGain.gain.cancelScheduledValues(now);
+        musicDuckGain.gain.setTargetAtTime(.48, now, .035);
+        musicDuckGain.gain.setTargetAtTime(1, now + .22, .1);
       }
     } else if (name === 'count') {
       const step = Math.max(0, Math.min(4, 5 - Number(value)));
@@ -636,8 +654,11 @@
     }
     if (!audioAvailable) return;
     try {
-      audio.volume = 0;
-      audio.muted = audioMuted;
+      audio.volume = musicGain && musicMuteGain ? 1 : 0;
+      audio.muted = audioMuted && !(musicMuteGain && audioContext);
+      if (musicMuteGain && audioContext) {
+        musicMuteGain.gain.setTargetAtTime(audioMuted ? 0 : 1, audioContext.currentTime, .025);
+      }
       const playResult = audio.play();
       if (playResult?.catch) playResult.catch(() => {});
     } catch (_) {
@@ -659,25 +680,47 @@
     try {
       audio.pause();
       audio.currentTime = 0;
-      audio.volume = 0;
-      audio.muted = audioMuted;
+      audio.volume = musicGain && musicMuteGain ? 1 : 0;
+      audio.muted = audioMuted && !(musicMuteGain && audioContext);
+      if (musicMuteGain && audioContext) {
+        musicMuteGain.gain.setTargetAtTime(audioMuted ? 0 : 1, audioContext.currentTime, .025);
+      }
       const playResult = audio.play();
       if (playResult?.catch) playResult.catch(() => {});
-      if (!audioMuted) fadeAudio(0, 1, Math.max(0.1, Number(C.music.fadeSeconds) || 3) * 1000);
+      fadeAudio(0, 1, Math.max(0.1, Number(C.music.fadeSeconds) || 3) * 1000);
     } catch (_) {
       // Gagal audio tidak menghentikan alur kejutan.
     }
   }
 
   function fadeAudio(from, to, duration) {
-    if (reducedMotion) { audio.volume = to; return; }
+    if (musicFadeRaf) {
+      window.cancelAnimationFrame(musicFadeRaf);
+      musicFadeRaf = 0;
+    }
+    const hasGainStage = !!(musicGain && audioContext && musicMuteGain);
+    const setLevel = (level) => {
+      if (hasGainStage) {
+        musicGain.gain.setValueAtTime(level, audioContext.currentTime);
+      } else {
+        audio.volume = Math.max(0, Math.min(1, level));
+      }
+    };
+    if (reducedMotion || duration <= 0) {
+      setLevel(to);
+      return;
+    }
     const started = performance.now();
     const frame = (time) => {
-      const progress = Math.min(1, (time - started) / duration);
-      audio.volume = Math.max(0, Math.min(1, from + (to - from) * progress));
-      if (progress < 1 && currentScene === 2 && !audioMuted) requestAnimationFrame(frame);
+      const progress = Math.min(1, (time - started) / Math.max(1, duration));
+      setLevel(from + (to - from) * progress);
+      if (progress < 1) {
+        musicFadeRaf = window.requestAnimationFrame(frame);
+      } else {
+        musicFadeRaf = 0;
+      }
     };
-    requestAnimationFrame(frame);
+    musicFadeRaf = window.requestAnimationFrame(frame);
   }
 
   function delay(ms) { return new Promise(resolve => window.setTimeout(resolve, ms)); }
@@ -691,6 +734,10 @@
     caption.className = 'countdown-caption';
     caption.textContent = withName(C.copy.countdownCopy || 'Siap-siap, {{name}}.');
     overlay.appendChild(caption);
+    const atmosphereCanvas = document.getElementById('atmosphere-canvas');
+    const atmosphereParent = atmosphereCanvas ? atmosphereCanvas.parentNode : null;
+    const atmosphereNextSibling = atmosphereCanvas ? atmosphereCanvas.nextSibling : null;
+    if (atmosphereCanvas) overlay.appendChild(atmosphereCanvas);
     document.body.appendChild(overlay);
     const countDuration = reducedMotion ? 380 : 640;
     for (const value of [5, 4, 3, 2, 1]) {
@@ -730,6 +777,13 @@
     setScene(2);
     await delay(reducedMotion ? 20 : 90);
     overlay.remove();
+    if (atmosphereCanvas && atmosphereParent) {
+      if (atmosphereNextSibling && atmosphereNextSibling.parentNode === atmosphereParent) {
+        atmosphereParent.insertBefore(atmosphereCanvas, atmosphereNextSibling);
+      } else {
+        atmosphereParent.appendChild(atmosphereCanvas);
+      }
+    }
   }
 
   function animateSceneDecorations(scene) {
@@ -789,6 +843,20 @@
     const previous = document.getElementById(sceneIds[currentScene]);
     const next = document.getElementById(sceneIds[index]);
     if (!next || index === currentScene) return;
+    if (currentScene === 5 && index !== 5) {
+      if (bouquetPetalTimer) {
+        window.clearTimeout(bouquetPetalTimer);
+        bouquetPetalTimer = 0;
+      }
+      const bouquetSvg = document.getElementById('bouquet-svg');
+      if (bouquetSvg && window.gsap) {
+        const stems = Array.from(bouquetSvg.querySelectorAll('.bouquet-stem'));
+        const targets = Array.from(bouquetSvg.querySelectorAll('.bouquet-leaf, .bouquet-flower, .bouquet-flower-cluster'));
+        window.gsap.killTweensOf([...stems, ...targets]);
+        window.gsap.set(stems, { clearProps: 'strokeDashoffset' });
+        window.gsap.set(targets, { clearProps: 'transform,opacity' });
+      }
+    }
     sceneTransitioning = true;
     if (previous) {
       previous.classList.remove('is-active');
@@ -852,7 +920,11 @@
     const count = Math.max(1, Math.min(18, Number(C.settings.balloonCount) || 18));
     const phrasePrefix = C.copy.balloonPhrasePrefix || 'HAPPY 18';
     const phrase = `${phrasePrefix.trimEnd()} ${String(C.name).replace(/\s+/g, '').toUpperCase()}`;
-    const charCount = Math.min(phrase.length, count);
+    const phraseCharacters = Array.from(phrase.matchAll(/\S/gu), match => ({
+      character: match[0],
+      end: match.index + match[0].length
+    }));
+    const charCount = Math.min(phraseCharacters.length, count);
     const coords = [
       [2,8], [19,3], [36,12], [54,4], [72,11], [88,5],
       [10,37], [27,31], [45,39], [63,32], [81,38], [1,65],
@@ -910,12 +982,13 @@
       }
       popped++;
       if (isCarrier && letterCount < charCount) {
-        const character = phrase[letterCount];
+        const phraseCharacter = phraseCharacters[letterCount];
+        const character = phraseCharacter.character;
         letterCount++;
         const mark = item.querySelector('.balloon-mark');
         if (mark) { mark.textContent = character === ' ' ? '\u00a0' : character; mark.classList.add('revealed-character'); }
         item.setAttribute('aria-label', safe(withName(C.copy.balloonPoppedLabel)));
-        reveal.textContent = phrase.slice(0, letterCount);
+        reveal.textContent = phrase.slice(0, phraseCharacter.end);
         if (counter) counter.textContent = String(letterCount);
         if (fill) fill.style.transform = `scaleX(${letterCount / charCount})`;
         if (character !== ' ' && window.gsap && !reducedMotion) {
@@ -933,7 +1006,7 @@
       }
       if (automatic && isCarrier) {
         const mark = item.querySelector('.balloon-mark');
-        if (mark) mark.textContent = phrase[Math.max(0, letterCount - 1)] || '';
+        if (mark) mark.textContent = phraseCharacters[Math.max(0, letterCount - 1)]?.character || '';
       }
       if (!autoStarted) {
         autoStarted = true;
@@ -1003,10 +1076,24 @@
       const distance = Math.hypot(dx, dy);
       if (distance < 90 && distance > 1) {
         const force = (90 - distance) / 90 * 28;
+        const wasFloating = item.classList.contains('is-floating');
+        const resumeDrift = () => {
+          if (wasFloating && item.isConnected) item.style.removeProperty('animation');
+        };
+        if (wasFloating) item.style.animation = 'none';
         window.gsap.killTweensOf(item);
         window.gsap.to(item, {
           x: dx / distance * force, y: dy / distance * force, duration: .14, ease: 'power2.out',
-          onComplete: () => window.gsap.to(item, { x: 0, y: 0, duration: .6, ease: 'elastic.out(1,.42)', clearProps: 'x,y' })
+          onComplete: () => {
+            if (!item.isConnected || item.classList.contains('popped') || item.classList.contains('balloon-escape')) {
+              resumeDrift();
+              return;
+            }
+            window.gsap.to(item, {
+              x: 0, y: 0, duration: .6, ease: 'elastic.out(1,.42)', clearProps: 'x,y',
+              onComplete: resumeDrift
+            });
+          }
         });
       }
     });
@@ -1044,12 +1131,29 @@
         bouquetPetalTimer = 0;
         return;
       }
-      const blooms = Array.from(document.querySelectorAll('#bouquet-svg .bouquet-flower'));
+      const blooms = Array.from(document.querySelectorAll('#bouquet-svg .bouquet-flower-cluster'));
       const bloom = blooms.length ? blooms[Math.floor(Math.random() * blooms.length)] : null;
       if (bloom) {
-        const rect = bloom.getBoundingClientRect();
+        const svg = bloom.ownerSVGElement;
+        const cx = Number(bloom.dataset.cx);
+        const cy = Number(bloom.dataset.cy);
+        const matrix = svg && svg.getScreenCTM ? svg.getScreenCTM() : null;
+        let x;
+        let y;
+        if (svg && matrix && Number.isFinite(cx) && Number.isFinite(cy)) {
+          const point = svg.createSVGPoint();
+          point.x = cx;
+          point.y = cy;
+          const screenPoint = point.matrixTransform(matrix);
+          x = screenPoint.x;
+          y = screenPoint.y;
+        } else {
+          const rect = bloom.getBoundingClientRect();
+          x = rect.left + rect.width / 2;
+          y = rect.top + rect.height / 2;
+        }
         addParticle({
-          type: 'petal', x: rect.left + rect.width / 2, y: rect.top + rect.height / 2,
+          type: 'petal', x, y,
           vx: (Math.random() - .5) * .55, vy: .18 + Math.random() * .3,
           rotation: Math.random() * Math.PI, spin: (Math.random() - .5) * .035,
           radius: 3 + Math.random() * 2.5, life: 1, decay: .004 + Math.random() * .002,
@@ -1069,27 +1173,49 @@
     if (!scene) return;
     const svg = scene.querySelector('#bouquet-svg');
     if (!svg) return;
+
     const stems = Array.from(svg.querySelectorAll('.bouquet-stem'));
     const leaves = Array.from(svg.querySelectorAll('.bouquet-leaf'));
     const flowers = Array.from(svg.querySelectorAll('.bouquet-flower'));
+    const clusters = Array.from(svg.querySelectorAll('.bouquet-flower-cluster'));
+
     if (reducedMotion || !window.gsap) {
       stems.forEach(el => { el.style.strokeDashoffset = '0'; });
       leaves.forEach(el => { el.style.opacity = '1'; });
-      flowers.forEach(el => { el.style.opacity = '1'; el.style.transform = 'scale(1)'; });
+      flowers.forEach(el => { el.style.opacity = '1'; });
+      clusters.forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
       return;
     }
-    window.gsap.killTweensOf([stems, leaves, flowers]);
-    const timeline = window.gsap.timeline();
-    window.gsap.set(flowers, { scale: .2, rotation: (i) => (Math.random() - .5) * 26, transformOrigin: 'center center' });
-    timeline.to(stems, { strokeDashoffset: 0, duration: .95, stagger: .055, ease: 'power2.out' });
-    timeline.to(leaves, { opacity: 1, scale: 1, rotation: (i) => (i % 2 ? 22 : -22), duration: .34, stagger: .035, ease: 'back.out(1.7)', transformOrigin: 'center bottom' }, '-=.5');
-    timeline.to(flowers, { opacity: 1, scale: 1, rotation: (i) => (i % 2 ? 8 : -8), duration: .48, stagger: .025, ease: 'back.out(1.4)', transformOrigin: 'center center' }, '-=.24');
-    const groups = Array.from(svg.querySelectorAll('.bouquet-stem-group'));
-    groups.forEach((group, i) => {
-      window.gsap.set(group, { transformBox: 'fill-box', transformOrigin: '50% 100%' });
-      window.gsap.to(group, { rotation: i % 2 ? 1.5 : -1.5, duration: 2 + Math.random() * 1.5, repeat: -1, yoyo: true, delay: Math.random() * 1.2, ease: 'sine.inOut' });
+
+    const gsap = window.gsap;
+    const allTargets = [...stems, ...leaves, ...flowers, ...clusters];
+    gsap.killTweensOf(allTargets);
+    gsap.set(flowers, { opacity: 0 });
+    gsap.set(leaves, { opacity: 0 });
+    gsap.set(clusters, {
+      scale: .2,
+      opacity: 0,
+      svgOrigin: (index, target) => `${target.dataset.cx} ${target.dataset.cy}`
     });
-    flowers.forEach((flower, i) => window.gsap.to(flower, { rotation: (i % 2 ? 5 : -5), duration: 2.4 + Math.random() * 1.8, repeat: -1, yoyo: true, delay: Math.random() * .8, ease: 'sine.inOut' }));
+
+    const timeline = gsap.timeline();
+    timeline.to(stems, {
+      strokeDashoffset: 0, duration: .95, stagger: .055, ease: 'power2.out'
+    });
+    timeline.to(leaves, {
+      opacity: 1, duration: .34, stagger: .035, ease: 'power1.out'
+    }, '-=.5');
+    timeline.to(clusters, {
+      opacity: 1,
+      scale: 1,
+      svgOrigin: (index, target) => `${target.dataset.cx} ${target.dataset.cy}`,
+      duration: .5,
+      stagger: .045,
+      ease: 'back.out(1.25)'
+    }, '-=.24');
+    timeline.to(flowers, {
+      opacity: 1, duration: .3, stagger: .008, ease: 'power1.out'
+    }, '<');
     timeline.call(() => releasePetals(20, canvasWidth * .5, canvasHeight * .18), null, '+=.12');
     scheduleBouquetPetalDrop();
   }
