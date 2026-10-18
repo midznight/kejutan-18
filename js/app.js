@@ -33,6 +33,8 @@
   const sceneIds = ['s0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10'];
 
   if (rotateCopy) rotateCopy.textContent = C.copy.rotate;
+  const loadingLabel = document.getElementById('loading-state');
+  if (loadingLabel) loadingLabel.setAttribute('aria-label', C.copy.loadingLabel);
   document.title = C.copy.documentTitle;
   document.documentElement.style.setProperty('--purple', C.colors.primary || '#a78bfa');
   document.documentElement.style.setProperty('--blue', C.colors.blue || '#7dd3fc');
@@ -49,11 +51,11 @@
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring"></span><span class="orbit-ring ring-two"></span><div class="orbit-center">${BIG_HEART}</div></div>
         ${makeTopline(c.startEyebrow, 0)}
-        <p class="kicker">UNTUK HARI YANG ISTIMEWA</p>
+        <p class="kicker">${formatted(c.startKicker)}</p>
         <h1 class="hero-title"><span class="accent">${formatted(c.startTitle)}</span></h1>
         <p class="body-copy">${formatted(c.startBody)}</p>
         <div class="actions">${button(c.startButton, 'start')}</div>
-        <p class="fine-copy" style="margin-top:22px">Dibuka pelan-pelan, khusus untuk ${safe(C.name)} ${HEART}</p>
+        <p class="fine-copy" style="margin-top:22px">${formatted(c.startFooter)}</p>
       </div>`;
 
     const riddle = C.riddles[0];
@@ -61,7 +63,7 @@
       ${makeTopline(c.lockEyebrow, 1)}
       <div class="glass-card lock-panel">
         <div class="lock-symbol">${lockIcon}</div>
-        <p class="kicker">SATU PERTANYAAN KECIL</p>
+        <p class="kicker">${formatted(c.lockKicker)}</p>
         <h2 class="lock-question">${formatted(riddle.question)}</h2>
         <p class="body-copy">${formatted(c.lockBody)}</p>
         <form id="answer-form" class="answer-form">
@@ -87,7 +89,7 @@
       ${makeTopline(c.balloonsEyebrow, 3)}
       <h2 class="section-title">${formatted(c.balloonsTitle)}</h2>
       <p class="body-copy">${formatted(c.balloonsBody)}</p>
-      <div class="balloon-arena" id="balloon-arena" aria-label="Balon untuk diketuk"></div>
+      <div class="balloon-arena" id="balloon-arena" aria-label="${safe(c.balloonsAria)}"></div>
       <div class="balloon-string-note"><span id="balloon-progress-label">${formatted(c.balloonsProgress)}</span>: <strong id="balloon-counter">0</strong> / <strong id="balloon-total">0</strong></div>
       <div class="balloon-progress"><span id="balloon-progress-fill"></span></div>
       <p id="balloon-reveal" class="closing-line" aria-live="polite" style="font-size:clamp(17px,4.4vw,25px);min-height:28px"></p>
@@ -96,7 +98,7 @@
     const reasons = C.reasons.map((reason, i) => `<article class="reason-card" style="--glow:${i % 3 === 0 ? '#bca6ff' : i % 3 === 1 ? '#7dd3fc' : '#ffd69b'}"><span class="reason-index">0${i + 1} / ${String(C.reasons.length).padStart(2, '0')}</span><h3>${formatted(reason.title)}</h3><p>${formatted(reason.body)}</p></article>`).join('');
     const s4 = `
       ${makeTopline(c.reasonsEyebrow, 4)}
-      <p class="kicker">DELAPAN HAL, DAN MUNGKIN LEBIH</p>
+      <p class="kicker">${formatted(c.reasonsKicker)}</p>
       <h2 class="section-title">${formatted(c.reasonsTitle)}</h2>
       <p class="body-copy">${formatted(c.reasonsBody)}</p>
       <div class="reason-grid">${reasons}</div>
@@ -106,7 +108,7 @@
     const s5 = `
       ${makeTopline(c.cakeEyebrow, 5)}
       <div class="hero-copy">
-        <p class="kicker">KALAU BISA MINTA SATU HAL</p>
+        <p class="kicker">${formatted(c.cakeKicker)}</p>
         <h2 class="section-title">${formatted(c.cakeTitle)}</h2>
         <p class="body-copy">${formatted(c.cakeInstruction)}</p>
         <div class="glass-card cake-wrap"><div class="cake-stage" id="cake-stage"><div class="candle-row">${candles}</div><div class="cake-top"></div><div class="cake-icing"></div><div class="cake-body"></div></div></div>
@@ -120,7 +122,7 @@
       ${makeTopline(c.interludeEyebrow, 6)}
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring"></span><span class="orbit-ring ring-two"></span><div class="orbit-center">${BIG_HEART}</div></div>
-        <p class="kicker">BUAT SEMUA HAL YANG AKAN DATANG</p>
+        <p class="kicker">${formatted(c.interludeKicker)}</p>
         <h2 class="section-title">${formatted(c.interludeTitle)}</h2>
         <p class="body-copy">${formatted(c.interludeBody)}</p>
         <p class="fine-copy">${formatted(c.interludeNote)}</p>
@@ -130,18 +132,18 @@
     const photos = C.photos.map((photo, i) => `<article class="gallery-card" style="--rot:${i % 2 ? '1.5deg' : '-1.5deg'};--lift:${i % 3 ? '3px' : '-3px'}" data-photo-index="${i}"><div class="gallery-photo"><div class="photo-placeholder"><div class="frame-icon">${imageIcon}</div><p>${formatted(c.photoEmpty)}</p><small>${formatted(c.photoEmptyNote)}</small></div><img data-src="${safe(photo.src)}" loading="lazy" decoding="async" alt="${safe(c.photoAlt)} ${i + 1}"></div><div class="gallery-caption"><span class="caption-count">${String(i + 1).padStart(2, '0')}</span><span>${formatted(photo.caption)}</span></div></article>`).join('');
     const s7 = `
       ${makeTopline(c.galleryEyebrow, 7)}
-      <p class="kicker">${String(C.photos.length).padStart(2, '0')} POTONGAN CERITA</p>
+      <p class="kicker">${String(C.photos.length).padStart(2, '0')} ${formatted(c.galleryKicker)}</p>
       <h2 class="section-title">${formatted(c.galleryTitle)}</h2>
       <p class="body-copy">${formatted(c.galleryBody)}</p>
-      <div class="gallery-strip" id="gallery-strip" aria-label="Galeri foto yang bisa digeser">${photos}</div>
-      <div class="gallery-foot"><span>GESER UNTUK MELIHAT</span><span id="gallery-index">01 / ${String(C.photos.length).padStart(2, '0')}</span></div>
+      <div class="gallery-strip" id="gallery-strip" aria-label="${safe(c.galleryAria)}">${photos}</div>
+      <div class="gallery-foot"><span>${formatted(c.gallerySwipe)}</span><span id="gallery-index">01 / ${String(C.photos.length).padStart(2, '0')}</span></div>
       <div class="actions">${button(c.galleryButton, 'next')}</div>`;
 
     const s8 = `
       ${makeTopline(c.preletterEyebrow, 8)}
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring"></span><span class="orbit-ring ring-two"></span><div class="orbit-center">${BIG_HEART}</div></div>
-        <p class="kicker">KALI INI, BIAR KATA-KATA YANG BICARA</p>
+        <p class="kicker">${formatted(c.preletterKicker)}</p>
         <h2 class="section-title">${formatted(c.preletterTitle)}</h2>
         <p class="body-copy">${formatted(c.preletterBody)}</p>
         <div class="actions">${button(c.preletterButton, 'next')}</div>
@@ -150,14 +152,14 @@
     const paragraphs = C.letter.map((paragraph, i) => `<p class="letter-paragraph" data-letter-paragraph="${i}">${formatted(paragraph)}</p>`).join('');
     const s9 = `
       ${makeTopline(c.letterEyebrow, 9)}
-      <div class="hero-copy" style="text-align:left"><p class="kicker">SEDIKIT CATATAN DARI AKU</p><h2 class="section-title">${formatted(c.letterTitle)}</h2></div>
+      <div class="hero-copy" style="text-align:left"><p class="kicker">${formatted(c.letterKicker)}</p><h2 class="section-title">${formatted(c.letterTitle)}</h2></div>
       <article class="letter-paper" id="letter-paper">${paragraphs}</article>
       <div class="actions" style="justify-content:center">${button(c.letterButton, 'next')}</div>`;
 
     const s10 = `
       ${makeTopline(c.finaleEyebrow, 10)}
       <div class="hero-copy">
-        <p class="kicker">SEBUAH HAL KECIL BUAT KAMU</p>
+        <p class="kicker">${formatted(c.finaleKicker)}</p>
         <h2 class="section-title">${formatted(c.finaleTitle)}</h2>
         <p class="body-copy">${formatted(c.closing)}</p>
       </div>
@@ -368,7 +370,8 @@
     const arena = document.getElementById('balloon-arena');
     if (!arena) return;
     const count = Math.max(1, Math.min(18, Number(C.settings.balloonCount) || 18));
-    const phrase = `HAPPY 18${String(C.name).replace(/\s+/g, '')}`;
+    const phrasePrefix = C.copy.balloonPhrasePrefix || 'HAPPY 18';
+    const phrase = `${phrasePrefix}${String(C.name).replace(/\s+/g, '')}`;
     const charCount = Math.min(phrase.length, count);
     const coords = [
       [2,8], [19,3], [36,12], [54,4], [72,11], [88,5],
@@ -384,7 +387,7 @@
       const [a,b] = palettes[i % palettes.length];
       const tilt = [-7,-4,4,7,1, -2][i % 6];
       const carrier = i < charCount;
-      return `<button type="button" class="balloon" data-carrier="${carrier ? 'true' : 'false'}" style="--x:${x}%;--y:${y}%;--tilt:${tilt}deg;--balloon-a:${a};--balloon-b:${b};--float:${3.2 + (i%4)*.48}s" aria-label="Pecahkan balon ${i+1}"><span class="balloon-mark" aria-hidden="true">${carrier ? TINY_HEART : ''}</span></button>`;
+      return `<button type="button" class="balloon" data-carrier="${carrier ? 'true' : 'false'}" style="--x:${x}%;--y:${y}%;--tilt:${tilt}deg;--balloon-a:${a};--balloon-b:${b};--float:${3.2 + (i%4)*.48}s" aria-label="${safe(withName(C.copy.balloonButtonLabel).replaceAll('{{count}}', i + 1))}"><span class="balloon-mark" aria-hidden="true">${carrier ? TINY_HEART : ''}</span></button>`;
     }).join('');
     const counter = document.getElementById('balloon-counter');
     const total = document.getElementById('balloon-total');
@@ -409,7 +412,7 @@
         letterCount++;
         if (mark) mark.textContent = character === ' ' ? '\u00a0' : character;
         if (mark) mark.classList.add('revealed-character');
-        item.setAttribute('aria-label', 'Balon pecah');
+        item.setAttribute('aria-label', safe(withName(C.copy.balloonPoppedLabel)));
         const gotPhrase = phrase.slice(0, letterCount);
         reveal.textContent = gotPhrase;
         if (counter) counter.textContent = String(letterCount);
@@ -427,7 +430,7 @@
       }
       if (letterCount >= charCount) {
         if (balloonTimer) clearTimeout(balloonTimer);
-        reveal.textContent = `HAPPY 18 ${C.name}`;
+        reveal.textContent = withName(C.copy.balloonsDone);
         reveal.classList.add('revealed');
         actions.hidden = false;
         if (window.gsap && !reducedMotion) window.gsap.fromTo(actions, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .65, ease: 'back.out(1.7)' });
@@ -488,7 +491,7 @@
         stage.classList.add('blown');
         hold.classList.add('complete');
         hold.setPointerCapture?.(hold._activePointerId);
-        hold.querySelector('span').textContent = 'Permintaanmu sudah dikirim ke semesta.';
+        hold.querySelector('span').textContent = withName(C.copy.wishComplete);
         if (copy) copy.hidden = true;
         if (after) after.hidden = false;
         if (actions) actions.hidden = false;
