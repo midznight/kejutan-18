@@ -1103,3 +1103,7 @@ body {
   box-shadow: inset 0 0 0 3px rgba(201,161,90,.1), 0 6px 0 rgba(11,5,14,.2);
 }
 .balloon-svg { filter: none; }
+
+/* Keep the last legacy font references inside the same editorial system. */
+.balloon .balloon-mark { font-family: var(--display-font); font-weight: 600; text-shadow: none; }
+.candle-digit { font-family: var(--display-font); font-weight: 600; }
