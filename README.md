@@ -52,6 +52,12 @@ Buka folder ini di editor lalu jalankan server statis sederhana, misalnya VS Cod
 3. Masuk ke `assets/audio/`, pilih **Add file → Upload files**, lalu upload `monokrom-tulus.mp3` dan commit.
 4. Pantau tab **Actions** atau Cloudflare Pages untuk memastikan deployment otomatis selesai.
 
+## Zodiak dan hadiah finale
+
+Scene Libra menggunakan informasi astrologi populer sebagai hiburan, bukan klaim ilmiah tentang kepribadian. Reveal kado memakai ilustrasi SVG inline: singa bersurai emas muncul lebih dulu, lalu berubah menjadi anak singa, tanpa aset gambar atau dependensi eksternal baru. Bentuk singa berupa ilustrasi vektor bergaya semi-realistik, bukan footage fotorealistik.
+
+Tes finale: buka kado sekali, amati singa besar selama beberapa detik, tunggu transformasi ke anak singa, lalu pastikan voucher dan teks penutup muncul. Ulangi dengan reduced-motion aktif. Uji kartu Libra pada lebar 320, 360, 390, dan 430 px; pastikan tidak ada teks yang terpotong.
+
 ## Privasi dan tes
 
 Repo GitHub sudah dibuat private dan Cloudflare Pages terhubung ke branch `main`: https://github.com/midznight/kejutan-18. URL situs: https://kejutan-18.pages.dev/. Framework preset **None**, build command kosong, output directory `/`. Setiap commit pada `main` memicu deployment otomatis.
