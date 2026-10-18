@@ -73,7 +73,7 @@ window.SURPRISE_CONTENT = {
     interludeTitle: "Semoga kamu tetap jadi {{name}} yang itu.",
     interludeBody: "Yang gampang nyambung sama orang, bisa bikin suasana hidup, dan punya cara sendiri untuk bikin hari biasa terasa lebih seru. Semoga kamu tetap punya ruang untuk jadi diri sendiri, bahkan saat hidup mulai sibuk.",
     interludeNote: "Kamu enggak harus punya semua jawaban sekarang. Jalanin pelan-pelan, aku dukung kamu.",
-    interludeButton: "Lihat potongan cerita kita",
+    interludeButton: "Lihat potongan foto",
     galleryEyebrow: "SEPULUH BINGKAI, BANYAK RASA",
     galleryTitle: "Kalau bisa, aku mau simpan semua momen.",
     galleryBody: "Geser pelan. Kalau fotonya belum ada, tempatnya aku siapin dulu buat nanti.",
