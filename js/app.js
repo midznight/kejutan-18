@@ -42,6 +42,7 @@
   let currentScene = 0;
   let openPhotoLightbox = null;
   let sceneTransitioning = false;
+  let pendingSceneIndex = null;
   let unlocked = false;
   let balloonTimer = null;
   let audioAvailable = false;
@@ -584,9 +585,11 @@
     const progress = document.getElementById('lock-level-progress');
     let activeRiddleIndex = 0;
     let incorrectAttempts = 0;
+    let answerChecking = false;
+    const submitButton = form ? form.querySelector('button[type="submit"]') : null;
     if (form) form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      if (unlocked) return;
+      if (unlocked || answerChecking) return;
       const level = riddleLevels[activeRiddleIndex];
       if (!level) return;
       const typed = normalizeAnswer(answer.value);
@@ -596,11 +599,29 @@
         return;
       }
       let hash;
+      answerChecking = true;
+      answer.readOnly = true;
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.setAttribute('aria-busy', 'true');
+      }
       try {
         hash = await sha256(typed);
       } catch (_) {
+        answerChecking = false;
+        answer.readOnly = false;
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.removeAttribute('aria-busy');
+        }
         feedback.textContent = C.copy.lockCryptoUnavailable;
         return;
+      }
+      answerChecking = false;
+      answer.readOnly = false;
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.removeAttribute('aria-busy');
       }
       const validHashes = Array.isArray(level.acceptedHashes) ? level.acceptedHashes : [];
       const accepted = validHashes.some(value => constantTimeEqual(value, hash));
@@ -650,15 +671,25 @@
     createAudioToggle();
   }
 
+  function updateAudioToggle(toggle = document.getElementById('audio-toggle')) {
+    if (!toggle) return;
+    const label = audioAvailable
+      ? (audioMuted ? C.copy.audioOn : C.copy.audioOff)
+      : (audioMuted ? 'Nyalakan suara' : 'Matikan suara');
+    toggle.textContent = label;
+    toggle.setAttribute('aria-label', label);
+    toggle.setAttribute('aria-pressed', String(audioMuted));
+    toggle.dataset.muted = String(audioMuted);
+    toggle.title = label;
+  }
+
   function createAudioToggle() {
     const toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'audio-toggle';
     toggle.hidden = true;
     toggle.id = 'audio-toggle';
-    toggle.textContent = C.copy.audioOn;
-    toggle.title = C.music.title;
-    toggle.setAttribute('aria-label', C.copy.audioOn);
+    updateAudioToggle(toggle);
     toggle.addEventListener('click', () => {
       audioMuted = !audioMuted;
       audio.muted = audioMuted && !(musicMuteGain && audioContext);
@@ -668,10 +699,7 @@
       if (sfxMasterGain && audioContext) {
         sfxMasterGain.gain.setTargetAtTime(audioMuted ? 0 : .3, audioContext.currentTime, .025);
       }
-      toggle.textContent = audioAvailable
-        ? (audioMuted ? C.copy.audioOn : C.copy.audioOff)
-        : (audioMuted ? 'Nyalakan suara' : 'Matikan suara');
-      toggle.setAttribute('aria-label', toggle.textContent);
+      updateAudioToggle(toggle);
     });
     document.body.appendChild(toggle);
     verifyAudio();
@@ -687,6 +715,7 @@
       audio.src = C.music.src;
       audio.load();
       audioAvailable = true;
+      updateAudioToggle();
     } catch (_) {
       audioAvailable = false;
     }
@@ -837,8 +866,7 @@
     if (!audioAvailable) {
       if (toggle) {
         toggle.disabled = false;
-        toggle.textContent = audioMuted ? 'Nyalakan suara' : 'Matikan suara';
-        toggle.setAttribute('aria-label', toggle.textContent);
+        updateAudioToggle(toggle);
       }
       return;
     }
@@ -852,6 +880,7 @@
       }
       const playResult = audio.play();
       if (playResult?.catch) playResult.catch(() => {});
+      updateAudioToggle(toggle);
       fadeAudio(0, 1, Math.max(0.1, Number(C.music.fadeSeconds) || 3) * 1000);
     } catch (_) {
       // Gagal audio tidak menghentikan alur kejutan.
@@ -1002,8 +1031,11 @@
   }
 
   function setScene(index) {
-    if (sceneTransitioning) return;
     index = Math.max(0, Math.min(sceneIds.length - 1, index));
+    if (sceneTransitioning) {
+      pendingSceneIndex = index === currentScene ? null : index;
+      return;
+    }
     if (index === 1 && !unlocked) { /* riddle is the expected first gate */ }
     const previous = document.getElementById(sceneIds[currentScene]);
     const next = document.getElementById(sceneIds[index]);
@@ -1029,7 +1061,12 @@
       previous.setAttribute('aria-hidden', 'true');
       window.setTimeout(() => previous.classList.remove('is-leaving'), reducedMotion ? 1 : 360);
     }
-    window.setTimeout(() => { sceneTransitioning = false; }, reducedMotion ? 1 : 360);
+    window.setTimeout(() => {
+      sceneTransitioning = false;
+      const queuedIndex = pendingSceneIndex;
+      pendingSceneIndex = null;
+      if (queuedIndex !== null && queuedIndex !== currentScene) setScene(queuedIndex);
+    }, reducedMotion ? 1 : 360);
     currentScene = index;
     clearSceneParticles();
     next.classList.add('is-active');
@@ -1049,10 +1086,14 @@
     if (index === 3) animateBalloonEntrance();
     if (index === sceneIds.length - 1) launchFireworkSequence(8);
     if (index === 6) animateReasonCards();
+    if (index === 8) animateZodiacCards();
+    if (index === 9) animateGalleryCards();
     if (index === 5) animateBouquet();
     if (index === 11) revealVisibleLetterParagraphs();
     const audioToggle = document.getElementById('audio-toggle');
-    if (audioToggle) audioToggle.hidden = index < 2 || index >= sceneIds.length - 2;
+    const showAudioToggle = index >= 2 && index < sceneIds.length - 2;
+    if (audioToggle) audioToggle.hidden = !showAudioToggle;
+    document.body.classList.toggle('audio-control-visible', showAudioToggle);
   }
 
   function animateReasonCards() {
@@ -1060,6 +1101,24 @@
     if (!active || reducedMotion || !window.gsap) return;
     const cards = Array.from(document.querySelectorAll('.scene.is-active .reason-card'));
     window.gsap.fromTo(cards, { opacity: .2, y: 26, rotateX: -8, scale: .97 }, { opacity: 1, y: 0, rotateX: 0, scale: 1, duration: .7, stagger: .075, ease: 'power4.out', clearProps: 'transform,opacity' });
+  }
+
+  function animateZodiacCards() {
+    const cards = Array.from(document.querySelectorAll('#zodiac-slide .zodiac-fact'));
+    if (!cards.length || reducedMotion || !window.gsap) return;
+    window.gsap.killTweensOf(cards);
+    window.gsap.fromTo(cards, { opacity: 0, y: 17, scale: .985 }, {
+      opacity: 1, y: 0, scale: 1, duration: .48, stagger: .075, ease: 'power3.out', clearProps: 'opacity,transform'
+    });
+  }
+
+  function animateGalleryCards() {
+    const cards = Array.from(document.querySelectorAll('#s8 .gallery-card'));
+    if (!cards.length || reducedMotion || !window.gsap) return;
+    window.gsap.killTweensOf(cards);
+    window.gsap.fromTo(cards, { opacity: 0, y: 15, scale: .975 }, {
+      opacity: 1, y: 0, scale: 1, duration: .48, stagger: .055, ease: 'power3.out', clearProps: 'opacity,transform'
+    });
   }
 
   function normalizeAnswer(value) {
@@ -1896,8 +1955,10 @@
     canvasContext = canvasElement.getContext('2d', { alpha: true });
     if (!canvasContext) return;
     resizeCanvas();
-    particleBudget = Math.max(80, Math.min(window.innerWidth <= 600 ? 220 : 520, Number(C.settings.canvasParticleMax) || 400));
-    const starterCount = Math.min(window.innerWidth <= 600 ? 26 : 58, particleBudget);
+    const touchViewport = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+    const visualParticleCap = (touchViewport || window.innerWidth <= 600) ? 220 : 520;
+    particleBudget = Math.max(80, Math.min(visualParticleCap, Number(C.settings.canvasParticleMax) || 400));
+    const starterCount = Math.min((touchViewport || window.innerWidth <= 600) ? 26 : 58, particleBudget);
     particles = particles.filter(p => p.type !== 'firefly');
     for (let i = 0; i < starterCount; i++) particles.push(makeFirefly());
     canvasActive = true;
@@ -1914,35 +1975,6 @@
   }
 
   let lastFingerStarAt = 0;
-  let orientationPermissionRequested = false;
-  let orientationListenerBound = false;
-
-  function requestDecorOrientationFromGesture() {
-    if (orientationPermissionRequested) return;
-    orientationPermissionRequested = true;
-    const API = window.DeviceOrientationEvent;
-    if (!API || typeof API.requestPermission !== 'function') {
-      if (!orientationListenerBound && API) bindDecorOrientation();
-      return;
-    }
-    // iOS permission prompt can only be called synchronously from a user gesture.
-    API.requestPermission().then((permission) => {
-      if (permission === 'granted') bindDecorOrientation();
-    }).catch(() => { /* pointer parallax remains the fallback */ });
-  }
-
-  function bindDecorOrientation() {
-    if (orientationListenerBound) return;
-    orientationListenerBound = true;
-    window.addEventListener('deviceorientation', (event) => {
-      if (document.hidden || !Number.isFinite(event.gamma) || !Number.isFinite(event.beta)) return;
-      const active = document.getElementById(sceneIds[currentScene]);
-      if (!active) return;
-      active.style.setProperty('--parallax-x', (Math.max(-22, Math.min(22, event.gamma)) * .42).toFixed(1) + 'px');
-      active.style.setProperty('--parallax-y', (Math.max(-24, Math.min(24, event.beta - 25)) * .24).toFixed(1) + 'px');
-    }, { passive: true });
-  }
-
   function spawnFingerStars(x, y, burst = false) {
     if (reducedMotion || !canvasActive) return;
     const count = burst ? 5 : 1;
@@ -1982,7 +2014,6 @@
       spawnFingerStars(event.clientX, event.clientY, true);
       if (currentScene === 0) {
         attractionPoint = { x: event.clientX, y: event.clientY, until: performance.now() + 1450 };
-        requestDecorOrientationFromGesture();
       }
       const finalSceneIndex = sceneIds.length - 1;
       const overControl = event.target && event.target.closest && event.target.closest('button, input, textarea, a');
