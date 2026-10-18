@@ -1342,7 +1342,7 @@
   }
 
   function addFlash(x, y, color = '#fff0d9', radius = 118) {
-    addParticle({ type: 'flash', x, y, vx: 0, vy: 0, color, life: 1, decay: .082, radius: 2, maxRadius: Math.min(radius, Math.max(70, canvasWidth * .42)) });
+    addParticle({ type: 'flash', x, y, vx: 0, vy: 0, color, life: 1, decay: .078, radius: 2, maxRadius: Math.min(170, Math.max(110, canvasWidth * .42), radius || 170) });
   }
 
   function makeFirefly() {
@@ -1365,14 +1365,15 @@
     const y = Math.max(canvasHeight * .16, Math.min(canvasHeight * .48, Number(targetY) || canvasHeight * .29));
     const startX = Math.max(18, Math.min(canvasWidth - 18, x + (Math.random() - .5) * 86));
     const startY = canvasHeight + 10;
-    const gravity = .082 + Math.random() * .012;
-    const apexHeight = Math.max(100, startY - y);
+    const gravity = .068 + Math.random() * .018;
+    const apexHeight = Math.max(110, startY - y);
     const baseSpeed = Math.sqrt(2 * gravity * apexHeight);
     addParticle({
       type: 'rocket', x: startX, y: startY, previousX: startX, previousY: startY,
-      targetX: x, targetY: y, vx: (x - startX) / Math.max(45, baseSpeed / gravity), vy: -baseSpeed,
-      gravity, curve: (Math.random() - .5) * .018, sway: Math.random() * Math.PI * 2,
-      life: 1, shape, age: 0, trailClock: 0,
+      targetX: x, targetY: y, originX: startX, vx: (x - startX) / Math.max(45, baseSpeed / gravity),
+      vy: -baseSpeed, gravity, curve: (Math.random() - .5) * .035,
+      sway: Math.random() * Math.PI * 2, swayAmplitude: .016 + Math.random() * .022,
+      life: 1, shape, age: 0, trailClock: 0, apexTargetY: y,
       color: FIREWORK_PALETTE[Math.floor(Math.random() * FIREWORK_PALETTE.length)]
     });
     playSfx('rocket');
@@ -1527,7 +1528,7 @@
     const trailsActive = currentScene === 2 || currentScene === sceneIds.length - 1 || !!document.querySelector('.countdown-overlay');
     if (trailsActive) {
       canvasContext.globalCompositeOperation = 'destination-out';
-      canvasContext.globalAlpha = .19;
+      canvasContext.globalAlpha = .18;
       canvasContext.fillStyle = '#000';
       canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);
       canvasContext.globalAlpha = 1;
@@ -1584,10 +1585,13 @@
       if (p.type === 'rocket') {
         p.age += delta;
         p.trailClock = (p.trailClock || 0) + delta;
-        p.vx += (p.curve || 0) * dt + Math.sin(p.age / 130 + p.sway) * .018 * dt;
+        const sway = Math.sin(p.age / (165 + (p.sway % 1) * 85) + p.sway) * (p.swayAmplitude || .02);
+        p.vx += ((p.curve || 0) + sway - p.vx * .0018) * dt;
         p.x += p.vx * dt;
         p.y += p.vy * dt;
-        p.vy += (p.gravity || .085) * dt;
+        p.vy += (p.gravity || .075) * dt;
+        // Ease the final ascent near the apex; the explosion occurs close to vy = 0.
+        if (p.vy < -.8 && p.y < p.targetY + 85) p.vy += .012 * dt;
         const tailX = p.x - p.vx * 4.8;
         const tailY = p.y - p.vy * 4.8;
         canvasContext.strokeStyle = p.color;
@@ -1608,7 +1612,7 @@
             color: p.color, baseColor: p.color, twinkle: Math.random() * 6.28, twinkleRate: 12, crackled: true
           });
         }
-        if ((p.vy >= -.22 && p.age > 160) || p.age > 3600) {
+        if ((p.vy >= -.14 && p.age > 160) || p.age > 3600) {
           explodeFirework(p.x, p.y, p.shape, p.shape === 'willow' ? 112 : 96);
           releaseParticle(i);
         }
