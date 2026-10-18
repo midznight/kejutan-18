@@ -454,3 +454,33 @@ h1, h2 { text-wrap: balance; }
   animation: smoke-rise 2.55s ease-out var(--smoke-delay,0ms) forwards;
 }
 @keyframes smoke-rise { 0% { opacity: 0; transform: translate(0,0) scale(.45) rotate(0); } 17% { opacity: .6; } 100% { opacity: 0; transform: translate(var(--smoke-drift,0px),-88px) scale(2.5) rotate(52deg); } }
+
+/* Phase 3 polish: unified gift reveal and restrained light rays. */
+.gift-stage::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 43%;
+  width: min(72vw, 300px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 8%, rgba(255,236,196,.78) 10%, transparent 13% 25%, rgba(210,190,255,.68) 28%, transparent 31% 47%, rgba(255,224,191,.7) 50%, transparent 53% 70%, rgba(210,190,255,.62) 73%, transparent 77% 100%);
+  opacity: 0;
+  transform: translate(-50%,-50%) scale(.28) rotate(-25deg);
+  pointer-events: none;
+}
+.gift-stage.gift-opened::before { animation: gift-rays-open 1.4s cubic-bezier(.16,.7,.24,1) forwards; }
+@keyframes gift-rays-open {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(.28) rotate(-25deg); }
+  22% { opacity: .9; }
+  100% { opacity: .22; transform: translate(-50%,-50%) scale(1.22) rotate(95deg); }
+}
+.gift-wrap.open .gift-bow { animation: gift-bow-bounce .72s cubic-bezier(.18,1.4,.3,1) both; }
+@keyframes gift-bow-bounce {
+  0% { transform: translateX(-50%) scale(1); }
+  34% { transform: translateX(-50%) scale(1.2,.78) rotate(7deg); }
+  62% { transform: translateX(-50%) scale(.93,1.08) rotate(-4deg); }
+  100% { transform: translateX(-50%) scale(1) rotate(0); }
+}
+.gift-stage.gift-opened .gift-box::before,
+.gift-stage.gift-opened .gift-lid::before { filter: brightness(1.18); }
