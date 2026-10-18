@@ -210,11 +210,11 @@ h1, h2 { text-wrap: balance; }
 .rotate-card { text-align: center; max-width: 260px; color: #e8dfff; }
 .rotate-glyph { display: block; font-size: 36px; margin-bottom: 14px; color: var(--blue); }
 .rotate-card p { font-size: 14px; line-height: 1.65; }
-@media (orientation: landscape) and (max-width: 900px) and (max-height: 540px) {
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 540px) and (hover: hover) and (pointer: fine) {
   .rotate-warning { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 24px; background: #21152ef5; }
   .app-shell, .audio-toggle { visibility: hidden; }
 }
-@media (min-width: 760px) {
+@media (min-width: 760px) and (hover: hover) and (pointer: fine) {
   body { display: grid; place-items: center; padding: 25px; background: radial-gradient(ellipse at 50% 0%,#292047 0,#100b22 65%); }
   .app-shell { width: min(100%,460px); min-height: min(930px,calc(100dvh - 50px)); padding: 32px 25px; border: 1px solid rgba(225,210,255,.16); border-radius: 39px; background: linear-gradient(150deg,rgba(255,255,255,.045),transparent 42%),rgba(14,9,30,.88); box-shadow: 0 35px 115px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.07); overflow: hidden; }
   .scene { min-height: min(860px,calc(100dvh - 100px)); }
@@ -1321,3 +1321,73 @@ body {
 .zodiac-meta-symbol .libra-sigil-svg { display:block; width:100%; height:100%; }
 #s0 .primary-btn { border-radius:50%!important; }
 #s0 .primary-btn::before { border-radius:50%!important; }
+
+
+/* Recovery state: never leave a spinner on screen if configuration or rendering fails. */
+#app.startup-error-state {
+  display:grid;
+  place-items:center;
+  min-height:100dvh;
+  width:100%;
+  padding:calc(24px + var(--safe-top)) calc(20px + var(--safe-right)) calc(24px + var(--safe-bottom)) calc(20px + var(--safe-left));
+}
+.startup-error-card {
+  width:min(100%,420px);
+  padding:clamp(24px,7vw,36px);
+  text-align:center;
+  border:1px solid rgba(226,189,115,.55);
+  background:linear-gradient(145deg,rgba(48,29,61,.98),rgba(17,10,29,.98));
+  box-shadow:inset 0 0 0 4px rgba(226,189,115,.045),0 24px 60px rgba(0,0,0,.28);
+}
+.startup-error-mark { display:block; margin-bottom:14px; color:#f3dfb0; font-size:30px; }
+.startup-error-card h1 { margin:0 0 12px; color:#fff4dd; font:600 clamp(28px,7vw,38px)/1.1 var(--display-font); }
+.startup-error-card p { margin:0 auto 20px; max-width:32ch; color:#dccfe0; font-size:15px; line-height:1.7; }
+.startup-error-card .primary-btn { width:100%; min-height:52px; }
+
+/* Touch-first rules: visible affordances and generous hit targets without a desktop frame. */
+@media (hover:none) and (pointer:coarse) {
+  .app-shell { width:100%; max-width:100%; }
+  .scene-inner { min-width:0; width:100%; }
+  .scene-topline { gap:8px; }
+  .eyebrow { max-width:72%; font-size:9px; line-height:1.45; letter-spacing:.12em; }
+  .scene-number { flex:0 0 auto; font-size:9px; }
+  .primary-btn,.secondary-btn { min-height:52px; }
+  .hold-button { min-height:60px; }
+  .audio-toggle { min-height:44px; height:auto; max-width:calc(100vw - 28px); padding:10px 11px; font-size:9px; letter-spacing:.08em; }
+  .answer-input { font-size:16px; }
+  .balloon { width:clamp(42px,11.2vw,58px); }
+  .balloon .balloon-mark { font-size:clamp(14px,4.3vw,19px); }
+  .gallery-strip { scroll-padding-inline:10px; scrollbar-width:none; }
+  .gallery-strip::-webkit-scrollbar { display:none; }
+  .gallery-card { -webkit-tap-highlight-color:transparent; }
+  .gallery-caption span[hidden] { display:none!important; }
+  .reason-card { min-height:0; }
+  .bouquet-art { touch-action:manipulation; transition:transform .18s ease,filter .18s ease; }
+  .bouquet-art:active { transform:scale(.99); filter:drop-shadow(0 0 12px rgba(226,189,115,.24)); }
+  .tarot-card:focus-visible,#bouquet-art:focus-visible { outline:2px solid #f3dfb0; outline-offset:4px; }
+  .primary-btn:active,.secondary-btn:active { filter:brightness(1.08); }
+}
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:540px) {
+  .app-shell { padding:8px calc(14px + var(--safe-right)) 12px calc(14px + var(--safe-left)); }
+  .scene { min-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 16px); }
+  .scene-inner { padding:10px 0 16px; }
+  .scene-topline { margin-bottom:12px; }
+  .hero-orbit { width:min(28vh,180px); margin-bottom:10px; }
+  .hero-title { margin:8px 0 12px; font-size:clamp(28px,5.6vh,42px); }
+  .section-title { font-size:clamp(25px,5vh,36px); }
+  .balloon-arena { height:55vh; min-height:165px; }
+  .cake-stage { min-height:220px; }
+  #s11 .finale-stage { min-height:260px; }
+}
+/* A slow, soft shimmer makes the Libra emblem feel alive without competing with the story. */
+@keyframes libra-mark-breathe {
+  0%,100% { opacity:.72; transform:scale(.985) rotate(-1deg); }
+  50% { opacity:1; transform:scale(1.025) rotate(1deg); }
+}
+.scene-zodiac-mark .libra-sigil-svg {
+  transform-origin:center;
+  animation:libra-mark-breathe 7s ease-in-out infinite;
+}
+@media (prefers-reduced-motion:reduce) {
+  .scene-zodiac-mark .libra-sigil-svg { animation:none!important; transform:none!important; }
+}
