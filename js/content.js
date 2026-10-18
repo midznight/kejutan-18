@@ -12,7 +12,7 @@ window.SURPRISE_CONTENT = {
 
   // GANTI: ubah pembuka dan seluruh kalimat di bawah sesukamu.
   copy: {
-    documentTitle: "Ada kejutan kecil buat {{name}}",
+    documentTitle: "Ada kejutan kecil buat Nor",
     // GANTI: label kecil dan teks bantuan antarmuka.
     loadingLabel: "Memuat kejutan",
     startKicker: "UNTUK HARI YANG ISTIMEWA",
@@ -71,7 +71,8 @@ window.SURPRISE_CONTENT = {
     balloonsDone: "HAPPY 18 {{name}}",
     balloonsButton: "Lanjut, yang ulang tahun",
     reasonsEyebrow: "HAL-HAL KECIL YANG AKU SIMPAN",
-    reasonsTitle: "Ada banyak alasan aku sayang kamu.",
+    reasonsTitle: "Sedikit Notes
+      ",
     reasonsBody: "Beberapa mungkin kelihatan sederhana. Tapi justru hal-hal ini yang bikin kamu jadi kamu.",
     reasonsButton: "Ada satu harapan lagi",
     cakeEyebrow: "SEBELUM KAMU MEMBUAT PERMINTAAN",
@@ -86,7 +87,7 @@ window.SURPRISE_CONTENT = {
     interludeButton: "Lihat potongan foto",
     galleryEyebrow: "SEPULUH BINGKAI, BANYAK RASA",
     galleryTitle: "Kalau bisa, aku mau simpan semua momen.",
-    galleryBody: "Geser pelan. Ada beberapa potongan cerita kita di sini.",
+    galleryBody: "Geser pelan.",
     galleryButton: "Masih ada yang mau aku bilang",
     preletterEyebrow: "SEBELUM KEJUTAN TERAKHIR",
     preletterTitle: "Ada yang lebih panjang dari satu ucapan.",
