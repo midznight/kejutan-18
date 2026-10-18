@@ -12,7 +12,26 @@ window.SURPRISE_CONTENT = {
 
   // GANTI: ubah pembuka dan seluruh kalimat di bawah sesukamu.
   copy: {
-    documentTitle: "Ada kejutan kecil buat Nor",
+    documentTitle: "Ada kejutan kecil buat {{name}}",
+    // GANTI: label kecil dan teks bantuan antarmuka.
+    loadingLabel: "Memuat kejutan",
+    startKicker: "UNTUK HARI YANG ISTIMEWA",
+    startFooter: "Dibuka pelan-pelan, khusus untuk {{name}} {{heart}}",
+    lockKicker: "SATU PERTANYAAN KECIL",
+    balloonsAria: "Balon untuk diketuk",
+    balloonButtonLabel: "Pecahkan balon {{count}}",
+    balloonPoppedLabel: "Balon pecah",
+    balloonPhrasePrefix: "HAPPY 18",
+    reasonsKicker: "HAL-HAL YANG BIKIN AKU SAYANG KAMU",
+    cakeKicker: "KALAU BISA MINTA SATU HAL",
+    wishComplete: "Permintaanmu sudah dikirim ke semesta.",
+    interludeKicker: "BUAT SEMUA HAL YANG AKAN DATANG",
+    galleryKicker: "POTONGAN CERITA",
+    galleryAria: "Galeri foto yang bisa digeser",
+    gallerySwipe: "GESER UNTUK MELIHAT",
+    preletterKicker: "KALI INI, BIAR KATA-KATA YANG BICARA",
+    letterKicker: "SEDIKIT CATATAN DARI AKU",
+    finaleKicker: "SEBUAH HAL KECIL BUAT KAMU",
     rotate: "Biar kejutan ini terasa utuh, putar kembali layar ke posisi portrait.",
     startEyebrow: "SEBUAH HAL KECIL, DARI HAMID",
     startTitle: "Hari ini,\nsemua lampu buat kamu.",
@@ -23,7 +42,7 @@ window.SURPRISE_CONTENT = {
     lockBody: "Jawab satu pertanyaan ini buat lanjut ke bagian berikutnya.",
     lockPlaceholder: "Tulis jawabanmu di sini",
     lockButton: "Coba buka",
-    lockHint: "Petunjuk: jumlahkan tanggal ulang tahun Nor dan Hamid. Tulis hasil akhirnya saja.",
+    lockHint: "Petunjuk: jumlahkan tanggal ulang tahun {{name}} dan Hamid. Tulis hasil akhirnya saja.",
     lockWrong: "Belum tepat. Coba ingat-ingat lagi, jangan buru-buru.",
     lockAlmost: "Sedikit lagi. Kamu pasti bisa.",
     lockSuccess: "Nah, benar. Pintu kecilnya kebuka.",
@@ -48,7 +67,7 @@ window.SURPRISE_CONTENT = {
     cakeAfter: "Semoga satu per satu harapanmu nemu jalan pulang jadi nyata.",
     cakeButton: "Simpan harapannya",
     interludeEyebrow: "UNTUK TAHUN BARU DALAM HIDUPMU",
-    interludeTitle: "Semoga kamu tetap jadi Nor yang itu.",
+    interludeTitle: "Semoga kamu tetap jadi {{name}} yang itu.",
     interludeBody: "Yang gampang nyambung sama orang, bisa bikin suasana hidup, dan punya cara sendiri untuk bikin hari biasa terasa lebih seru. Semoga kamu tetap punya ruang untuk jadi diri sendiri, bahkan saat hidup mulai sibuk.",
     interludeNote: "Kamu enggak harus punya semua jawaban sekarang. Jalanin pelan-pelan, aku dukung kamu.",
     interludeButton: "Lihat potongan cerita kita",
@@ -60,7 +79,7 @@ window.SURPRISE_CONTENT = {
     preletterTitle: "Ada yang lebih panjang dari satu ucapan.",
     preletterBody: "Aku enggak selalu jago merangkai kata pas lagi langsung ngomong. Jadi kali ini, biar aku tulis pelan-pelan buat kamu.",
     preletterButton: "Baca surat kecilku",
-    letterEyebrow: "DARI HAMID, UNTUK NOR",
+    letterEyebrow: "DARI HAMID, UNTUK {{name}}",
     letterTitle: "Buat kamu, di usia 18.",
     letterButton: "Buka hadiah terakhir",
     finaleEyebrow: "YANG TERAKHIR, TAPI BUKAN AKHIR",
@@ -88,7 +107,7 @@ window.SURPRISE_CONTENT = {
   // lalu hitung SHA-256-nya. Penjelasan singkat tersedia di README.md.
   riddles: [
     {
-      question: "Tanggal berapa ultah Nor sama ultah Hamid? Jumlahkan.",
+      question: "Tanggal berapa ultah {{name}} sama ultah Hamid? Jumlahkan.",
       acceptedHashes: ["d59eced1ded07f84c145592f65bdf854358e009c5cd705f5215bf18697fed103"],
       hint: "Ingat angka hasil penjumlahan dua tanggal ulang tahun kita. Masukkan hasil akhirnya saja.",
       wrongMessages: ["Belum tepat. Coba ingat-ingat lagi, jangan buru-buru.", "Sedikit lagi. Coba hitung sekali lagi, ya."],
@@ -109,11 +128,11 @@ window.SURPRISE_CONTENT = {
 
   // GANTI: teks surat ini muncul per paragraf dengan animasi tersendiri.
   letter: [
-    "Nor, selamat ulang tahun yang ke-18, ya. Rasanya seru bisa sampai di hari ini dan ikut melihat kamu masuk ke bab baru dalam hidupmu. Semoga di umur yang baru, kamu makin kenal sama diri sendiri, makin berani memilih jalan yang kamu mau, dan tetap punya banyak alasan buat ketawa lepas.",
+    "{{name}}, selamat ulang tahun yang ke-18, ya. Rasanya seru bisa sampai di hari ini dan ikut melihat kamu masuk ke bab baru dalam hidupmu. Semoga di umur yang baru, kamu makin kenal sama diri sendiri, makin berani memilih jalan yang kamu mau, dan tetap punya banyak alasan buat ketawa lepas.",
     "Aku berharap hal-hal baik datang ke kamu, bukan cuma yang besar dan kelihatan orang lain, tapi juga hal kecil yang bikin kamu tenang. Semoga kamu ketemu orang-orang yang tulus, kesempatan yang bikin kamu berkembang, dan keberanian buat menjauh dari hal-hal yang bikin kamu kehilangan diri sendiri. Kamu enggak harus selalu kuat atau selalu tahu harus ke mana. Pelan-pelan juga enggak apa-apa.",
     "Terima kasih sudah nemenin aku sejauh ini. Terima kasih buat cerita-cerita kamu, buat waktu yang kamu bagi, buat tawa, dan buat kehadiranmu yang sering kali berarti lebih dari yang mungkin kamu sadari. Aku tahu kita sama-sama masih belajar, dan aku enggak berharap semuanya selalu sempurna. Aku cuma bersyukur kita punya kesempatan untuk terus saling mengenal dan tumbuh.",
     "Semoga umur 18 ini jadi awal dari banyak pengalaman yang bikin kamu bangga sama diri sendiri. Kejar hal-hal yang kamu impikan, nikmati hari-hari yang ramai, dan jangan lupa kasih diri sendiri waktu untuk istirahat. Apa pun yang nanti berubah, aku harap kamu enggak kehilangan bagian dirimu yang hangat, ceria, dan penuh warna itu.",
-    "Selamat ulang tahun, Nor. Semoga kamu selalu punya ruang untuk bahagia, tempat untuk pulang saat capek, dan orang-orang yang mendukungmu dengan tulus. Hari ini, aku ikut merayakan kamu—bukan cuma karena kamu bertambah umur, tapi juga karena kamu adalah kamu.\n\nDari aku, Hamid. {{heart}}",
+    "Selamat ulang tahun, {{name}}. Semoga kamu selalu punya ruang untuk bahagia, tempat untuk pulang saat capek, dan orang-orang yang mendukungmu dengan tulus. Hari ini, aku ikut merayakan kamu—bukan cuma karena kamu bertambah umur, tapi juga karena kamu adalah kamu.\n\nDari aku, Hamid. {{heart}}",
   ],
 
   // GANTI: daftar foto dinamis. Tambah/hapus objek untuk mengubah jumlah kartu galeri.
