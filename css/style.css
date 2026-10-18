@@ -238,3 +238,46 @@ h1, h2 { text-wrap: balance; }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .ambient { animation: none; }
 }
+
+
+/* Sculpted SVG balloons: satin highlights, colored shadows, animated strings. */
+.balloon { border: 0; border-radius: 0; background: transparent; box-shadow: none; aspect-ratio: .68; overflow: visible; transition: opacity .24s; }
+.balloon::before, .balloon::after { content: none; }
+.balloon-svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; pointer-events: none; filter: drop-shadow(1px 5px 3px rgba(15,8,24,.23)); }
+.balloon-rope { transform-origin: 50% 10%; animation: rope-sway 1.8s ease-in-out infinite alternate; }
+@keyframes rope-sway { from { transform: rotate(-2deg); } to { transform: rotate(2deg); } }
+.balloon .balloon-mark { z-index: 2; top: 2%; bottom: 20%; font-size: clamp(13px,3.8vw,19px); font-family: 'Fraunces', Georgia, serif; font-weight: 700; text-shadow: 0 1px 4px rgba(39,24,54,.24); }
+.balloon.popped { animation: balloon-pop .38s cubic-bezier(.2,.8,.2,1) forwards; }
+
+/* Hand-cut polaroids retain native horizontal scroll-snap. */
+.gallery-strip { gap: 20px; padding: 22px 10px 28px; }
+.gallery-card { position: relative; flex: 0 0 min(76vw,310px); padding: 10px 10px 0; border: 1px solid #dfcfbf; border-radius: 3px 2px 4px 2px; color: #392a43; background: #f5eadb; box-shadow: 4px 5px 0 rgba(12,7,19,.22), 0 13px 24px rgba(8,5,17,.2); transform: rotate(var(--rot)) translateY(calc(var(--lift) + var(--parallax, 0px))); transition: transform .22s ease; }
+.polaroid-tape { position: absolute; z-index: 3; top: -7px; left: 50%; width: 67px; height: 20px; transform: translateX(-50%) rotate(-3deg); background: rgba(238,204,180,.78); border: 1px solid rgba(255,246,230,.62); box-shadow: 1px 2px 0 rgba(66,44,55,.08); }
+.gallery-photo { border-radius: 1px; background: #e9dece; }
+.gallery-photo .photo-placeholder { color: #49384f; }
+.photo-placeholder .frame-icon { border-color: #c7b6ac; background: #ebdfd1; box-shadow: 5px 5px 0 #d9c6b7; }
+.photo-placeholder small { color: #897582; }
+.gallery-caption { min-height: 67px; padding: 13px 7px 10px; color: #47334d; font-size: 22px; line-height: 1.13; }
+.gallery-caption .caption-count { color: #7A89C2; font: 700 10px/1.6 'Outfit', sans-serif; }
+.gallery-foot { color: #d9c5dc; }
+
+/* Distinct scene wipes, built from transform and opacity only. */
+.scene-wipe { position: fixed; z-index: 80; inset: 0; overflow: hidden; pointer-events: none; }
+.wipe-orb { position: absolute; left: 50%; top: 50%; width: 26vmax; height: 26vmax; border-radius: 50%; transform: translate(-50%,-50%) scale(0); background: #f0d3bf; }
+.wipe-strip { position: absolute; top: 0; bottom: 0; width: 34%; background: #ad98c8; }
+.wipe-strip-0 { left: 0; background: #c4b0d8; }
+.wipe-strip-1 { left: 33%; background: #f0d1bd; }
+.wipe-strip-2 { right: 0; background: #79658e; }
+.wipe-band { position: absolute; background: #d7c4e5; transform: scale(0); opacity: 0; }
+.wipe-band-horizontal { left: 0; top: 35%; width: 100%; height: 30%; }
+.wipe-band-vertical { left: 35%; top: 0; width: 30%; height: 100%; background: #f0d0bd; }
+.scene-wipe.is-running .wipe-orb { animation: wipe-iris .7s cubic-bezier(.65,0,.25,1) forwards; }
+.scene-wipe.is-running .wipe-strip { animation: wipe-curtain .66s cubic-bezier(.65,0,.25,1) forwards; }
+.scene-wipe.is-running .wipe-strip-1 { animation-delay: .055s; }
+.scene-wipe.is-running .wipe-strip-2 { animation-delay: .11s; }
+.scene-wipe.is-running .wipe-band { animation: wipe-cross .56s cubic-bezier(.65,0,.25,1) forwards; }
+.scene-wipe.is-running .wipe-band-vertical { animation-delay: .055s; }
+@keyframes wipe-iris { 0% { transform: translate(-50%,-50%) scale(0); opacity: 1; } 100% { transform: translate(-50%,-50%) scale(14); opacity: 0; } }
+@keyframes wipe-curtain { 0% { transform: translateY(-110%); opacity: 1; } 100% { transform: translateY(110%); opacity: 0; } }
+@keyframes wipe-cross { 0% { transform: scale(0); opacity: .95; } 100% { transform: scale(1); opacity: 0; } }
+
