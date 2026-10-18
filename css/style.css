@@ -872,6 +872,7 @@ body {
 .scene[data-signature="seal"] .scenery-main { width:clamp(330px,108vw,520px); top:-8%; right:-22%; opacity:.82; }
 .constellation-etch { position:absolute; z-index:2; left:-5%; top:20%; width:min(88vw,325px); height:auto; opacity:.08; transition:opacity .25s; }
 #s0.constellation-lit .constellation-etch { opacity:.85; }
+#s0 .constellation-strokes path { stroke-dasharray:520; stroke-dashoffset:520; }
 #s0 .primary-btn { width:132px; height:132px; min-width:132px; min-height:132px; max-width:132px; padding:19px 12px; border-radius:50%; border:2px solid #c9a15a; outline:1px solid #f3dfb0; outline-offset:4px; background:radial-gradient(circle at 36% 24%,#74457b,#4a2260 57%,#2a1638); color:#f3dfb0; font:600 11px/1.35 var(--label-font); letter-spacing:.1em; box-shadow:inset 0 0 0 6px rgba(201,161,90,.13),inset 0 0 0 8px rgba(243,223,176,.28),0 9px 0 rgba(8,3,12,.25); white-space:normal; }
 #s0 .primary-btn::before { inset:9px; border-radius:50%; border-color:rgba(243,223,176,.6); }
 #s0 .primary-btn::after { content:"✦"; top:-4px; right:3px; font-size:18px; color:#f3dfb0; }
