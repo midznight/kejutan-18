@@ -489,7 +489,7 @@
         </div>
       </div>
       <div class="voucher" id="voucher"><div class="voucher-label">${formatted(c.voucherLabel)}</div><h3>${formatted(C.finale.title || c.voucherTitle)}</h3><p>${formatted(C.finale.body || c.voucherBody)}</p><div class="voucher-bottom"><span>${formatted(c.voucherFoot)}</span>${BIG_HEART}</div></div>
-      <div class="hero-copy"><button type="button" class="primary-btn" id="gift-button">${formatted(c.giftButton)}</button><h2 class="closing-line" id="closing-line">${formatted(C.finale.message || C.finale.closing || c.closing)}</h2><div class="replay-row">${button(c.replay, 'replay', true)}</div></div>`;
+      <div class="hero-copy"><button type="button" class="primary-btn" id="gift-button">${formatted(c.giftButton)}</button><h2 class="closing-line" id="closing-line" hidden>${formatted(C.finale.message || C.finale.closing || c.closing)}</h2><div class="replay-row" id="replay-row" hidden>${button(c.replay, 'replay', true)}</div></div>`;
 
     app.innerHTML = [s0,s1,s2,s3,s5,sFlower,s4,s6,sZodiac,s7,s8,s9,s10].map((html, i) => makeScene(sceneIds[i], html, i)).join('');
     installAtelierDecor();
@@ -1559,6 +1559,9 @@
       spawnCelebrationBurst(canvasWidth * .5, canvasHeight * .48, 70);
       spawnConfettiBurst(canvasWidth * .5, canvasHeight * .42, 18);
       const closing = document.getElementById('closing-line');
+      if (closing) closing.removeAttribute('hidden');
+      const replay = document.getElementById('replay-row');
+      if (replay) replay.removeAttribute('hidden');
       if (closing && window.gsap && !reducedMotion) {
         window.gsap.fromTo(closing, { opacity: 0, y: 18, scale: .96 }, {
           opacity: 1, y: 0, scale: 1, duration: .9, delay: .18, ease: 'power4.out'
@@ -1600,8 +1603,8 @@
       if (navigator.vibrate && /Android/i.test(navigator.userAgent)) {
         try { navigator.vibrate([20, 35, 20]); } catch (_) { /* no-op */ }
       }
-      buttonElement.textContent = C.copy.voucherLabel;
       buttonElement.disabled = true;
+      buttonElement.setAttribute('hidden', '');
 
       if (reducedMotion) {
         roaringLion.setAttribute('hidden', '');
