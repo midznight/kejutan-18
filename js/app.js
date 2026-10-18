@@ -159,7 +159,7 @@
       <div class="hero-copy">
         <p class="kicker">SEBUAH HAL KECIL BUAT KAMU</p>
         <h2 class="section-title">${formatted(c.finaleTitle)}</h2>
-        <p class="body-copy">${formatted(c.copy.closing)}</p>
+        <p class="body-copy">${formatted(c.closing)}</p>
       </div>
       <div class="finale-stage" id="finale-stage"><canvas id="finale-canvas" aria-hidden="true"></canvas><div class="gift-stage" id="gift-stage"><button type="button" class="gift-wrap" id="gift-wrap" aria-label="${safe(c.giftButton)}"><span class="gift-bow"></span><span class="gift-lid"></span><span class="gift-box"></span></button></div><div class="voucher" id="voucher"><div class="voucher-label">${formatted(c.voucherLabel)}</div><h3>${formatted(C.finale.title || c.voucherTitle)}</h3><p>${formatted(C.finale.body || c.voucherBody)}</p><div class="voucher-bottom"><span>${formatted(c.voucherFoot)}</span>${BIG_HEART}</div></div></div>
       <div class="hero-copy"><button type="button" class="primary-btn" id="gift-button">${formatted(c.giftButton)}</button><h2 class="closing-line" id="closing-line">${formatted(C.finale.message || C.finale.closing || c.closing)}</h2><div class="replay-row">${button(c.replay, 'replay', true)}</div></div>`;
