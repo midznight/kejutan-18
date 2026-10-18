@@ -349,12 +349,12 @@
 
     const sFlower = `
       ${makeTopline(c.flowerEyebrow || c.flowerKicker, 5)}
-      <div class="hero-copy bouquet-copy">
+      <div class="hero-copy bouquet-copy" aria-busy="true">
         <p class="kicker">${formatted(c.flowerKicker)}</p>
         <h2 class="section-title">${formatted(c.flowerTitle)}</h2>
         <div class="bouquet-art" id="bouquet-art" role="button" tabindex="0" aria-label="${safe(c.flowerAria || 'Ketuk buket untuk melihat kelopak berkilau')}">${makeBouquetSVG()}</div>
         <p class="body-copy bouquet-body">${formatted(c.flowerBody)}</p>
-        <div class="actions">${button(c.flowerButton, 'next')}</div>
+        <div class="actions"><p id="bouquet-motion-note" class="fine-copy bouquet-motion-note" role="status" aria-live="polite">Bunganya sedang mekar…</p>${button('Bunganya sedang mekar…', 'next', false, 'id="bouquet-next" disabled aria-disabled="true"')}</div>
       </div>`;
 
     const s6 = `
@@ -1336,8 +1336,21 @@
   function animateBouquet() {
     const scene = document.getElementById('s5');
     if (!scene) return;
+    const nextButton = scene.querySelector('#bouquet-next');
+    const motionNote = scene.querySelector('#bouquet-motion-note');
+    const copy = scene.querySelector('.bouquet-copy');
+    const enableNext = () => {
+      if (nextButton) {
+        nextButton.disabled = false;
+        nextButton.removeAttribute('aria-disabled');
+        nextButton.textContent = withName(C.copy.flowerButton || 'Lanjut');
+        nextButton.classList.add('bouquet-ready');
+      }
+      if (motionNote) motionNote.hidden = true;
+      if (copy) copy.setAttribute('aria-busy', 'false');
+    };
     const svg = scene.querySelector('#bouquet-svg');
-    if (!svg) return;
+    if (!svg) { enableNext(); return; }
 
     const stems = Array.from(svg.querySelectorAll('.bouquet-stem'));
     const leaves = Array.from(svg.querySelectorAll('.bouquet-leaf'));
@@ -1349,6 +1362,7 @@
       leaves.forEach(el => { el.style.opacity = '1'; });
       flowers.forEach(el => { el.style.opacity = '1'; });
       clusters.forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
+      enableNext();
       return;
     }
 
@@ -1381,7 +1395,10 @@
     timeline.to(flowers, {
       opacity: 1, duration: .3, stagger: .008, ease: 'power1.out'
     }, '<');
-    timeline.call(() => releasePetals(20, canvasWidth * .5, canvasHeight * .18), null, '+=.12');
+    timeline.call(() => {
+      releasePetals(20, canvasWidth * .5, canvasHeight * .18);
+      enableNext();
+    }, null, '+=.12');
     scheduleBouquetPetalDrop();
   }
 
