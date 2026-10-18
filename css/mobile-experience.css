@@ -1,0 +1,94 @@
+/* Mobile Experience layer v15 — preserves the editorial art while giving touch controls and content the space they need. */
+@media (hover:none) and (pointer:coarse) {
+  :root { --phone-gutter: clamp(14px, 4.4vw, 20px); }
+  html,body { width:100%; max-width:100%; min-height:100vh; min-height:100svh; min-height:100dvh; overflow-x:clip; overscroll-behavior-x:none; }
+  #app { width:100%; max-width:100%; min-width:0; overflow-x:clip; }
+  .app-shell {
+    width:100%; max-width:100%; min-width:0; min-height:100vh; min-height:100svh; min-height:100dvh;
+    padding:calc(16px + var(--safe-top)) calc(var(--phone-gutter) + var(--safe-right)) calc(20px + var(--safe-bottom)) calc(var(--phone-gutter) + var(--safe-left));
+    border:0; border-radius:0; box-shadow:none; overflow-x:clip; overflow-y:visible; background:transparent;
+  }
+  .scene { width:100%; max-width:100%; min-width:0; overflow-x:clip; overflow-y:visible; }
+  .scene-inner { width:100%; max-width:100%; min-width:0; padding:clamp(18px,4.5vw,25px) 0 clamp(24px,4.8vh,36px); }
+  .scene-topline { align-items:flex-start; gap:8px; margin-bottom:clamp(18px,3.2vh,25px); }
+  .eyebrow { max-width:min(74%,270px); font-size:9px; line-height:1.45; letter-spacing:.12em; }
+  .scene-number { flex:0 0 auto; padding-top:1px; font-size:9px; white-space:nowrap; }
+  .body-copy { font-size:clamp(15px,4vw,17px); line-height:1.68; }
+  .fine-copy { font-size:12.5px; line-height:1.6; }
+  .primary-btn,.secondary-btn { min-height:52px; touch-action:manipulation; }
+  .hold-button { min-height:60px; touch-action:none; }
+  .answer-input { min-height:52px; font-size:16px; }
+  .audio-toggle {
+    top:calc(10px + var(--safe-top)); right:calc(10px + var(--safe-right)); display:grid; place-items:center;
+    width:44px; min-width:44px; height:44px; min-height:44px; padding:0; border-radius:50%; font-size:0; line-height:0;
+    box-shadow:0 5px 18px rgba(0,0,0,.24),inset 0 0 0 3px rgba(201,161,90,.08);
+  }
+  .audio-toggle::before { content:"♫"; display:block; color:#f3dfb0; font:600 20px/1 Georgia,serif; }
+  .audio-toggle[data-muted="true"]::before { content:"×"; font:500 24px/1 system-ui,sans-serif; }
+  .audio-toggle:focus-visible { outline:2px solid #f3dfb0; outline-offset:4px; }
+  body.audio-control-visible .scene-topline { margin-top:27px; }
+  #s0 .scene-topline { margin-top:0; }
+  .scenery-note,.telegram-side-note,.candle-table-note,.editorial-marginalia,.gallery-room-label,.signature-ornament,.specimen-label { display:none!important; }
+  .scene-scenery { overflow:hidden; }
+  .scene-scenery::after { opacity:.55; }
+  .scenery-main { opacity:.3; }
+  .scenery-secondary { opacity:.22; }
+  .scene-zodiac-mark { opacity:.06; }
+  .birthday-stamp { opacity:.28; }
+  .hero-marquee { opacity:.78; }
+  .scene-scenery .scenery-corner { opacity:.6; }
+  #s0 .hero-title { max-width:100%; font-size:clamp(37px,10.3vw,48px); line-height:1.02; }
+  #s0 .hero-orbit { width:min(56vw,235px); margin-bottom:15px; }
+  #s0 .zodiac-hero-badge { max-width:100%; }
+  #s0 .primary-btn { width:116px; height:116px; min-width:116px; min-height:116px; max-width:116px; padding:17px 10px 0; }
+  #s1 .lock-panel { width:100%; max-width:100%; padding:clamp(21px,6vw,30px); transform:none; }
+  #s1 .lock-question { font-size:clamp(27px,7.4vw,36px); line-height:1.1; }
+  #s2 .hero-orbit { width:min(68vw,242px); margin-bottom:13px; }
+  #s2 .big-number { font-size:clamp(130px,42vw,172px); }
+  #s2 .hero-title { font-size:clamp(32px,8.8vw,42px); line-height:1.04; }
+  #s3 .balloon-arena { margin-inline:0; height:clamp(260px,41svh,350px); border-radius:24px; }
+  #s4 .cake-wrap { margin:15px auto 4px; padding-inline:8px; }
+  #s4 .cake-stage { min-height:clamp(240px,35svh,290px); }
+  #s5 .bouquet-art { width:min(100%,350px); margin-inline:auto; }
+  #s5 .bouquet-svg { display:block; width:100%; max-width:100%; }
+  #s5 .bouquet-body { font-size:15px; line-height:1.62; }
+  #s5 .bouquet-motion-note { width:100%; margin:0 0 7px; text-align:center; }
+  #s5 #bouquet-next { width:100%; min-height:52px; }
+  #s5 #bouquet-next:disabled { opacity:.64; cursor:wait; filter:saturate(.72); box-shadow:none; }
+  #s6 .reason-grid {
+    display:flex; width:calc(100% + 12px); margin:17px -6px 0; padding:6px 6px 20px; gap:12px; overflow-x:auto;
+    overscroll-behavior-x:contain; scroll-snap-type:x mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  #s6 .reason-grid::-webkit-scrollbar { display:none; }
+  #s6 .reason-card.tarot-card { flex:0 0 min(78vw,300px); width:min(78vw,300px); scroll-snap-align:center; }
+  #zodiac-slide .zodiac-fact h3 { font-size:15px; line-height:1.18; }
+  #zodiac-slide .zodiac-fact p { font-size:13px; line-height:1.62; }
+  #zodiac-slide .zodiac-meta { gap:6px; }
+  #zodiac-slide .zodiac-meta span { font-size:10px; padding:7px 9px; }
+  #s8 .gallery-strip { width:calc(100% + 24px); max-width:calc(100% + 24px); margin-inline:-12px; padding-inline:12px; scroll-padding-inline:12px; -webkit-overflow-scrolling:touch; }
+  #s8 .gallery-card { flex-basis:min(82vw,300px); }
+  #s8 .gallery-photo img { cursor:zoom-in; }
+  #s10 .letter-paper { padding:clamp(22px,6vw,28px) clamp(18px,5.4vw,24px); }
+  #s10 .letter-paragraph { font-size:clamp(16px,4.2vw,18px); line-height:1.66; }
+  #s11 .finale-stage { min-height:clamp(320px,85vw,380px); }
+  #s11 .lion-art { width:min(100%,300px); }
+  .gallery-photo img:focus-visible,#bouquet-art:focus-visible,.tarot-card:focus-visible { outline:2px solid #f3dfb0; outline-offset:4px; }
+  .primary-btn:disabled,.secondary-btn:disabled { cursor:wait; }
+}
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:540px) {
+  .app-shell { padding:calc(8px + var(--safe-top)) calc(14px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(14px + var(--safe-left)); }
+  .scene-inner { padding:9px 0 14px; }
+  .scene-topline { margin-top:0!important; margin-bottom:12px; }
+  body.audio-control-visible .scene-topline { margin-top:0!important; }
+  .hero-orbit { width:min(28vh,170px); margin-bottom:10px; }
+  .hero-title { font-size:clamp(28px,5.6vh,42px); }
+  .section-title { font-size:clamp(24px,4.8vh,35px); }
+  #s3 .balloon-arena { height:55vh; min-height:165px; }
+  #s4 .cake-stage { min-height:215px; }
+  #s5 .bouquet-art { width:min(42vh,285px); }
+  #s6 .reason-card.tarot-card { flex-basis:min(60vw,270px); height:310px; min-height:310px; }
+  #s8 .gallery-card { flex-basis:min(56vw,245px); }
+  #s11 .finale-stage { min-height:250px; }
+}
+.zodiac-fact,.gallery-card { will-change:transform,opacity; }
+@media (prefers-reduced-motion:reduce) { .zodiac-fact,.gallery-card { will-change:auto; } }
