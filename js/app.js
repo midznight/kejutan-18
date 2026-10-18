@@ -17,6 +17,7 @@
   const imageIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3.5" y="3.5" width="17" height="17" rx="2.6"/><circle cx="9" cy="9" r="1.7"/><path d="m4.5 17 5-5 3.5 3 2.2-2.1 4.3 4.1"/></svg>';
   const lockIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4.5" y="10" width="15" height="10.5" rx="2.5"/><path d="M8 10V7.3a4 4 0 0 1 8 0V10"/><circle cx="12" cy="15" r="1"/></svg>';
   let currentScene = 0;
+  let sceneTransitioning = false;
   let unlocked = false;
   let balloonTimer = null;
   let audioAvailable = false;
@@ -619,8 +620,7 @@
 
   function playSceneWipe(index) {
     if (reducedMotion || ![2, 5, 10].includes(index)) return;
-    const modes = ['iris', 'curtain', 'cross'];
-    const mode = modes[index % modes.length];
+    const mode = index === 2 ? 'iris' : index === 5 ? 'curtain' : 'cross';
     const layer = document.createElement('div');
     layer.className = 'scene-wipe scene-wipe-' + mode;
     layer.setAttribute('aria-hidden', 'true');
@@ -659,15 +659,20 @@
   }
 
   function setScene(index) {
+    if (sceneTransitioning) return;
     index = Math.max(0, Math.min(sceneIds.length - 1, index));
     if (index === 1 && !unlocked) { /* riddle is the expected first gate */ }
     const previous = document.getElementById(sceneIds[currentScene]);
     const next = document.getElementById(sceneIds[index]);
     if (!next || index === currentScene) return;
+    sceneTransitioning = true;
     if (previous) {
       previous.classList.remove('is-active');
+      previous.classList.add('is-leaving');
       previous.setAttribute('aria-hidden', 'true');
+      window.setTimeout(() => previous.classList.remove('is-leaving'), reducedMotion ? 1 : 360);
     }
+    window.setTimeout(() => { sceneTransitioning = false; }, reducedMotion ? 1 : 360);
     currentScene = index;
     clearSceneParticles();
     next.classList.add('is-active');
