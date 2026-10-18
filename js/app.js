@@ -144,7 +144,7 @@
       library.id = 'atelier-art-library';
       library.classList.add('atelier-art-library');
       library.setAttribute('aria-hidden', 'true');
-      library.innerHTML = \`
+      library.innerHTML = `
         <symbol id="art-moon" viewBox="0 0 160 180"><path d="M108 13 A70 70 0 1 0 145 132 A58 58 0 0 1 108 13Z" fill="#c9a15a" fill-opacity=".12" stroke="#e5c786" stroke-width="1.6"/><path d="M105 24 A57 57 0 0 0 136 125" fill="none" stroke="#f3dfb0" stroke-width=".8" stroke-dasharray="2 5"/><circle cx="65" cy="48" r="2.6" fill="#f3dfb0"/><path d="M35 81 l4 9 9 4-9 4-4 9-4-9-9-4 9-4Z" fill="#e8d09a"/></symbol>
         <symbol id="art-branch" viewBox="0 0 320 380"><g fill="none" stroke="#b7a174" stroke-width="1.35" stroke-linecap="round"><path d="M20 0 C68 60 70 116 128 163 S214 250 299 380"/><path d="M67 88 Q23 48 12 25 Q54 31 67 88Z"/><path d="M81 114 Q120 71 154 73 Q133 112 81 114Z"/><path d="M111 151 Q63 139 44 103 Q93 112 111 151Z"/><path d="M146 184 Q185 132 225 140 Q207 180 146 184Z"/><path d="M171 220 Q131 218 108 184 Q154 191 171 220Z"/><path d="M210 268 Q242 220 279 233 Q260 268 210 268Z"/></g><g stroke="#d8b0c1" stroke-width="1" fill="#8e5fb0" fill-opacity=".55"><path d="M91 124 C76 110 81 91 96 94 C107 96 108 114 91 124Z"/><path d="M100 138 C85 124 90 105 105 108 C116 110 117 128 100 138Z"/><path d="M111 151 C96 137 101 118 116 121 C127 123 128 141 111 151Z"/><path d="M214 244 C199 230 204 211 219 214 C230 216 231 234 214 244Z"/></g></symbol>
         <symbol id="art-arch" viewBox="0 0 320 420"><path d="M24 420 V165 A136 136 0 0 1 296 165 V420" fill="#8e5fb0" fill-opacity=".05" stroke="#c9a15a" stroke-width="2"/><path d="M37 420 V165 A123 123 0 0 1 283 165 V420" fill="none" stroke="#f3dfb0" stroke-opacity=".5" stroke-width=".8"/><path d="M24 242 Q160 199 296 242 M24 278 Q160 235 296 278" fill="none" stroke="#b28a50" stroke-opacity=".48"/></symbol>
@@ -157,7 +157,7 @@
         <symbol id="art-star" viewBox="0 0 32 32"><path d="M16 1 L19 12 L31 16 L19 19 L16 31 L13 19 L1 16 L13 12Z" fill="#e5c786"/></symbol>
         <symbol id="art-sigil" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="#c9a15a" stroke-width="1.4"/><circle cx="40" cy="40" r="26" fill="none" stroke="#e5c786" stroke-width=".8" stroke-dasharray="1.5 3.5"/><path d="M40 20 C29 8 15 21 25 33 L40 47 L55 33 C65 21 51 8 40 20Z" fill="#7A89C2" stroke="#f3dfb0" stroke-width="1.1"/></symbol>
         <symbol id="art-moth" viewBox="0 0 80 60"><path d="M40 28 C13 -3 3 12 17 38 L34 35 M40 28 C67 -3 77 12 63 38 L46 35" fill="#8e5fb0" fill-opacity=".42" stroke="#c9a15a" stroke-width="1.1"/><path d="M40 19 V48 M35 24 L28 16 M45 24 L52 16" stroke="#e5c786" stroke-width="1.2" fill="none"/></symbol>
-      \`;
+      `;
       document.body.prepend(library);
     }
     const motifs = {
@@ -172,7 +172,7 @@
       const scene = document.getElementById(id);
       if (!scene || scene.querySelector('.scene-scenery')) return;
       scene.dataset.motif = item[0];
-      scene.insertAdjacentHTML('afterbegin', \`
+      scene.insertAdjacentHTML('afterbegin', `
         <div class="scene-scenery" aria-hidden="true">
           <svg class="scenery-large scenery-main" viewBox="0 0 520 620" preserveAspectRatio="xMidYMid meet"><use href="#\${item[1]}" x="0" y="0" width="520" height="620"/></svg>
           <svg class="scenery-large scenery-secondary" viewBox="0 0 320 380"><use href="#\${item[2]}" x="0" y="0" width="320" height="380"/></svg>
@@ -182,7 +182,7 @@
           <svg class="scenery-mini mini-moth" viewBox="0 0 80 60"><use href="#art-moth"/></svg>
           <svg class="scenery-mini mini-sigil" viewBox="0 0 80 80"><use href="#art-sigil"/></svg>
           <span class="scenery-rule"></span>
-        </div>\`);
+        </div>`);
     });
   }
 
