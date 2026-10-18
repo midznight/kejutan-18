@@ -35,6 +35,7 @@ window.SURPRISE_CONTENT = {
     // GANTI: teks hitung mundur sebelum kejutan ulang tahun.
     countdownCopy: "Siap-siap, Nor. Hari ini semua sorotan buat kamu.",
     // GANTI: copy bunga untuk merayakan hal-hal yang sedang tumbuh.
+    flowerEyebrow: "KEBUN KECIL UNTUK NOR",
     flowerKicker: "HAL BAIK SEDANG TUMBUH",
     flowerTitle: "Buat semua hal indah yang sedang kamu tumbuhkan.",
     flowerBody: "Semoga usia 18 membuka banyak pintu, cerita baru, dan orang-orang baik. Kamu pantas punya hari-hari yang penuh warna.",
@@ -58,6 +59,7 @@ window.SURPRISE_CONTENT = {
     lockAlmost: "Sedikit lagi. Kamu pasti bisa.",
     lockSuccess: "Nah, benar. Pintu kecilnya kebuka.",
     heroEyebrow: "HARI INI PUNYA KAMU",
+    heroKicker: "SATU BAB BARU DIMULAI",
     heroTitle: "HAPPY BIRTHDAY,\n{{name}}.",
     heroAge: "18 tahun. Banyak hal indah sedang menunggu kamu.",
     heroBody: "Semoga hari ini terasa seramai tawa kamu, sehangat orang-orang yang sayang kamu, dan seindah hal-hal yang belum sempat kamu bayangkan.",
