@@ -186,6 +186,30 @@
     });
   }
 
+  function installSignatureCompositions() {
+    const map = { s0: 'seal', s1: 'telegram', s2: 'birthday-arch', s3: 'dusk-sky', s4: 'candle-table', s5: 'specimen', s6: 'tarot-deck' };
+    Object.entries(map).forEach(([id, signature]) => {
+      const scene = document.getElementById(id);
+      const scenery = scene && scene.querySelector('.scene-scenery');
+      if (!scenery) return;
+      scene.dataset.signature = signature;
+      if (scenery.querySelector('.signature-ornament')) return;
+      const mark = document.createElement('span');
+      mark.className = 'signature-ornament';
+      mark.setAttribute('aria-hidden', 'true');
+      mark.textContent = signature === 'specimen' ? 'SPECIMEN N° 18' : signature === 'tarot-deck' ? 'ARCANA · VIII' : '✦';
+      scenery.appendChild(mark);
+    });
+    const intro = document.getElementById('s0');
+    if (intro && !intro.dataset.constellationReady) {
+      intro.dataset.constellationReady = 'true';
+      intro.addEventListener('pointerdown', () => {
+        intro.classList.add('constellation-lit');
+        window.setTimeout(() => intro.classList.remove('constellation-lit'), 1900);
+      }, { passive: true });
+    }
+  }
+
   function renderApp() {
     const c = C.copy;
     const s0 = `
@@ -319,6 +343,7 @@
 
     app.innerHTML = [s0,s1,s2,s3,s5,sFlower,s4,s6,s7,s8,s9,s10].map((html, i) => makeScene(sceneIds[i], html, i)).join('');
     installAtelierDecor();
+    installSignatureCompositions();
     installEventHandlers();
     observePhotos();
     setupLetterReveal();
